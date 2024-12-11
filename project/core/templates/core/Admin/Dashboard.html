@@ -16,39 +16,39 @@
         <!--vertical navbar-->
         <div class="min-w-fit min-h-screen flex flex-col bg-gray-2 w-[6rem] text-white items-center">
             <!--container-->
-            <div class="flex flex-col mt-3 flex-grow items-center min-w-full">
-                <div class="mb-5 flex flex-col items-center">
+            <div class="flex flex-col mx-2 flex-grow items-center min-w-full">
+                <div class="py-4 flex flex-col items-center">
                     <img src="{% static 'images/user-icon.png'%}" alt="user-icon" class="w-7 h-7 mb-1">
                     <p class="text-white items-center text-sm">John Doe</p>
                     <p class="text-white items-center text-sm">Admin</p>
                 </div>
                 <ul class="flex flex-col items-center space-y-2 min-w-full">
                     <li class="flex flex-col items-center hover:bg-slate-900 min-w-full pt-1">
-                        <a href="{% url 'Request' %}" class="text-sm mt-1">
+                        <a href="{% url 'Admin/Request' %}" class="text-sm mt-1">
                             <img src="{% static 'images/Request.png' %}" alt="Request" class="w-6 h-6 ml-4">
                             Request
                         </a>
                     </li>
                     <li class="flex flex-col items-center hover:bg-slate-900 min-w-full pt-1">
-                        <a href="{% url 'Inventory' %}" class="text-sm mt-1">
+                        <a href="{% url 'Admin/Inventory' %}" class="text-sm mt-1">
                             <img src="{% static 'images/inventory.png' %}" alt="Inventory" class="w-6 h-6 ml-5">
                             Inventory
                         </a>
                     </li>
                     <li class="flex flex-col items-center hover:bg-slate-900 min-w-full pt-1">
-                        <a href="{% url 'Account' %}" class="text-sm mt-1">
+                        <a href="{% url 'Admin/Account' %}" class="text-sm mt-1">
                             <img src="{% static 'images/account.png' %}" alt="Account" class="w-6 h-6 ml-3">
                             Account
                         </a>
                     </li>
                     <li class="flex flex-col items-center hover:bg-slate-900 min-w-full pt-1">
-                        <a href="{% url 'Reports' %}" class="text-sm mt-1">
+                        <a href="{% url 'Admin/Reports' %}" class="text-sm mt-1">
                             <img src="{% static 'images/reports.png' %}" alt="Reports" class="w-6 h-6 ml-4">
                             Reports
                         </a>
                     </li>
                     <li class="flex flex-col items-center hover:bg-slate-900 min-w-full pt-1">
-                        <a href="{% url 'Supplier' %}" class="text-sm mt-1">
+                        <a href="{% url 'Admin/Supplier' %}" class="text-sm mt-1">
                             <img src="{% static 'images/Supplier.png' %}" alt="Supplier" class="w-6 h-6 ml-3">
                             Supplier
                         </a>

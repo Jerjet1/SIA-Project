@@ -1,0 +1,57 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Request{% endblock %}</title>
+    {% tailwind_css %}
+</head>
+<body class="font-Nats overflow-auto">
+    <header class="flex bg-gray-1 w-full">
+        <img src="{% static 'images/Logo.png'%}" alt="Ferma Steel works" class="ml-20 w-28 h-20">
+        <h1 class="text-white font-bold mt-5 ml-2 sm:text-xs md:text-4xl">FERMA STAINLESS WORKS</h1>
+    </header>
+    <main class="flex w-full min-h-screen bg-white overflow-hidden">
+        <!--vertical navbar-->
+        <div class="min-w-fit min-h-screen flex flex-col bg-gray-2 w-[6rem] text-white items-center">
+            <!--container-->
+            <div class="flex flex-col flex-grow items-center min-w-full mx-2">
+                <div class="flex flex-col items-center mb-10 py-4">
+                    <img src="{% static 'images/user-icon.png'%}" alt="user-icon" class="w-7 h-7 mb-1">
+                    <p class="text-white items-center text-sm">Luffy</p>
+                    <p class="text-white items-center text-sm">Worker</p>
+                </div>
+                <ul class="flex flex-col items-center space-y-2 min-w-full">
+                    <li class="flex flex-col items-center hover:bg-slate-900 min-w-full pt-1">
+                        <a href="{% url 'Worker/Request' %}" class="text-sm mt-1">
+                            <img src="{% static 'images/Request.png' %}" alt="Request" class="w-6 h-6 ml-4">
+                            Request
+                        </a>
+                    </li>
+                </ul>
+                <ul class="mt-auto min-w-full">
+                    <li class="flex flex-col items-center min-w-full hover:bg-slate-900 pt-2">
+                        <a href="{% url 'Login' %}" class="">
+                            <img src="{% static 'images/logout.png'%}" alt="logout" class="w-6 h-6 ml-2">
+                            <p class="text-sm mt-2 pb-3">Log out</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="w-full bg-slate-400 flex justify-center items-center">
+            <div class="w-[66rem] h-[35rem]  mt-10">
+                <div class=" min-w-full h-20 pt-2">
+                    <input type="text" placeholder="Search" class="h-8 rounded-3xl">
+                    <button type="button" class="bg-slate-600 rounded-xl pt-1 pb-1 pl-6 pr-6">
+                        Search
+                    </button>
+                </div>
+                <div class="min-w-full h-[26rem] bg-green-700">
+
+                </div>
+            </div>
+        </div>
+</body>
+</html>

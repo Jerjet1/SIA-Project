@@ -19,3 +19,15 @@ def Reports(request):
 
 def Supplier(request):
     return render(request, 'core/Admin/Supplier.html')
+
+def CustodianInv(request):
+    return render(request, 'core/Custodian/Inventory.html')
+
+def CustodianReq(request):
+    return render(request, 'core/Custodian/Inventory.html')
+
+def CustodianReports(request):
+    return render(request, 'core/Custodian/Inventory.html')
+
+def WorkerReq(request):
+    return render(request, 'core/Workers/Request.html')
