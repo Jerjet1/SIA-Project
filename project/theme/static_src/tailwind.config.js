@@ -46,6 +46,7 @@ module.exports = {
             colors: {
                 'gray-1' : '#2E2D2D',
                 'gray-2' : '#414036',
+                'gray-3' : '#D9D9D9'
             },
             fontFamily:{
                 'Nats' : 'Sans-serif',

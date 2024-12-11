@@ -1,0 +1,33 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FERMA STAINLESS WORKS{% endblock %}</title>
+    {% tailwind_css %}
+</head>
+<body class="font-Nats overflow-hidden">
+    <header class="flex bg-gray-1 w-full">
+        <img src="{% static 'images/Logo.png'%}" alt="Ferma Steel works" class="ml-20 w-28 h-20">
+        <h1 class="text-white font-bold mt-5 ml-2 sm:text-xs md:text-4xl">FERMA STAINLESS WORKS</h1>
+    </header>
+    <main class="flex justify-center items-center w-full min-h-screen bg-white overflow-hidden">
+        <!--Login container-->
+        <div class="w-[25rem] h-[24rem] bg-gray-3 mb-10 rounded-2xl">
+            <!--Label container-->
+            <div class="min-w-full h-20 bg-gray-1 flex justify-center rounded-t-2xl">
+                <h2 class="text-white text-4xl pt-5">Sign-in</h2>
+            </div>
+            <!--input container-->
+            <div class="min-w-full h-[19rem] bg-gray-3 flex items-center justify-center rounded-b-2xl">
+                <div class="w-[20rem] h-[12rem] flex justify-center items-center flex-col mt-5">
+                    <input type="text" placeholder="UserName" class="rounded-2xl "><br>
+                    <input type="password" placeholder="password" class="rounded-2xl"><br>
+                    <button type="button" class="w-[5rem] h-[2rem] bg-gray-1 text-white rounded-2xl">Sign-in</button>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
