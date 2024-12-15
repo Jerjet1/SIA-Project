@@ -6,7 +6,7 @@ pip install django,
 python -m pip install django-tailwind,
 pip install django-browser-reload,
 python manage.py tailwind install,
-
+pip install psycopg2,
 
 tailwind docs: https://django-tailwind.readthedocs.io/en/latest/installation.html
 
