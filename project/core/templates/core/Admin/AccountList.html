@@ -2,33 +2,35 @@
 {% block content %}
 <div class="w-full bg-white flex justify-center items-center">
     <div class="w-[50rem] h-[35rem]  mt-10">
-        <form action="" class="flex items-center space-x-2">
+        <div class=" min-w-full h-20 pt-2">
             <input type="text" placeholder="Search" class="h-8 rounded-3xl hover:border-blue-700">
             <button type="submit" class="rounded-xl pt-1 pb-1 px-5 text-md bg-gray-2 text-white hover:text-orange-500">
                 Search
             </button>
-        </form>
+        </div>
         <!--table container-->
-        <div class="min-w-full h-[26rem] bg-gray-3 mt-6">
+        <div class="min-w-full h-[26rem] bg-gray-3">
             <table class="w-full ">
                 <thead class="bg-gray-200 border-b-2 border-gray-200">
                     <tr class="">
-                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Item ID</th>
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Name</th>
-                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Description</th>
-                        <th class="p-3 text-sm font-semibold tracking-wide text-center">stocks</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Contact No.</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">User Role</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Status</th>
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Action</th>
                     </tr>
                 </thead>
                 <tbody >
                     <tr class="text-center">
-                        <td class="pt-1">001</td>
-                        <td class="pt-1">Welding rod</td>
-                        <td class="pt-1">Wsdasd</td>
-                        <td class="pt-1">30</td>
-                        <td class="pt-1">
-                            <button class="bg-gray-2 text-white px-2 py-1 rounded-lg hover:text-orange-500">Update</button>
-                            <button class="bg-gray-2 text-white px-2 py-1 rounded-lg hover:text-orange-500">Delete</button>
+                        <td class="p-1">Jon Doe</td>
+                        <td class="p-1">job request</td>
+                        <td class="p-1">Admin</td>
+                        <td class="p-1">
+                            <span class="bg-green-600 text-white px-3 py-1 rounded-xl" id="status">Active</span>
+                        </td>
+                        <td class="p-1">
+                            <button class="bg-gray-2 hover:text-orange-500 text-white px-2 py-1 rounded-lg">update</button>
+                            <button class="bg-gray-2 hover:text-orange-500 text-white px-2 py-1 rounded-lg">Deactivate</button>
                         </td>
                     </tr>
                 </tbody>

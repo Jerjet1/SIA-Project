@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Inventory{% endblock %}</title>
+    <title>FERMA STAINLESS WORKS</title>
     {% tailwind_css %}
 </head>
 <body class="font-Nats overflow-auto">
@@ -23,27 +23,54 @@
                     <p class="text-white items-center text-sm">Custodian</p>
                 </div>
                 <ul class="flex flex-col items-center space-y-2 min-w-full">
-                    <li class="flex flex-col items-center hover:bg-slate-900 min-w-full pt-1">
+                    <li class="flex flex-col items-center hover:bg-slate-900 hover:text-orange-500 min-w-full pt-1">
                         <a href="{% url 'Custodian/Request' %}" class="text-sm mt-1">
                             <img src="{% static 'images/Request.png' %}" alt="Request" class="w-6 h-6 ml-4">
                             Request
                         </a>
                     </li>
-                    <li class="flex flex-col items-center hover:bg-slate-900 min-w-full pt-1">
+                    <li class="flex flex-col items-center hover:bg-slate-900 hover:text-orange-500 min-w-full pt-1">
                         <a href="{% url 'Custodian/Inventory' %}" class="text-sm mt-1">
                             <img src="{% static 'images/inventory.png' %}" alt="Inventory" class="w-6 h-6 ml-5">
                             Inventory
                         </a>
                     </li>
-                    <li class="flex flex-col items-center hover:bg-slate-900 min-w-full pt-1">
-                        <a href="{% url 'Custodian/Reports' %}" class="text-sm mt-1">
-                            <img src="{% static 'images/reports.png' %}" alt="Reports" class="w-6 h-6 ml-4">
+                    <li class="relative group flex flex-col items-center min-w-full pt-1 text-sm">
+                        <img src="{% static 'images/reports.png' %}" alt="Reports" class="w-6 h-6">
                             Reports
-                        </a>
+                        <!--hover submenu-->
+                        <ul class="absolute left-[5.5rem] mt-1 hidden group-hover:block bg-gray-2 rounded-md">
+                            <li class="w-[9rem] text-center">
+                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
+                                    Item Requests
+                                </a>
+                            </li>
+                            <li class="w-[9rem] text-center">
+                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
+                                    Job Requests
+                                </a>
+                            </li>
+                            <li class="w-[9rem] text-center">
+                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
+                                    Order History
+                                </a>
+                            </li>
+                            <li class="w-[9rem] text-center">
+                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
+                                    Job Requests
+                                </a>
+                            </li>
+                            <li class="w-[9rem] text-center">
+                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
+                                    Delivery History
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
+                <!--logout-->
                 <ul class="mt-auto min-w-full">
-                    <li class="flex flex-col items-center min-w-full hover:bg-slate-900 pt-2">
+                    <li class="flex flex-col items-center min-w-full hover:bg-slate-900 hover:text-orange-500 pt-2">
                         <a href="{% url 'Login' %}" class="">
                             <img src="{% static 'images/logout.png'%}" alt="logout" class="w-6 h-6 ml-2">
                             <p class="text-sm mt-2 pb-3">Log out</p>
@@ -52,37 +79,53 @@
                 </ul>
             </div>
         </div>
-        {% block content %}
+    {% block content %}
         <div class="w-full bg-white flex justify-center items-center">
             <div class="w-[50rem] h-[35rem]  mt-10">
-                <div class=" min-w-full h-20 pt-2">
-                    <input type="text" placeholder="Search" class="h-8 rounded-3xl hover:border-orange-800">
-                    <button type="button" class="bg- rounded-xl pt-1 pb-1 px-5 text-sm bg-gray-1 text-white">
-                        Search
-                    </button>
+                <!--search and add item container-->
+                <div class=" min-w-full h-20 pt-2 flex justify-between">
+                    <!--search-->
+                    <form action="" class="flex items-center space-x-2">
+                        <input type="text" placeholder="Search" class="h-8 rounded-3xl hover:border-blue-700">
+                        <button type="submit" class="rounded-xl pt-1 pb-1 px-5 text-md bg-gray-2 text-white hover:text-orange-500">
+                            Search
+                        </button>
+                    </form>
+                    <!--add item-->
+                    <div class="pr-4 mt-5">
+                        <button class="bg-gray-2 py-2 px-4 rounded-2xl text-md text-white hover:text-orange-500" 
+                        onclick="openModal('AddModal')">
+                            Add Item
+                        </button>
+                    </div>
                 </div>
                 <!--table container-->
                 <div class="min-w-full h-[26rem] bg-gray-3">
                     <table class="w-full ">
                         <thead class="bg-gray-200 border-b-2 border-gray-200">
                             <tr class="">
-                                <th class="p-3 text-sm font-semibold tracking-wide text-center">Request ID</th>
-                                <th class="p-3 text-sm font-semibold tracking-wide text-center">Request Type</th>
-                                <th class="p-3 text-sm font-semibold tracking-wide text-center">Date</th>
-                                <th class="p-3 text-sm font-semibold tracking-wide text-center">Status</th>
+                                <th class="p-3 text-sm font-semibold tracking-wide text-center">Item ID</th>
+                                <th class="p-3 text-sm font-semibold tracking-wide text-center">Name</th>
+                                <th class="p-3 text-sm font-semibold tracking-wide text-center">Description</th>
+                                <th class="p-3 text-sm font-semibold tracking-wide text-center">stocks</th>
                                 <th class="p-3 text-sm font-semibold tracking-wide text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody >
                             <tr class="text-center">
                                 <td class="pt-1">001</td>
-                                <td class="pt-1">job request</td>
-                                <td class="pt-1">December 25, 2024</td>
-                                <td class="pt-1">pending</td>
+                                <td class="pt-1">Welding rod</td>
+                                <td class="pt-1">asdasda</td>
+                                <td class="pt-1">200</td>
                                 <td class="pt-1">
-                                    <button class="bg-slate-400 px-2 py-0.5 rounded-lg">view</button>
-                                    <button class="bg-slate-400 px-2 py-0.5 rounded-lg">approve</button>
-                                    <button class="bg-slate-400 px-2 py-0.5 rounded-lg">decline</button>
+                                    <button class="bg-gray-2 px-3 py-1 rounded-lg text-white hover:text-orange-500" 
+                                    onclick="openModal('Update')">
+                                        Update
+                                    </button>
+                                    <button class="bg-gray-2 px-3 py-1 rounded-lg text-white hover:text-orange-500" 
+                                    onclick="openModal('Delete')">
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -90,7 +133,119 @@
                 </div>
             </div>
         </div>
-        {% endblock %}
+        <!--add modal-->
+        <div id="AddModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+            <div class="bg-white rounded-lg p-6 space-y-4 relative">
+                <button 
+                class="text-black  rounded-full top-2 left-[21rem] absolute"
+                    onclick="closeModal('AddModal')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+                </button>
+                <h2 class="text-lg font-bold">Add material</h2>
+                <!--form container-->
+                <div class="flex flex-col justify-center items-center pt-5">
+                    <form action="">
+                        <div class="mb-4 flex justify-between">
+                            <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="first-name">
+                                Name
+                            </label>
+                            <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                            id="Name" type="text" placeholder="Name">
+                        </div>
+                        <div class="mb-4 flex justify-between">
+                            <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="first-name">
+                                Description
+                            </label>
+                            <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                            id="Description" type="text">
+                        </div>
+                        <div class="mb-4 flex justify-between">
+                            <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="first-name">
+                                Stocks
+                            </label>
+                            <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                            id="Stock" type="number" min="1" placeholder="0">
+                        </div>
+                        <div class=" flex justify-center items-center">
+                            <button type="submit" class="mt-5 bg-gray-2 py-2 px-5 text-white rounded-2xl hover:text-orange-500">
+                                Add
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!--update modal-->
+        <div id="Update" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+            <div class="bg-white rounded-lg p-6 space-y-4 relative">
+                <button 
+                class="text-black  rounded-full top-2 left-[21rem] absolute"
+                    onclick="closeModal('Update')">
+                    <img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+                </button>
+                <h2 class="text-lg font-bold">Update Material</h2>
+                <!--form container-->
+                <div class="flex flex-col justify-center items-center pt-5">
+                    <form action="">
+                        <div class="mb-4 flex justify-between">
+                            <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="first-name">
+                                Name
+                            </label>
+                            <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                            id="Name" type="text" placeholder="Name">
+                        </div>
+                        <div class="mb-4 flex justify-between">
+                            <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="first-name">
+                                Description
+                            </label>
+                            <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                            id="Description" type="text">
+                        </div>
+                        <div class="mb-4 flex justify-between">
+                            <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="first-name">
+                                Stocks
+                            </label>
+                            <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                            id="Stock" type="number" min="1" placeholder="0">
+                        </div>
+                        <div class=" flex justify-center items-center">
+                            <button type="submit" class="mt-5 bg-gray-2 py-2 px-5 text-white rounded-2xl hover:text-orange-500">
+                                Save
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!--delete modal-->
+        <div id="Delete" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+            <div class="bg-white rounded-lg p-6 space-y-4 relative">
+                <button 
+                    class="text-black  rounded-full top-2 left-[20rem] absolute"
+                    onclick="closeModal('Delete')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+                </button>
+                <h2 class="text-lg font-bold">Are you sure you wanna delete this?</h2>
+                <!--????-->
+                <div class="flex justify-center items-center">
+                    <form action="">
+                        <button type="submit" class="bg-gray-2 text-white px-4 py-2 rounded-2xl hover:text-orange-500">Yes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <script>
+            function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('hidden'); // Remove hidden class
+            modal.classList.add('flex'); // Add flex for centering
+            }
+        
+            function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('flex'); // Remove flex to prevent display issues
+            modal.classList.add('hidden'); // Add hidden class to hide modal
+            }
+        </script>
+    {% endblock %}
     </main>
 </body>
 </html>

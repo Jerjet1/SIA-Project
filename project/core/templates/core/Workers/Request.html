@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Request{% endblock %}</title>
+    <title>FERMA STAINLESS WORKS</title>
     {% tailwind_css %}
 </head>
 <body class="font-Nats overflow-auto">
@@ -42,11 +42,21 @@
         </div>
         <div class="w-full bg-white flex justify-center items-center">
             <div class="w-[50rem] h-[35rem]  mt-10">
-                <div class=" min-w-full h-20 pt-2">
-                    <input type="text" placeholder="Search" class="h-8 rounded-3xl hover:border-orange-800">
-                    <button type="button" class="bg- rounded-xl pt-1 pb-1 px-5 text-sm bg-gray-1 text-white">
-                        Search
-                    </button>
+                <!--search and create Request-->
+                <div class=" min-w-full h-20 pt-2 flex justify-between">
+                    <form action="" class="flex items-center space-x-2">
+                        <input type="text" placeholder="Search" class="h-8 rounded-3xl hover:border-blue-700">
+                        <button type="submit" class="rounded-xl py-1 px-5 text-md bg-gray-2 text-white hover:text-orange-500">
+                            Search
+                        </button>
+                    </form>
+                    <!--create request button-->
+                    <div class="pr-4 mt-5">
+                        <button class="bg-gray-2 py-2 px-4 rounded-2xl text-md text-white hover:text-orange-500" 
+                            onclick="openModal('CreateModal')">
+                            Create Request
+                        </button>
+                    </div>
                 </div>
                 <!--table container-->
                 <div class="min-w-full h-[26rem] bg-gray-3">
@@ -67,9 +77,15 @@
                                 <td class="pt-1">December 25, 2024</td>
                                 <td class="pt-1">pending</td>
                                 <td class="pt-1">
-                                    <button class="bg-slate-400 px-2 py-0.5 rounded-lg">view</button>
-                                    <button class="bg-slate-400 px-2 py-0.5 rounded-lg">approve</button>
-                                    <button class="bg-slate-400 px-2 py-0.5 rounded-lg">decline</button>
+                                    <button class="bg-gray-2 text-white hover:text-orange-500 px-2 py-1 rounded-lg" onclick="openModal('view')">
+                                        view
+                                    </button>
+                                    <button class="bg-gray-2 text-white hover:text-orange-500 px-2 py-1 rounded-lg" onclick="openModal('update')">
+                                        Update
+                                    </button>
+                                    <button class="bg-gray-2 text-white hover:text-orange-500 px-2 py-1 rounded-lg" onclick="openModal('delete')">
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -77,6 +93,158 @@
                 </div>
             </div>
         </div>
+        <!--Update Modal-->
+        <div id="update" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+            <div class="bg-white rounded-lg p-6 space-y-4 relative">
+                <button 
+                    class="text-black  rounded-full top-1 left-[21rem] absolute"
+                    onclick="closeModal('update')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+                </button>
+                <h2 class="text-lg font-bold">Requests</h2>
+                <div class="flex flex-col justify-center items-center">
+                    <form action="">
+                        <select required class="shadow appearance-none border rounded w-[20rem] py-2 px-3
+                         text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        id="Request">
+                            <!-- <option value="" disabled selected>Select Requests</option> -->
+                            <option value="Worker">Item Request</option>
+                        </select>
+                        <!--item request-->
+                        <div id="itemField" class="flex-col justify-center items-center pt-5">
+                            <div class="mb-4">
+                                <div class="mb-4 flex justify-between">
+                                    <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="item">
+                                        Item
+                                    </label>
+                                    <input required class="shadow appearance-none border rounded 
+                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    id="Name" type="text" placeholder="Name">
+                                </div>
+                                <div class="mb-4 flex justify-between">
+                                    <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="Quantity">
+                                        Quantity
+                                    </label>
+                                    <input required class="shadow appearance-none border rounded 
+                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    id="Quantity" type="number" min="1" placeholder="0">
+                                </div>
+                                <div class="mb-4 flex justify-between">
+                                    <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="first-name">
+                                        Name
+                                    </label>
+                                    <input required class="shadow appearance-none border rounded 
+                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    id="Name" type="text" placeholder="Name">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-center items-center">
+                            <button type="button"
+                                class="bg-gray-2 text-white hover:text-orange-500 px-2 py-1 rounded-lg" 
+                                id="submitButton">
+                                Submit
+                            </button>
+                        </div>    
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!--Delete Modal-->
+        <div id="delete" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+            <div class="bg-white rounded-lg p-6 space-y-4 relative">
+                <button 
+                    class="text-black  rounded-full top-2 left-[20rem] absolute"
+                    onclick="closeModal('delete')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+                </button>
+                <h2 class="text-lg font-bold">Are you sure you wanna delete this?</h2>
+                <div class="flex justify-center items-center">
+                    <form action="">
+                        <button type="submit" class="bg-gray-2 text-white px-4 py-2 rounded-2xl hover:text-orange-500">
+                            Yes
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!--view modal-->
+        <div id="view" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+            <div class="bg-white rounded-lg p-6 space-y-4">
+                <h2 class="text-lg font-bold">View Request</h2>
+                <p>Details about the job request go here.</p>
+                <button 
+                    class="bg-blue-500 text-white px-4 py-2 rounded-lg"
+                    onclick="closeModal('view')">Close</button>
+            </div>
+        </div>
+        <!--create Modal-->
+        <div id="CreateModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+            <div class="bg-white rounded-lg p-6 space-y-4 relative">
+                <button 
+                    class="text-black  rounded-full top-1 left-[20.5rem] absolute"
+                    onclick="closeModal('CreateModal')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+                </button>
+                <h2 class="text-lg font-bold">Requests</h2>
+                <div class="flex flex-col justify-center items-center">
+                    <form action="">
+                        <select required class="shadow appearance-none border rounded w-[20rem] py-2 px-3
+                         text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        id="Request">
+                            <!-- <option value="" disabled selected>Select Requests</option> -->
+                            <option value="Worker">Item Request</option>
+                        </select>
+                        <!--item request-->
+                        <div id="itemField" class="flex-col justify-center items-center pt-5">
+                            <div class="mb-4">
+                                <div class="mb-4 flex justify-between">
+                                    <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="item">
+                                        Item
+                                    </label>
+                                    <input required class="shadow appearance-none border rounded 
+                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    id="Name" type="text" placeholder="Name">
+                                </div>
+                                <div class="mb-4 flex justify-between">
+                                    <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="Quantity">
+                                        Quantity
+                                    </label>
+                                    <input required class="shadow appearance-none border rounded 
+                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    id="Quantity" type="number" min="1" placeholder="0">
+                                </div>
+                                <div class="mb-4 flex justify-between">
+                                    <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="first-name">
+                                        Name
+                                    </label>
+                                    <input required class="shadow appearance-none border rounded 
+                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    id="Name" type="text" placeholder="Name">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-center items-center">
+                            <button type="button"
+                                class="bg-gray-2 text-white hover:text-orange-500 px-2 py-1 rounded-lg" 
+                                id="submitButton">
+                                Submit
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </main>
+    <script>
+        function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('hidden'); // Remove hidden class
+        modal.classList.add('flex'); // Add flex for centering
+        }
+    
+        function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('flex'); // Remove flex to prevent display issues
+        modal.classList.add('hidden'); // Add hidden class to hide modal
+        }
+    </script>
 </body>
 </html>

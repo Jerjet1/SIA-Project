@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Request{% endblock %}</title>
+    <title>FERMA STAINLESS WORKS</title>
     {% tailwind_css %}
 </head>
 <body class="font-Nats overflow-auto">
@@ -23,38 +23,67 @@
                     <p class="text-white items-center text-sm">Admin</p>
                 </div>
                 <ul class="flex flex-col items-center space-y-2 min-w-full">
-                    <li class="flex flex-col items-center hover:bg-slate-900 hover:text-orange-700 min-w-full pt-1">
+                    <!--Request-->
+                    <li class="flex flex-col items-center hover:bg-slate-900 hover:text-orange-500 min-w-full pt-1">
                         <a href="{% url 'Admin/Request' %}" class="text-sm mt-1">
                             <img src="{% static 'images/Request.png' %}" alt="Request" class="w-6 h-6 ml-4">
                             Request
                         </a>
                     </li>
-                    <li class="flex flex-col items-center hover:bg-slate-900 hover:text-orange-700 min-w-full pt-1">
+                    <!--Inventory-->
+                    <li class="flex flex-col items-center hover:bg-slate-900 hover:text-orange-500 min-w-full pt-1">
                         <a href="{% url 'Admin/Inventory' %}" class="text-sm mt-1">
                             <img src="{% static 'images/inventory.png' %}" alt="Inventory" class="w-6 h-6 ml-5">
                             Inventory
                         </a>
                     </li>
-                    <li class="flex flex-col items-center hover:bg-slate-900 hover:text-orange-700 min-w-full pt-1">
-                        <a href="{% url 'Admin/Account' %}" class="text-sm mt-1">
-                            <img src="{% static 'images/account.png' %}" alt="Account" class="w-6 h-6 ml-3">
+                    <!--Account-->
+                    <li class="relative group flex flex-col items-center min-w-full pt-1 text-sm">
+                        <img src="{% static 'images/account.png' %}" alt="Account" class="w-6 h-6">
                             Account
-                        </a>
+                        <!--hover submenu-->
+                        <ul class="absolute left-[5.5rem] mt-1 hidden group-hover:block bg-gray-2 rounded-md">
+                            <li>
+                                <a href="{% url 'Admin/CreateAccount' %}" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">Create Account</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'Admin/Account' %}" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">Accounts</a>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="flex flex-col items-center hover:bg-slate-900 hover:text-orange-700 min-w-full pt-1">
-                        <a href="{% url 'Admin/Reports' %}" class="text-sm mt-1">
-                            <img src="{% static 'images/reports.png' %}" alt="Reports" class="w-6 h-6 ml-4">
+                    <!--Reports-->
+                    <li class="relative group flex flex-col items-center min-w-full pt-1 text-sm">
+                        <img src="{% static 'images/reports.png' %}" alt="Reports" class="w-6 h-6">
                             Reports
-                        </a>
+                        <!--hover submenu-->
+                        <ul class="absolute left-[5.5rem] mt-1 hidden group-hover:block bg-gray-2 rounded-md">
+                            <li class="w-[9rem] text-center">
+                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">Item Requests</a>
+                            </li>
+                            <li class="w-[9rem] text-center">
+                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">Job Requests</a>
+                            </li>
+                            <li class="w-[9rem] text-center">
+                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">Order History</a>
+                            </li>
+                            <li class="w-[9rem] text-center">
+                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">Job Requests</a>
+                            </li>
+                            <li class="w-[9rem] text-center">
+                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">Delivery History</a>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="flex flex-col items-center hover:bg-slate-900 hover:text-orange-700 min-w-full pt-1">
+                    <!--Supplier-->
+                    <li class="flex flex-col items-center hover:bg-slate-900 hover:text-orange-500 min-w-full pt-1">
                         <a href="{% url 'Admin/Supplier' %}" class="text-sm mt-1">
                             <img src="{% static 'images/Supplier.png' %}" alt="Supplier" class="w-6 h-6 ml-3">
                             Supplier
                         </a>
                     </li>
                 </ul>
-                <ul class="mt-auto min-w-full hover:text-orange-700">
+                <!--Logout-->
+                <ul class="mt-auto min-w-full hover:text-orange-500">
                     <li class="flex flex-col items-center min-w-full hover:bg-slate-900 pt-2">
                         <a href="{% url 'Login'%}" class="">
                             <img src="{% static 'images/logout.png'%}" alt="logout" class="w-6 h-6 ml-2">
@@ -69,15 +98,15 @@
         <div class="w-full bg-white flex justify-center items-center">
             <div class="w-[50rem] h-[35rem]  mt-10">
                 <div class=" min-w-full h-20 pt-2">
-                    <input type="text" placeholder="Search" class="h-8 rounded-3xl hover:border-orange-800">
-                    <button type="button" class="bg- rounded-xl pt-1 pb-1 px-5 text-sm bg-gray-1 text-white">
+                    <input type="text" placeholder="Search" class="h-8 rounded-3xl hover:border-blue-700">
+                    <button type="button" class="rounded-xl pt-1 pb-1 px-5 text-md hover:text-orange-500 bg-gray-2 text-white">
                         Search
                     </button>
                 </div>
                 <!--table container-->
-                <div class="min-w-full h-[26rem] bg-gray-3">
-                    <table class="w-full ">
-                        <thead class="bg-gray-200 border-b-2 border-gray-200">
+                <div class="min-w-full h-[28rem] bg-gray-3">
+                    <table class="w-full">
+                        <thead class="bg-gray-200 border-b-3 border-gray-200">
                             <tr class="">
                                 <th class="p-3 text-sm font-semibold tracking-wide text-center">Request ID</th>
                                 <th class="p-3 text-sm font-semibold tracking-wide text-center">Request Type</th>
@@ -86,16 +115,18 @@
                                 <th class="p-3 text-sm font-semibold tracking-wide text-center">Action</th>
                             </tr>
                         </thead>
-                        <tbody >
+                        <tbody class="">
                             <tr class="text-center">
-                                <td class="pt-1">001</td>
-                                <td class="pt-1">job request</td>
-                                <td class="pt-1">December 25, 2024</td>
-                                <td class="pt-1">pending</td>
+                                <td class="pt-1 mt-1">001</td>
+                                <td class="pt-1 mt-1">job request</td>
+                                <td class="pt-1 mt-1">December 25, 2024</td>
                                 <td class="pt-1">
-                                    <button class="bg-slate-400 px-2 py-0.5 rounded-lg">view</button>
-                                    <button class="bg-slate-400 px-2 py-0.5 rounded-lg">approve</button>
-                                    <button class="bg-slate-400 px-2 py-0.5 rounded-lg">decline</button>
+                                    <span class="bg-red-600 text-white px-3 py-1.5 rounded-xl" id="status">pending</span>
+                                </td>
+                                <td class="pt-1 mt-1">
+                                    <button class="bg-gray-2 px-2 py-1 hover:text-orange-500 rounded-lg text-white" onclick="openModal('viewModal')">view</button>
+                                    <button class="bg-gray-2 px-2 py-1 hover:text-orange-500 rounded-lg text-white" onclick="openModal('approveModal')">approve</button>
+                                    <button class="bg-gray-2 px-2 py-1 hover:text-orange-500 rounded-lg text-white" onclick="openModal('declineModal')">decline</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -103,6 +134,63 @@
                 </div>
             </div>
         </div>
+        <!--view Modal-->
+        <div id="viewModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+            <div class="bg-white rounded-lg p-6 space-y-4">
+                <h2 class="text-lg font-bold">View Request</h2>
+                <p>Details about the job request go here.</p>
+                <button 
+                    class="bg-blue-500 text-white px-4 py-2 rounded-lg"
+                    onclick="closeModal('viewModal')">Close</button>
+            </div>
+        </div>
+        <!--approve modal-->
+        <div id="approveModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+            <div class="bg-white rounded-lg p-6 space-y-4">
+                <h2 class="text-lg font-bold">Approve Request</h2>
+                <p>Are you sure you want to approve this request?</p>
+                <div class="flex justify-end space-x-2">
+                    <form action="">
+                        <button 
+                            class="bg-green-500 text-white px-4 py-2 rounded-lg" type="submit"
+                            onclick="closeModal('approveModal')">Yes</button>
+                        </form>
+                    <button 
+                        class="bg-gray-300 px-4 py-2 rounded-lg"
+                        onclick="closeModal('approveModal')">Cancel</button>
+                </div>
+            </div>
+        </div>
+        <!--decline Modal-->
+        <div id="declineModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+                <div class="bg-white rounded-lg p-6 space-y-4">
+                    <h2 class="text-lg font-bold">Decline Request</h2>
+                    <p>Are you sure you want to decline this request?</p>
+                    <div class="flex justify-end space-x-2">
+                        <form action="">
+                            <button 
+                                class="bg-red-500 text-white px-4 py-2 rounded-lg"
+                                onclick="closeModal('declineModal')" type="submit">Yes</button>
+                        </form>
+                        <button 
+                            class="bg-gray-300 px-4 py-2 rounded-lg"
+                            onclick="closeModal('declineModal')">Cancel</button>
+                    </div>
+                </div>
+        </div>
+        <script>
+            function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('hidden'); // Remove hidden class
+            modal.classList.add('flex'); // Add flex for centering
+            }
+    
+            function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('flex'); // Remove flex to prevent display issues
+            modal.classList.add('hidden'); // Add hidden class to hide modal
+            }
+        </script>
         {% endblock %}
     </main>
 </body>
