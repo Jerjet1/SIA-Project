@@ -803,6 +803,10 @@ select {
   inset: 0px;
 }
 
+.left-\[20\.5rem\] {
+  left: 20.5rem;
+}
+
 .left-\[20rem\] {
   left: 20rem;
 }
@@ -821,10 +825,6 @@ select {
 
 .top-2 {
   top: 0.5rem;
-}
-
-.left-\[20\.5rem\] {
-  left: 20.5rem;
 }
 
 .mx-2 {
@@ -899,10 +899,6 @@ select {
 
 .mt-auto {
   margin-top: auto;
-}
-
-.mt-4 {
-  margin-top: 1rem;
 }
 
 .block {
@@ -1019,10 +1015,6 @@ select {
 
 .w-full {
   width: 100%;
-}
-
-.w-\[24rem\] {
-  width: 24rem;
 }
 
 .min-w-fit {
