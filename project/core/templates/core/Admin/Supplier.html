@@ -2,105 +2,191 @@
 {% load static tailwind_tags %}
 {% block content %}
 <div class="w-full bg-white flex justify-center items-center">
-    <div class="w-[50rem] h-[35rem]  mt-10">
+    <div class="w-[61rem] h-[38rem]  mt-10">
         <!--Search and add supplier container-->
-        <div class=" min-w-full h-20 pt-2 flex justify-between">
+        <div class=" min-w-full h-[6rem] pt-2 flex justify-between">
             <!--search-->
-            <form action="" class="flex items-center space-x-2">
-                <input type="text" placeholder="Search" class="h-8 rounded-3xl hover:border-blue-700">
-                <button type="submit" class="rounded-xl pt-1 pb-1 px-5 text-md bg-gray-2 text-white hover:text-orange-500">
-                    Search
-                </button>
+            <form method="GET" class="flex flex-col items-start space-y-2" action="{% url 'search_supplier'%}">
+                {%csrf_token%}
+                <input type="text" id="search-input" name="search" placeholder="Search" 
+                class="h-8 rounded-3xl hover:border-blue-700" oninput="filterSuppliers()">
+                <div class="flex items-baseline">
+                    <button type="submit" class="rounded-xl pt-1 pb-1 px-5 text-md bg-gray-2 
+                    text-white hover:text-orange-500">
+                        Search
+                    </button>
+                    <button type="button" class="rounded-xl pt-1 pb-1 px-6 ml-4 text-md bg-gray-2
+                     text-white hover:text-orange-500" onclick="clearSearch()">
+                        Clear
+                    </button>
+                </div>
             </form>
             <!--add supplier-->
-            <div class="pr-4 mt-5">
-                <button class="bg-gray-2 py-2 px-4 rounded-2xl text-md text-white hover:text-orange-500" onclick="openModal('AddModal')">
+            <div class="pr-4 mt-10">
+                <button class="bg-gray-2 py-2 px-4 rounded-2xl text-md text-white hover:text-orange-500" 
+                onclick="openModal('AddModal')">
                     Add Supplier
                 </button>
             </div>
         </div>
         <!--table container-->
-        <div class="min-w-full h-[26rem] bg-gray-3">
-            <table class="w-full ">
-                <thead class="bg-gray-200 border-b-2 border-gray-200">
+        <div class="min-w-full h-[26rem] bg-gray-3 overflow-auto">
+            <table class="w-full">
+                <thead class="bg-gray-200 border-b-2 border-white">
                     <tr class="">
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Name</th>
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Address</th>
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Contact No.</th>
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Item</th>
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Price</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Grade</th>
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Action</th>
                     </tr>
                 </thead>
-                <tbody >
-                    <tr class="text-center">
-                        <td class="pt-1">Morgan freeman </td>
-                        <td class="pt-1">cebu city</td>
-                        <td class="pt-1">09123412321</td>
-                        <td class="pt-1">welding rod</td>
-                        <td class="pt-1">300</td>
+                <tbody id="supplier-table">
+                    {% for supplier in suppliers %}
+                    <tr class="text-center ">
+                        <td class="pt-1">{{supplier.supplier_name}}</td>
+                        <td class="pt-1">{{supplier.supplier_address}}</td>
+                        <td class="pt-1">{{supplier.supplier_contactno}}</td>
+                        <td class="pt-1">{{supplier.item__item_name}}</td>
+                        <td class="pt-1">{{supplier.supplier_price}}</td>
+                        <td class="pt-1">{{supplier.supplier_grade}}</td>
                         <td class="pt-1">
-                            <button class="bg-gray-2 px-3 py-1 rounded-lg text-white hover:text-orange-500" onclick="openModal('updateModal')">Update</button>
-                            <button class="bg-gray-2 px-3 py-1 rounded-lg text-white hover:text-orange-500" onclick="openModal('deleteModal')">Delete</button>
+                            <button class="bg-gray-2 px-3 py-1 rounded-lg text-white hover:text-orange-500" 
+                                onclick="openModal('updateModal-{{supplier.supplier_id}}')">
+                                Update
+                            </button>
+                            <button class="bg-gray-2 px-3 py-1 rounded-lg text-white hover:text-orange-500" 
+                                onclick="openModal('deleteModal-{{supplier.supplier_id}}')">
+                                Delete
+                            </button>
+                            <!--Update Supplier Modal-->
+                            <div id="updateModal-{{supplier.supplier_id}}" class="modal hidden fixed inset-0 
+                            bg-black bg-opacity-50 items-center justify-center">
+                                <div class="bg-white rounded-lg p-6 space-y-4 relative">
+                                    <button 
+                                        class="text-black  rounded-full top-2 left-[21rem] absolute"
+                                            onclick="closeModal('updateModal-{{supplier.supplier_id}}')">
+                                            <img src="{% static 'images/closebtn.png' %}" alt="closebutton" 
+                                            class="w-7 h-7 ">
+                                    </button>
+                                    <!--form container-->
+                                    <div class="flex flex-col justify-center items-center pt-5">
+                                        <form method="POST" action="{% url 'update_supplier' supplier_id=supplier.supplier_id %}">
+                                            {%csrf_token%}
+                                            <!--supplier name-->
+                                            <input type="hidden" name="supplier_id" value="{{ supplier.supplier_id }}">
+                                            <div class="mb-4 flex justify-between">
+                                                <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="name">
+                                                    Name
+                                                </label>
+                                                <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
+                                                text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                id="name" name="name" type="text" value="{{supplier.supplier_name}}">
+                                            </div>
+                                            <!--supplier address-->
+                                            <div class="mb-4 flex justify-between">
+                                                <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="address">
+                                                    Address
+                                                </label>
+                                                <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
+                                                text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                id="address" name="address" type="text" value="{{supplier.supplier_address}}">
+                                            </div>
+                                            <!--supplier contact no-->
+                                            <div class="mb-4 flex justify-between">
+                                                <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="Contact-no">
+                                                    Contact No.
+                                                </label>
+                                                <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
+                                                text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                id="contact_no" name="contactno" type="text" pattern="\d{11}" 
+                                                value="{{supplier.supplier_contactno}}" maxlength="11" 
+                                                oninput="validateContactNo(this)">
+                                            </div>
+                                            <!--supplier item-->
+                                            <div class="mb-4 flex justify-between">
+                                                <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="items">
+                                                    Item
+                                                </label>
+                                                <select name="items" class="shadow appearance-none border rounded 
+                                                w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                                    {% for item in items %}
+                                                        <option value="{{item.item_id}}" 
+                                                        {% if item.item_id == supplier.item_id%}selected{% endif %}>
+                                                            {{item.item_name}}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <!--supplier price-->
+                                            <div class="mb-4 flex justify-between">
+                                                <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="price">
+                                                    Price
+                                                </label>
+                                                <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
+                                                text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                id="price" name="price" type="text" pattern="^\d*\.?\d*$" value="{{supplier.supplier_price}}" 
+                                                oninput="validatePrice(this)">
+                                            </div>
+                                            <!--supplier item grade-->
+                                            <div class="mb-4 flex justify-between">
+                                                <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="grade">
+                                                    Grade
+                                                </label>
+                                                <select name="grade" id="grade" class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
+                                                    text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                                    <option value="" disabled>Select grade</option>
+                                                    <option value="A" {% if supplier.supplier_grade == "A" %}selected{% endif %}>A</option>
+                                                    <option value="B" {% if supplier.supplier_grade == "B" %}selected{% endif %}>B</option>
+                                                    <option value="C" {% if supplier.supplier_grade == "C" %}selected{% endif %}>C</option>
+                                                </select>
+                                            </div>
+                                            <div class=" flex justify-center items-center">
+                                                <button type="submit" class="mt-5 bg-gray-2 py-2 px-5 text-white rounded-2xl 
+                                                hover:text-orange-500">Save</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--delete supplier modal-->
+                            <div id="deleteModal-{{supplier.supplier_id}}" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+                                <div class="bg-white rounded-lg p-6 space-y-4 relative">
+                                    <button 
+                                        class="text-black  rounded-full top-2 left-[20rem] absolute"
+                                        onclick="closeModal('deleteModal-{{supplier.supplier_id}}')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+                                    </button>
+                                    <h2 class="text-lg font-bold">Are you sure you wanna delete this?</h2>
+                                    <div class="flex justify-center items-center">
+                                        <form method="POST" action="{% url 'delete_supplier' supplier_id=supplier.supplier_id %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="supplier_id" value="{{supplier.supplier_id}}">
+                                            <button type="submit" class="bg-gray-2 text-white px-4 py-2 rounded-2xl hover:text-orange-500">Yes</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                     </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
-    <!--Update Modal-->
-    <div id="updateModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
-        <div class="bg-white rounded-lg p-6 space-y-4 relative">
-            <button 
-                class="text-black  rounded-full top-2 left-[21rem] absolute"
-                    onclick="closeModal('updateModal')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+    <!-- Modal Container -->
+    <div id="message-modal" class="hidden fixed inset-0 items-center justify-center bg-gray-800 bg-opacity-50">
+        <div class="bg-white rounded-lg p-6 w-[90%] max-w-sm shadow-lg">
+            <p id="modal-message" class="text-center text-gray-800 text-lg font-semibold"></p>
+            <button
+                id="close-modal"
+                class="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md w-full">
+                OK
             </button>
-            <!--form container-->
-            <div class="flex flex-col justify-center items-center pt-5">
-                <form action="">
-                    <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="first-name">
-                            Name
-                        </label>
-                        <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Name" type="text" placeholder="Name">
-                    </div>
-                    <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="first-name">
-                            Address
-                        </label>
-                        <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Address" type="text" placeholder="Address">
-                    </div>
-                    <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="first-name">
-                            Contact No.
-                        </label>
-                        <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Contact No." type="text" placeholder="+63">
-                    </div>
-                    <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="first-name">
-                            Item
-                        </label>
-                        <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Item" type="text" placeholder="Item">
-                    </div>
-                    <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="first-name">
-                            Price
-                        </label>
-                        <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Price" type="number" min="1" placeholder="₱">
-                    </div>
-                    <div class=" flex justify-center items-center">
-                        <button type="submit" class="mt-5 bg-gray-2 py-2 px-5 text-white rounded-2xl hover:text-orange-500">Save</button>
-                    </div>
-                </form>
-            </div>
         </div>
     </div>
-    <!--Add modal-->
+    <!--Add supplier modal-->
     <div id="AddModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
         <div class="bg-white rounded-lg p-6 space-y-4 relative">
             <button 
@@ -109,76 +195,142 @@
             </button>
             <!--form container-->
             <div class="flex flex-col justify-center items-center pt-5">
-                <form action="">
+                <form method="POST" action="{% url 'admin_supplier' %}">
+                    {%csrf_token%}
+                    <!--supplier name-->
                     <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="first-name">
+                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="name">
                             Name
                         </label>
-                        <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Name" type="text" placeholder="Name">
+                        <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
+                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        id="name" name="name" type="text" placeholder="Name">
                     </div>
+                    <!--supplier address-->
                     <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="first-name">
+                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="address">
                             Address
                         </label>
-                        <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Address" type="text" placeholder="Address">
+                        <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
+                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        id="address" name="address" type="text" placeholder="Address">
                     </div>
+                    <!--Contact No.-->
                     <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="first-name">
+                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="contact_no">
                             Contact No.
                         </label>
-                        <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Contact No." type="text" placeholder="+63">
+                        <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
+                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        id="contact_no" name="contact_no" type="text" pattern="\d{11}" placeholder="+63" maxlength="11" 
+                        oninput="validateContactNo(this)">
                     </div>
+                    <!--supplier item-->
                     <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="first-name">
+                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="items">
                             Item
                         </label>
-                        <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="item" type="text" placeholder="item">
+                        <select name="items" class="shadow appearance-none border rounded 
+                        w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            {% for item in items %}
+                            <option value="{{item.item_id}}">{{item.item_name}}</option>
+                            {% endfor %}
+                        </select>
                     </div>
+                    <!--supplier price-->
                     <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="first-name">
+                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="price">
                             Price
                         </label>
-                        <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Price" type="number" min="1" placeholder="₱">
+                        <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
+                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        id="price" name="price" type="text" pattern="^\d*\.?\d*$" placeholder="₱" oninput="validatePrice(this)">
+                    </div>
+                    <!--supplier grade-->
+                    <div class="mb-4 flex justify-between">
+                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="grade">
+                            Grade
+                        </label>
+                        <select name="grade" id="grade" class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
+                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <option value="" disabled selected>Select grade</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
                     </div>
                     <div class=" flex justify-center items-center">
-                        <button type="submit" class="mt-5 bg-gray-2 py-2 px-5 text-white rounded-2xl hover:text-orange-500">Add</button>
+                        <button type="submit" class="mt-5 bg-gray-2 py-2 px-5 text-white rounded-2xl 
+                        hover:text-orange-500">Add</button>
                     </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <!--delete modal-->
-    <div id="deleteModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
-        <div class="bg-white rounded-lg p-6 space-y-4 relative">
-            <button 
-                class="text-black  rounded-full top-2 left-[20rem] absolute"
-                onclick="closeModal('deleteModal')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
-            </button>
-            <h2 class="text-lg font-bold">Are you sure you wanna delete this?</h2>
-            <div class="flex justify-center items-center">
-                <form action="">
-                    <button type="submit" class="bg-gray-2 text-white px-4 py-2 rounded-2xl hover:text-orange-500">Yes</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+
 <script>
+    function validatePrice(input) {
+        // Remove any non-numeric characters except for the decimal point 
+        input.value = input.value.replace(/[^0-9.]/g, ''); 
+        // Ensure only one decimal point 
+        if ((input.value.match(/\./g) || []).length > 1) {
+        input.value = input.value.slice(0, -1); // Remove the last entered character if it's a second decimal 
+        } 
+        // Additional validation using regex 
+        const regex = /^\d*(\.\d{0,2})?$/; 
+        if (!regex.test(input.value)) {
+        input.setCustomValidity("Please enter a valid price (e.g., 100.00)"); }
+        else { input.setCustomValidity(""); 
+        } 
+    } 
+    
+    function validateContactNo(input) { 
+        input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters 
+        if (input.value.length > 11) { 
+        input.value = input.value.slice(0, 11); // Limit to 11 digits 
+        } 
+    } 
+
     function openModal(modalId) {
-    const modal = document.getElementById(modalId);
-    modal.classList.remove('hidden'); // Remove hidden class
-    modal.classList.add('flex'); // Add flex for centering
+        console.log('Opening modal:', modalId);
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('hidden'); // Remove hidden class
+        modal.classList.add('flex'); // Add flex for centering
     }
 
     function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    modal.classList.remove('flex'); // Remove flex to prevent display issues
-    modal.classList.add('hidden'); // Add hidden class to hide modal
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('flex'); // Remove flex to prevent display issues
+        modal.classList.add('hidden'); // Add hidden class to hide modal
+    }
+
+    function filterSuppliers() {
+        var input = document.getElementById('search-input');
+        var filter = input.value.toLowerCase();
+        var table = document.getElementById('supplier-table');
+        var rows = table.getElementsByTagName('tr');
+        
+        for (var i = 0; i < rows.length; i++) { // Start from 1 to skip header row
+            var row = rows[i];
+            var cells = row.getElementsByTagName('td');
+            var match = false;
+            
+            for (var j = 0; j < cells.length; j++) {
+                var cell = cells[j];
+                if (cell.textContent.toLowerCase().indexOf(filter) > -1) {
+                    match = true;
+                    break;
+                }
+            }
+            
+            if (match) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
     }
 </script>
 {% endblock %}

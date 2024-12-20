@@ -71,85 +71,73 @@
             onclick="closeModal('CreateModal')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
         </button>
         <h2 class="text-lg font-bold">Requests</h2>
-        <form action="">
-            <div class="flex flex-col justify-center items-center">
-                <select required class="shadow appearance-none border rounded w-[20rem] py-2 px-3
-                     text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                    id="Request">
-                        <option value="" disabled selected>Select Requests</option>
-                        <option value="Purchase">Purchase Order</option>
-                        <option value="job-request">Job Request</option>
-                        <option value="item-request">Item Request</option>
-                    </select>
-            </div>
-            <!--item request-->
-            <div id="itemField" class="flex-col justify-center items-center pt-5 hidden">
+        <div class="flex flex-col justify-center items-center">
+            <select required class="shadow appearance-none border rounded w-[20rem] py-2 px-3
+                 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                id="Request">
+                    <option value="">Select Requests</option>
+                    <option value="Purchase">Purchase Order</option>
+                    <option value="job-request">Job Request</option>
+                </select>
+        </div>
+        <!--job request-->
+        <div id="jobField" class="flex-col justify-center items-center pt-5 hidden">
+            <!--job request form-->
+            <form action="POST">
                 <div class="mb-4">
-                    <div class="mb-4 flex justify-between">
+                    <input type="text" disabled value="Job Request" class=" hidden shadow appearance-none border rounded w-[20rem] py-2 px-3
+                    text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="request-type">
+                    <div class="mb-4">
                         <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="item">
                             Item
                         </label>
                         <input required class="shadow appearance-none border rounded 
                         w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Name" type="text" placeholder="Name">
+                        id="Item" name="Item" type="text" placeholder="Name">
                     </div>
-                    <div class="mb-4 flex justify-between">
+                    <div class="mb-4">
                         <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="Quantity">
                             Quantity
                         </label>
                         <input required class="shadow appearance-none border rounded 
                         w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Quantity" type="number" min="1" placeholder="0">
+                        id="Quantity" name="Quantity" type="number" min="1" placeholder="0">
                     </div>
-                    <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="first-name">
-                            Name
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="repair">
+                            Repair details
                         </label>
                         <input required class="shadow appearance-none border rounded 
                         w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Name" type="text" placeholder="Name">
+                        id="repair" name="repair" type="text" placeholder="Details here..">
                     </div>
                 </div>
-            </div>
-            <!--job request-->
-            <div id="jobField" class="flex-col justify-center items-center pt-5 hidden">
-                <div class="mb-4">
+                <div class="flex justify-center items-center">
+                    <button type="submit"
+                        class="bg-gray-2 text-white hover:text-orange-500 px-2 py-1 rounded-lg" 
+                        id="submitButton">
+                        Submit
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!--Purchase Order-->
+        <div id="purchaseField" class="flex-col justify-center items-center pt-5 hidden">
+            <div class="mb-4">
+                <!--purchase order form-->
+                <form action="POST">
+                    <input type="text" disabled value="Purchase Order" class=" hidden shadow appearance-none border rounded w-[20rem] py-2 px-3
+                    text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="request-type">
                     <div class="mb-4 flex justify-between">
                         <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="item">
                             Item
                         </label>
-                        <input required class="shadow appearance-none border rounded 
-                        w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Name" type="text" placeholder="Name">
-                    </div>
-                    <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="Quantity">
-                            Quantity
-                        </label>
-                        <input required class="shadow appearance-none border rounded 
-                        w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Quantity" type="number" min="1" placeholder="0">
-                    </div>
-                    <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="first-name">
-                            Name
-                        </label>
-                        <input required class="shadow appearance-none border rounded 
-                        w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Name" type="text" placeholder="Name">
-                    </div>
-                </div>
-            </div>
-            <!--Purchase Order-->
-            <div id="purchaseField" class="flex-col justify-center items-center pt-5 hidden">
-                <div class="mb-4">
-                    <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="item">
-                            Item
-                        </label>
-                        <input required class="shadow appearance-none border rounded 
-                        w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Name" type="text" placeholder="Name">
+                        <select name="items" class="shadow appearance-none border rounded 
+                        w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            {% for item in items %}
+                            <option value="{{item.item_id}}">{{item.item_name}}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="mb-4 flex justify-between">
                         <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="Quantity">
@@ -159,24 +147,16 @@
                          w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                         id="Quantity" type="number" min="1" placeholder="0">
                     </div>
-                    <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="first-name">
-                            Name
-                        </label>
-                        <input required class="shadow appearance-none border rounded 
-                        w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Name" type="text" placeholder="Name">
+                    <div class="flex justify-center items-center">
+                        <button type="submit"
+                            class="bg-gray-2 text-white hover:text-orange-500 px-2 py-1 rounded-lg" 
+                            id="submitButton">
+                            Submit
+                        </button>
                     </div>
-                </div>
+                </form>
             </div>
-            <div class="flex justify-center items-center">
-                <button type="button"
-                    class="bg-gray-2 text-white hover:text-orange-500 px-2 py-1 rounded-lg hidden" 
-                    id="submitButton">
-                    Submit
-                </button>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 <!--Delete Modal-->
@@ -198,11 +178,6 @@
 </div>
 <!--Scripts for interactive buttons-->
 <script>
-
-
-
-
-
     function openModal(modalId) {
     const modal = document.getElementById(modalId);
     modal.classList.remove('hidden'); // Remove hidden class
@@ -216,25 +191,16 @@
     }
 
     document.getElementById('Request').addEventListener('change',function(){
-        document.getElementById('itemField').classList.add('hidden');
         document.getElementById('jobField').classList.add('hidden');
         document.getElementById('purchaseField').classList.add('hidden');
-        document.getElementById('submitButton').classList.add('hidden');
-
-        if(this.value  === 'item-request'){
-            document.getElementById('itemField').classList.remove('hidden');
-            document.getElementById('itemField').classList.add('flex');
-            document.getElementById('submitButton').classList.remove('hidden');
-        }
+        
         if(this.value  === 'job-request'){
             document.getElementById('jobField').classList.remove('hidden');
             document.getElementById('jobField').classList.add('flex');
-            document.getElementById('submitButton').classList.remove('hidden');
         }
         if(this.value  === 'Purchase'){
             document.getElementById('purchaseField').classList.remove('hidden');
             document.getElementById('purchaseField').classList.add('flex');
-            document.getElementById('submitButton').classList.remove('hidden');
         }
     });
 </script>

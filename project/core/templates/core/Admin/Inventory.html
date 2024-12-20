@@ -20,18 +20,26 @@
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Action</th>
                     </tr>
                 </thead>
+                {% for item in items %}
                 <tbody >
                     <tr class="text-center">
-                        <td class="pt-1">001</td>
-                        <td class="pt-1">Welding rod</td>
-                        <td class="pt-1">Wsdasd</td>
-                        <td class="pt-1">30</td>
+                        <td class="pt-1">{{item.inventory_id}}</td>
+                        <td class="pt-1">{{item.item__item_name}}</td>
+                        <td class="pt-1">{{item.item__item_description}}</td>
+                        <td class="pt-1">{{item.inventory_quantity}}</td>
                         <td class="pt-1">
-                            <button class="bg-gray-2 text-white px-2 py-1 rounded-lg hover:text-orange-500">Update</button>
-                            <button class="bg-gray-2 text-white px-2 py-1 rounded-lg hover:text-orange-500">Delete</button>
+                            <button class="bg-gray-2 px-3 py-1 rounded-lg text-white hover:text-orange-500" 
+                            onclick="openModal('Update')">
+                                Update
+                            </button>
+                            <button class="bg-gray-2 px-3 py-1 rounded-lg text-white hover:text-orange-500" 
+                            onclick="openModal('Delete')">
+                                Delete
+                            </button>
                         </td>
                     </tr>
                 </tbody>
+                {% endfor %}
             </table>
         </div>
     </div>

@@ -24,7 +24,7 @@
                 </div>
                 <ul class="flex flex-col items-center space-y-2 min-w-full">
                     <li class="flex flex-col items-center hover:bg-slate-900 min-w-full pt-1">
-                        <a href="{% url 'Worker/Request' %}" class="text-sm mt-1">
+                        <a href="{% url 'worker_request' %}" class="text-sm mt-1">
                             <img src="{% static 'images/Request.png' %}" alt="Request" class="w-6 h-6 ml-4">
                             Request
                         </a>
@@ -103,12 +103,8 @@
                 <h2 class="text-lg font-bold">Requests</h2>
                 <div class="flex flex-col justify-center items-center">
                     <form action="">
-                        <select required class="shadow appearance-none border rounded w-[20rem] py-2 px-3
-                         text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Request">
-                            <!-- <option value="" disabled selected>Select Requests</option> -->
-                            <option value="Worker">Item Request</option>
-                        </select>
+                        <input type="text" disabled value="Item Request" class="shadow appearance-none border rounded w-[20rem] py-2 px-3
+                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                         <!--item request-->
                         <div id="itemField" class="flex-col justify-center items-center pt-5">
                             <div class="mb-4">
@@ -185,44 +181,38 @@
                 </button>
                 <h2 class="text-lg font-bold">Requests</h2>
                 <div class="flex flex-col justify-center items-center">
-                    <form action="">
-                        <select required class="shadow appearance-none border rounded w-[20rem] py-2 px-3
-                         text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Request">
-                            <!-- <option value="" disabled selected>Select Requests</option> -->
-                            <option value="Worker">Item Request</option>
-                        </select>
+                    <form method="">
+                        <input type="text" disabled value="Item Request" class="shadow appearance-none border rounded w-[20rem] py-2 px-3
+                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="request-type">
                         <!--item request-->
                         <div id="itemField" class="flex-col justify-center items-center pt-5">
                             <div class="mb-4">
+                                <!--item details-->
                                 <div class="mb-4 flex justify-between">
                                     <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="item">
                                         Item
                                     </label>
-                                    <input required class="shadow appearance-none border rounded 
-                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                    id="Name" type="text" placeholder="Name">
+                                    <select name="items" class="shadow appearance-none border rounded 
+                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                        {% for item in items %}
+                                        <option value="{{item.item_id}}">{{item.item_name}}</option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
+                                <!--Quantity details-->
                                 <div class="mb-4 flex justify-between">
                                     <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="Quantity">
                                         Quantity
                                     </label>
                                     <input required class="shadow appearance-none border rounded 
                                     w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                    id="Quantity" type="number" min="1" placeholder="0">
-                                </div>
-                                <div class="mb-4 flex justify-between">
-                                    <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="first-name">
-                                        Name
-                                    </label>
-                                    <input required class="shadow appearance-none border rounded 
-                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                    id="Name" type="text" placeholder="Name">
+                                    id="Quantity" name="Quantity" type="number" min="1" placeholder="0">
                                 </div>
                             </div>
                         </div>
+                        <!--submit button-->
                         <div class="flex justify-center items-center">
-                            <button type="button"
+                            <button type="submit"
                                 class="bg-gray-2 text-white hover:text-orange-500 px-2 py-1 rounded-lg" 
                                 id="submitButton">
                                 Submit
