@@ -117,11 +117,11 @@
                                 <td class="pt-1">{{item.item__item_description}}</td>
                                 <td class="pt-1">{{item.inventory_quantity}}</td>
                                 <td class="pt-1">
-                                    <button class="bg-gray-2 px-3 py-1 rounded-lg text-white hover:text-orange-500" 
+                                    <button class="bg-gray-2 px-3 py-1 rounded-lg text-white hover:text-orange-500" type="button"
                                     onclick="openModal('Update-{{item.inventory_id}}')">
                                         Update
                                     </button>
-                                    <button class="bg-gray-2 px-3 py-1 rounded-lg text-white hover:text-orange-500" 
+                                    <button class="bg-gray-2 px-3 py-1 rounded-lg text-white hover:text-orange-500" type="button"
                                     onclick="openModal('Delete-{{item.inventory_id}}')">
                                         Delete
                                     </button>
@@ -129,7 +129,7 @@
                                     <div id="Update-{{item.inventory_id}}" class="modal hidden fixed inset-0 
                                     bg-black bg-opacity-50 items-center justify-center">
                                         <div class="bg-white rounded-lg p-6 space-y-4 relative">
-                                            <button 
+                                            <button type="button"
                                             class="text-black  rounded-full top-2 left-[21rem] absolute"
                                                 onclick="closeModal('Update-{{item.inventory_id}}')">
                                                 <img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
@@ -178,7 +178,7 @@
                                     <div id="Delete-{{item.inventory_id}}" class="modal hidden fixed inset-0 
                                     bg-black bg-opacity-50 items-center justify-center">
                                         <div class="bg-white rounded-lg p-6 space-y-4 relative">
-                                            <button 
+                                            <button type="button"
                                                 class="text-black  rounded-full top-2 left-[20rem] absolute"
                                                 onclick="closeModal('Delete-{{item.inventory_id}}')">
                                                 <img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
@@ -206,7 +206,7 @@
         <div id="AddModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
             <div class="bg-white rounded-lg p-6 space-y-4 relative">
                 <button 
-                class="text-black  rounded-full top-2 left-[21rem] absolute"
+                class="text-black  rounded-full top-2 left-[21rem] absolute" type="button"
                     onclick="closeModal('AddModal')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
                 </button>
                 <h2 class="text-lg font-bold">Add material</h2>

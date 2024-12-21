@@ -10,7 +10,10 @@ urlpatterns = [
     path('Admin/Inventory/', views.AdminInventory, name='admin_inventory'),
     #Admin Account url path
     path('Admin/CreateAccount/', views.AdminAccount, name='admin_create_account'),
-    path('Admin/Account/', views.AccountList, name='admin_account'),
+    path('Admin/Account/', views.AccountList, name='Account_list'),
+    path('Admin/Account/Update/<int:account_id>', views.UpdateAccount, name='admin_account_update'),
+    path('Admin/Account/Delete/<int:account_id>', views.DeleteAccount, name='admin_account_delete'),
+    #admin reports url path
     path('Admin/Reports/', views.AdminReports, name='admin_reports'),
     #supplier admin url path
     path('Admin/Supplier/Delete/<int:supplier_id>', views.delete_supplier, name='delete_supplier'),

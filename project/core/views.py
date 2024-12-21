@@ -92,8 +92,60 @@ def AdminAccount(request):
             return redirect('admin_create_account')
     return render(request, 'core/Admin/Account.html')
 
+#delete account
+def DeleteAccount(request, account_id):
+    pass
+
+#update Account
+def UpdateAccount(request, account_id):
+
+    account = get_object_or_404(Account, account_id = account_id)
+    if request.method == "POST":
+        account_first_name = request.POST.get("first-name", "").strip().title()
+        account_last_name = request.POST.get("last-name", "").strip().title()
+        account_contact_no = request.POST.get("contact", "")
+        account_password = request.POST.get("password", "")
+        
+        #validation field
+        if not(account_first_name and account_last_name and account_contact_no and account_password):
+            #message here
+            return redirect('Account_list')
+        
+        if Account.objects.filter(account_fname=account_first_name, account_lname=account_last_name).exclude(
+            account_id=account_id).exists():
+            #message here
+            print('not updated')
+            return redirect('Account_list')
+        
+        if account.account_role == 'Admin':
+            admin = get_object_or_404(Admin, account = account_id)
+            admin.admin_fname = account_first_name
+            admin.admin_lname = account_last_name
+            admin.save()
+        elif account.account_role == 'Workers':
+            worker = get_object_or_404(Worker, account = account_id)
+            worker.worker_fname = account_first_name
+            worker.worker_lname= account_last_name
+            worker.save()
+        elif account.account_role == 'Custodian':
+            custodian = get_object_or_404(Custodian, account = account_id)
+            custodian.custodian_fname = account_first_name
+            custodian.custodian_lname= account_last_name
+            custodian.save()
+
+        account.account_fname = account_first_name
+        account.account_lname = account_last_name
+        account.account_contactno = account_contact_no
+        account.account_pass = account_password
+        account.save()
+        #message
+        return redirect('Account_list')
+    return HttpResponse("invalid request method", status=405)
+
+#display account list
 def AccountList(request):
-    return render(request, 'core/Admin/AccountList.html')
+    accounts = Account.objects.all()
+    return render(request, 'core/Admin/AccountList.html', {"accounts": accounts})
 
 def AdminReports(request):
     return render(request, 'core/Admin/Reports.html')
