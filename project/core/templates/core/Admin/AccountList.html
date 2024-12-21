@@ -1,0 +1,231 @@
+{% extends "core/Admin/Dashboard.html" %}
+{% load static tailwind_tags %}
+{% block content %}
+<div class="w-full bg-white flex justify-center items-center">
+    <div class="w-[50rem] h-[35rem]  mt-10">
+        <div class=" min-w-full h-20 pt-2">
+            <input type="text" id="search-input" placeholder="Search" class="h-9 rounded-3xl 
+            hover:border-blue-700 mt-6" oninput="filterAccounts(this)">
+        </div>
+        <!--table container-->
+        <div class="min-w-full h-[26rem] bg-gray-3">
+            <table class="w-full ">
+                <thead class="bg-gray-200 border-b-2 border-gray-200">
+                    <tr class="">
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Name</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Contact No.</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">User Role</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Status</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="account-table">
+                    {% for account in accounts%}
+                    <tr class="text-center">
+                        <td class="p-1">{{account.account_fname}} {{account.account_lname}}</td>
+                        <td class="p-1">{{account.account_contactno}}</td>
+                        <td class="p-1">{{account.account_role}}</td>
+                        <td class="p-1">
+                            <span class="{% if account.account_status == 'active' %} 
+                            bg-green-600 {% else %} bg-red-600 {% endif %} 
+                            text-white px-3 py-1.5 rounded-xl text-base">
+                                {{account.account_status}}
+                            </span>
+                        </td>
+                        <td class="p-1">
+                            <button class="bg-gray-2 hover:text-orange-500 text-white px-2 py-1 rounded-lg" type="button"
+                            onclick="openModal('Update-{{account.account_id}}')">
+                                Update
+                            </button>
+                            <button class="bg-gray-2 hover:text-orange-500 text-white px-2 py-1 rounded-lg" type="button"
+                            onclick="openModal('Delete-{{account.account_id}}')">
+                                Delete
+                            </button>
+                            {% if account.account_status == 'active' %}
+                                <button class="bg-gray-2 hover:text-orange-500 text-white px-2 py-1 rounded-lg" type="button"
+                                onclick="openModal('Deactivate-{{account.account_id}}')">
+                                    Deactivate
+                                </button>
+                            {% else %}
+                                <button class="bg-gray-2 hover:text-orange-500 text-white px-2 py-1 rounded-lg" type="button"
+                                onclick="openModal('Activate-{{account.account_id}}')">
+                                    Activate
+                                </button>
+                            {% endif %}
+                        </td>
+                        <!--Activate modal-->
+                        <div id="Activate-{{account.account_id}}" class="modal hidden fixed inset-0 
+                        bg-black bg-opacity-50 items-center justify-center">
+                            <div class="bg-white rounded-lg p-6 space-y-2 relative">
+                                <button class="text-black  rounded-full top-1 left-[25rem] absolute" type="button"
+                                    onclick="closeModal('Activate-{{account.account_id}}')">
+                                    <img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+                                </button>
+                                <h2 class="text-lg font-bold">Are you sure you want to Activate this user?</h2>
+                                <div class="flex justify-center items-center">
+                                    <form method="POST" action="">
+                                        {%csrf_token%}
+                                        <button type="submit" class="bg-gray-2 text-white px-4 py-2 rounded-2xl 
+                                        hover:text-orange-500">Yes</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Deactivate modal-->
+                        <div id="Deactivate-{{account.account_id}}" class="modal hidden fixed inset-0 
+                        bg-black bg-opacity-50 items-center justify-center">
+                            <div class="bg-white rounded-lg p-6 space-y-2 relative">
+                                <button class="text-black  rounded-full top-1 left-[26rem] absolute" type="button"
+                                    onclick="closeModal('Deactivate-{{account.account_id}}')">
+                                    <img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+                                </button>
+                                <h2 class="text-lg font-bold">Are you sure you want to deactivate this user?</h2>
+                                <div class="flex justify-center items-center">
+                                    <form method="POST" action="">
+                                        {%csrf_token%}
+                                        <button type="submit" class="bg-gray-2 text-white px-4 py-2 rounded-2xl 
+                                        hover:text-orange-500">Yes</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!--delete modal-->
+                        <div id="Delete-{{account.account_id}}" class="modal hidden fixed inset-0 
+                        bg-black bg-opacity-50 items-center justify-center">
+                            <div class="bg-white rounded-lg p-6 space-y-4 relative">
+                                <button class="text-black  rounded-full top-1 left-[20.5rem] absolute" type="button"
+                                    onclick="closeModal('Delete-{{account.account_id}}')">
+                                    <img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+                                </button>
+                                <h2 class="text-lg font-bold">Are you sure you wanna delete this?</h2>
+                                <!--????-->
+                                <div class="flex justify-center items-center">
+                                    <form method="POST" action="{% url 'admin_account_delete' account_id=account.account_id%}">
+                                        {%csrf_token%}
+                                        <button type="submit" class="bg-gray-2 text-white px-4 py-2 rounded-2xl 
+                                        hover:text-orange-500">Yes</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!--update modal-->
+                        <div id="Update-{{account.account_id}}" class="modal hidden fixed inset-0 
+                            bg-black bg-opacity-50 items-center justify-center">
+                            <div class="bg-white rounded-lg p-6 space-y-4 relative">
+                                <button type="button" class="text-black  rounded-full top-1 left-[22rem] absolute"
+                                    onclick="closeModal('Update-{{account.account_id}}')">
+                                    <img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+                                </button>
+                                <div class="flex justify-center items-center">
+                                    <h2 class="text-2xl font-bold">Update Account</h2>
+                                </div>
+                                <!--form container-->
+                                <div class="flex flex-col justify-center items-center pt-5">
+                                    <form method="POST" action="{% url 'admin_account_update' account_id=account.account_id %}">
+                                        {%csrf_token%}
+                                        <div class="mb-2 flex justify-between">
+                                            <label class="block text-gray-700 text-sm font-bold mt-2" for="first-name">
+                                                First Name
+                                            </label>
+                                            <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 ml-6 
+                                            text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                            name="first-name" type="text" value="{{account.account_fname}}">
+                                        </div>
+                                        <div class="mb-2 flex justify-between">
+                                            <label class="block text-gray-700 text-sm font-bold mt-2" for="last-name">
+                                                Last name
+                                            </label>
+                                            <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 ml-7 
+                                            text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                            name="last-name" type="text" value="{{account.account_lname}}">
+                                        </div>
+                                        <div class="mb-2 flex justify-between">
+                                            <label class="block text-gray-700 text-sm font-bold mt-2" for="contact">
+                                                Contact No
+                                            </label>
+                                            <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 ml-5 
+                                            text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                            name="contact" type="text" value="{{account.account_contactno}}" oninput="validateContactNo(this)">
+                                        </div>
+                                        <div class="mb-2 flex justify-between">
+                                            <label class="block text-gray-700 text-sm font-bold mt-2" for="username">
+                                                Username
+                                            </label>
+                                            <input disabled class="shadow appearance-none border rounded w-[15rem] py-2 px-3 ml-6 
+                                            text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                            type="text" value="{{account.account_user}}">
+                                        </div>
+                                        <div class="mb-2 flex justify-between">
+                                            <label class="block text-gray-700 text-sm font-bold mt-2" for="password">
+                                                Password
+                                            </label>
+                                            <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 ml-6 
+                                            text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                            type="password" name="password">
+                                        </div>
+                                        <div class=" flex justify-center items-center">
+                                            <button type="submit" class="mt-5 bg-gray-2 py-2 px-5 text-white rounded-2xl 
+                                            hover:text-orange-500">
+                                                Save
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    function openModal(modalId) {
+                console.log('Opening modal:', modalId);
+                const modal = document.getElementById(modalId);
+                modal.classList.remove('hidden'); // Remove hidden class
+                modal.classList.add('flex'); // Add flex for centering
+    }
+
+    function closeModal(modalId) {
+                const modal = document.getElementById(modalId);
+                modal.classList.remove('flex'); // Remove flex to prevent display issues
+                modal.classList.add('hidden'); // Add hidden class to hide modal
+    }
+
+    function validateContactNo(input) { 
+        input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters 
+        if (input.value.length > 11) { 
+        input.value = input.value.slice(0, 11); // Limit to 11 digits 
+        } 
+    } 
+
+    function filterAccounts() {
+                var input = document.getElementById('search-input');
+                var filter = input.value.toLowerCase();
+                var table = document.getElementById('account-table');
+                var rows = table.getElementsByTagName('tr');
+        
+            for (var i = 0; i < rows.length; i++) { // Start from 1 to skip header row
+                var row = rows[i];
+                var cells = row.getElementsByTagName('td');
+                var match = false;
+                
+                for (var j = 0; j < cells.length; j++) {
+                    var cell = cells[j];
+                    if (cell.textContent.toLowerCase().indexOf(filter) > -1) {
+                        match = true;
+                        break;
+                    }
+                }
+                
+                if (match) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+    }
+</script>
+{% endblock %}
