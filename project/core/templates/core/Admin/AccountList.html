@@ -2,18 +2,19 @@
 {% load static tailwind_tags %}
 {% block content %}
 <div class="w-full bg-white flex justify-center items-center">
-    <div class="w-[50rem] h-[35rem]  mt-10">
+    <div class="w-[51rem] h-[35rem]  mt-10">
         <div class=" min-w-full h-20 pt-2">
             <input type="text" id="search-input" placeholder="Search" class="h-9 rounded-3xl 
             hover:border-blue-700 mt-6" oninput="filterAccounts(this)">
         </div>
         <!--table container-->
         <div class="min-w-full h-[26rem] bg-gray-3">
-            <table class="w-full ">
+            <table class="w-full table-auto">
                 <thead class="bg-gray-200 border-b-2 border-gray-200">
                     <tr class="">
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Name</th>
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Contact No.</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Address</th>
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">User Role</th>
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Status</th>
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Action</th>
@@ -24,6 +25,7 @@
                     <tr class="text-center">
                         <td class="p-1">{{account.account_fname}} {{account.account_lname}}</td>
                         <td class="p-1">{{account.account_contactno}}</td>
+                        <td class="p-1">{{account.account_address}}</td>
                         <td class="p-1">{{account.account_role}}</td>
                         <td class="p-1">
                             <span class="{% if account.account_status == 'active' %} 
@@ -63,7 +65,7 @@
                                 </button>
                                 <h2 class="text-lg font-bold">Are you sure you want to Activate this user?</h2>
                                 <div class="flex justify-center items-center">
-                                    <form method="POST" action="">
+                                    <form method="POST" action="{% url 'admin_account_status' account_id=account.account_id%}">
                                         {%csrf_token%}
                                         <button type="submit" class="bg-gray-2 text-white px-4 py-2 rounded-2xl 
                                         hover:text-orange-500">Yes</button>
@@ -81,7 +83,7 @@
                                 </button>
                                 <h2 class="text-lg font-bold">Are you sure you want to deactivate this user?</h2>
                                 <div class="flex justify-center items-center">
-                                    <form method="POST" action="">
+                                    <form method="POST" action="{% url 'admin_account_status' account_id=account.account_id%}">
                                         {%csrf_token%}
                                         <button type="submit" class="bg-gray-2 text-white px-4 py-2 rounded-2xl 
                                         hover:text-orange-500">Yes</button>
@@ -98,7 +100,6 @@
                                     <img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
                                 </button>
                                 <h2 class="text-lg font-bold">Are you sure you wanna delete this?</h2>
-                                <!--????-->
                                 <div class="flex justify-center items-center">
                                     <form method="POST" action="{% url 'admin_account_delete' account_id=account.account_id%}">
                                         {%csrf_token%}
@@ -145,7 +146,16 @@
                                             </label>
                                             <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 ml-5 
                                             text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                            name="contact" type="text" value="{{account.account_contactno}}" oninput="validateContactNo(this)">
+                                            name="contact" type="text" value="{{account.account_contactno}}" 
+                                            pattern="\d{11}" maxlength="11" oninput="validateContactNo(this)">
+                                        </div>
+                                        <div class="mb-2 flex justify-between">
+                                            <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="address">
+                                                Address
+                                            </label>
+                                            <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 ml-7
+                                            text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                            name="address" type="text" value="{{account.account_address}}">
                                         </div>
                                         <div class="mb-2 flex justify-between">
                                             <label class="block text-gray-700 text-sm font-bold mt-2" for="username">

@@ -5,12 +5,7 @@
     <div class="w-[50rem] h-[35rem]  mt-10">
         <!--container for search and create request-->
         <div class=" min-w-full h-20 pt-2 flex justify-between">
-            <form action="" class="flex items-center space-x-2">
-                <input type="text" placeholder="Search" class="h-8 rounded-3xl hover:border-blue-700">
-                <button type="submit" class="rounded-xl py-1 px-5 text-md bg-gray-2 text-white hover:text-orange-500">
-                    Search
-                </button>
-            </form>
+            <input type="text" placeholder="Search" class="h-9 rounded-3xl hover:border-blue-700 mt-6">
             <!--create request button-->
             <div class="pr-4 mt-5">
                 <button class="bg-gray-2 py-2 px-4 rounded-2xl text-md text-white hover:text-orange-500" 
@@ -32,37 +27,153 @@
                     </tr>
                 </thead>
                 <tbody >
+                    {% for request in request_custodian %}
                     <tr class="text-center">
-                        <td class="pt-1">001</td>
-                        <td class="pt-1">job request</td>
-                        <td class="pt-1">December 25, 2024</td>
-                        <td class="pt-1">pending</td>
+                        <td class="pt-1">{{request.request_id}}</td>
+                        <td class="pt-1">{{request.request_type}}</td>
+                        <td class="pt-1">{{request.request_date}}</td>
+                        <td class="pt-1">
+                            <span class="bg-orange-600 text-white px-3 py-1.5 rounded-xl text-base">
+                                {{request.request_status}}
+                            </span>
+                        </td>
                         <td class="pt-1">
                             <button class="bg-gray-2 text-white hover:text-orange-500 px-2 py-1 rounded-lg" 
-                            onclick="openModal('view')">
-                                view
+                            onclick="openModal('update-{{request.request_id}}')">
+                                Update
                             </button>
                             <button class="bg-gray-2 text-white hover:text-orange-500 px-2 py-1 rounded-lg" 
-                            onclick="openModal('deleteModal')">
+                            onclick="openModal('deleteModal-{{request.request_id}}')">
                                 Delete
                             </button>
                         </td>
+                        <!--Delete Modal-->
+                        <div id="deleteModal-{{request.request_id}}" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+                            <div class="bg-white rounded-lg p-6 space-y-4 relative">
+                                <div class="top-1 left-[20rem] absolute">
+                                    <button class="text-black  rounded-full ml-2"
+                                        onclick="closeModal('deleteModal-{{request.request_id}}')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+                                    </button>
+                                </div>
+                                <h2 class="text-lg font-bold">Are you sure you wanna delete this?</h2>
+                                <div class="flex justify-center items-center">
+                                    <form method="POST" action="{% url 'custodian_delete_request' request_id=request.request_id %}">
+                                        {%csrf_token%}
+                                        <button type="submit" class="bg-gray-2 text-white px-4 py-2 rounded-2xl hover:text-orange-500">
+                                            Yes
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Update modal-->
+                        <div id="update-{{request.request_id}}" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+                            <div class="bg-white rounded-lg p-6 space-y-4 relative">
+                                <div class="top-1 left-[20rem] absolute">
+                                    <button class="text-black  rounded-full ml-2"
+                                        onclick="closeModal('update-{{request.request_id}}')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+                                    </button>
+                                </div>
+                                <div class="flex justify-center items-center">
+                                    <h2 class="text-lg font-bold">Update Request</h2>
+                                </div>
+                                {% if request.request_type == 'Purchase Order' %}
+                                    <!--Purchase Order-->
+                                    <div class="flex-col justify-center items-center pt-5 flex">
+                                        <div class="mb-4">
+                                            <!--purchase order form-->
+                                            <form method="POST" action="{% url 'custodian_update_request' request_id=request.request_id %}">
+                                                {%csrf_token%}
+                                                <input type="text" readonly value="Purchase Order" class=" hidden shadow 
+                                                appearance-none border rounded w-[20rem] py-2 px-3
+                                                text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="request-type">
+                                                <div class="mb-4 flex justify-between">
+                                                    <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="item">
+                                                        Item
+                                                    </label>
+                                                    <select name="items" class="shadow appearance-none border rounded 
+                                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                                        {% for item in items %}
+                                                        <option value="{{item.item_id}}" {% if item.item_id == request.item_id %} selected {% endif %}>
+                                                            {{item.item_name}}
+                                                        </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="mb-4 flex justify-between">
+                                                    <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="quantity">
+                                                        Quantity
+                                                    </label>
+                                                    <input required class="shadow appearance-none border rounded
+                                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                    id="quantity" type="text" name="quantity" value="{{request.request_item_quantity}}" 
+                                                    oninput="validatestocks(this)">
+                                                </div>
+                                                <div class="flex justify-center items-center">
+                                                    <button type="submit"
+                                                        class="bg-gray-2 text-white hover:text-orange-500 px-2 py-1 rounded-lg" 
+                                                        id="submitButton">
+                                                        Submit
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <!--job request-->
+                                    <div class="flex-col justify-center items-center pt-5 flex w-[19rem]">
+                                        <!--job request form-->
+                                        <form method="POST" action="{% url 'custodian_update_request' request_id=request.request_id %}">
+                                            {%csrf_token%}
+                                            <div class="mb-4">
+                                                <input type="text" readonly value="Job Request" class=" hidden shadow appearance-none border 
+                                                rounded w-[20rem] py-2 px-3
+                                                text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="request-type">
+                                                <div class="mb-4">
+                                                    <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="item">
+                                                        Item
+                                                    </label>
+                                                    <input required class="shadow appearance-none border rounded 
+                                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                    id="Item" name="item" type="text" value="{{request.request_item_name}}">
+                                                </div>
+                                                <div class="mb-4">
+                                                    <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="quantity">
+                                                        Quantity
+                                                    </label>
+                                                    <input required class="shadow appearance-none border rounded 
+                                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                    id="quantity" name="quantity" type="text" value="{{request.request_item_quantity}}" oninput="validatestocks(this)">
+                                                </div>
+                                                <div class="mb-4">
+                                                    <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="repair">
+                                                        Repair details
+                                                    </label>
+                                                    <textarea name="repair" id="repair" required class="shadow appearance-none border rounded 
+                                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline 
+                                                    resize-none" maxlength="255">{{request.request_repair_details}}</textarea>
+                                                </div>
+                                            </div>
+                                            <div class="flex justify-center items-center">
+                                                <button type="submit"
+                                                    class="bg-gray-2 text-white hover:text-orange-500 px-2 py-1 rounded-lg" 
+                                                    id="submitButton">
+                                                    Submit
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-<!--view modal-->
-<div id="view" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
-    <div class="bg-white rounded-lg p-6 space-y-4">
-        <h2 class="text-lg font-bold">View Request</h2>
-        <p>Details about the job request go here.</p>
-        <button 
-            class="bg-blue-500 text-white px-4 py-2 rounded-lg"
-            onclick="closeModal('view')">Close</button>
-    </div>
-</div>
+
 <!--Create Request Modal-->
 <div id="CreateModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
     <div class="bg-white rounded-lg p-6 space-y-4 relative ">
@@ -74,18 +185,19 @@
         <div class="flex flex-col justify-center items-center">
             <select required class="shadow appearance-none border rounded w-[20rem] py-2 px-3
                  text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                id="Request">
+                    id="Request">
                     <option value="">Select Requests</option>
                     <option value="Purchase">Purchase Order</option>
                     <option value="job-request">Job Request</option>
-                </select>
+            </select>
         </div>
         <!--job request-->
         <div id="jobField" class="flex-col justify-center items-center pt-5 hidden">
             <!--job request form-->
-            <form action="POST">
+            <form method="POST" action="">
+                {%csrf_token%}
                 <div class="mb-4">
-                    <input type="text" disabled value="Job Request" class=" hidden shadow appearance-none border rounded w-[20rem] py-2 px-3
+                    <input type="text" readonly value="Job Request" class=" hidden shadow appearance-none border rounded w-[20rem] py-2 px-3
                     text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="request-type">
                     <div class="mb-4">
                         <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="item">
@@ -93,23 +205,23 @@
                         </label>
                         <input required class="shadow appearance-none border rounded 
                         w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Item" name="Item" type="text" placeholder="Name">
+                        id="item" name="item" type="text" placeholder="Name">
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="Quantity">
                             Quantity
                         </label>
-                        <input required class="shadow appearance-none border rounded 
-                        w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Quantity" name="Quantity" type="number" min="1" placeholder="0">
+                        <input required class="shadow appearance-none border rounded
+                         w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        id="quantity" type="text" name="quantity" placeholder="0" oninput="validatestocks(this)">
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="repair">
                             Repair details
                         </label>
-                        <input required class="shadow appearance-none border rounded 
-                        w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="repair" name="repair" type="text" placeholder="Details here..">
+                        <textarea name="repair" id="repair" required class="shadow appearance-none border rounded 
+                        w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline resize-none" 
+                        maxlength="255"></textarea>
                     </div>
                 </div>
                 <div class="flex justify-center items-center">
@@ -125,8 +237,9 @@
         <div id="purchaseField" class="flex-col justify-center items-center pt-5 hidden">
             <div class="mb-4">
                 <!--purchase order form-->
-                <form action="POST">
-                    <input type="text" disabled value="Purchase Order" class=" hidden shadow appearance-none border rounded w-[20rem] py-2 px-3
+                <form method="POST" action="{% url 'custodian_request' %}">
+                    {%csrf_token%}
+                    <input type="text" readonly value="Purchase Order" class=" hidden shadow appearance-none border rounded w-[20rem] py-2 px-3
                     text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="request-type">
                     <div class="mb-4 flex justify-between">
                         <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="item">
@@ -145,7 +258,7 @@
                         </label>
                         <input required class="shadow appearance-none border rounded
                          w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="Quantity" type="number" min="1" placeholder="0">
+                        id="quantity" type="text" name="quantity" placeholder="0" oninput="validatestocks(this)">
                     </div>
                     <div class="flex justify-center items-center">
                         <button type="submit"
@@ -159,37 +272,23 @@
         </div>
     </div>
 </div>
-<!--Delete Modal-->
-<div id="deleteModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
-    <div class="bg-white rounded-lg p-6 space-y-4 relative">
-        <button 
-            class="text-black  rounded-full top-2 left-[20rem] absolute"
-            onclick="closeModal('deleteModal')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
-        </button>
-        <h2 class="text-lg font-bold">Are you sure you wanna delete this?</h2>
-        <div class="flex justify-center items-center">
-            <form action="">
-                <button type="submit" class="bg-gray-2 text-white px-4 py-2 rounded-2xl hover:text-orange-500">
-                    Yes
-                </button>
-            </form>
-        </div>
-    </div>
-</div>
 <!--Scripts for interactive buttons-->
 <script>
+    function validatestocks(input) { 
+        input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters 
+    }
     function openModal(modalId) {
-    const modal = document.getElementById(modalId);
-    modal.classList.remove('hidden'); // Remove hidden class
-    modal.classList.add('flex'); // Add flex for centering
+        console.log(modalId)
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('hidden'); // Remove hidden class
+        modal.classList.add('flex'); // Add flex for centering
     }
 
     function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    modal.classList.remove('flex'); // Remove flex to prevent display issues
-    modal.classList.add('hidden'); // Add hidden class to hide modal
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('flex'); // Remove flex to prevent display issues
+        modal.classList.add('hidden'); // Add hidden class to hide modal
     }
-
     document.getElementById('Request').addEventListener('change',function(){
         document.getElementById('jobField').classList.add('hidden');
         document.getElementById('purchaseField').classList.add('hidden');

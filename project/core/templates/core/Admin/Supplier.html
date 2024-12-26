@@ -15,8 +15,8 @@
                     text-white hover:text-orange-500">
                         Search
                     </button>
-                    <button type="button" class="rounded-xl pt-1 pb-1 px-6 ml-4 text-md bg-gray-2
-                     text-white hover:text-orange-500" onclick="clearSearch()">
+                    <button type="submit" class="rounded-xl pt-1 pb-1 px-6 ml-4 text-md bg-gray-2
+                     text-white hover:text-orange-500">
                         Clear
                     </button>
                 </div>
@@ -65,12 +65,11 @@
                             <div id="updateModal-{{supplier.supplier_id}}" class="modal hidden fixed inset-0 
                             bg-black bg-opacity-50 items-center justify-center">
                                 <div class="bg-white rounded-lg p-6 space-y-4 relative">
-                                    <button 
-                                        class="text-black  rounded-full top-2 left-[21rem] absolute"
-                                            onclick="closeModal('updateModal-{{supplier.supplier_id}}')">
-                                            <img src="{% static 'images/closebtn.png' %}" alt="closebutton" 
-                                            class="w-7 h-7 ">
-                                    </button>
+                                    <div class="top-1 left-[21rem] absolute">
+                                        <button class="text-black  rounded-full ml-2"
+                                            onclick="closeModal('updateModal-{{supplier.supplier_id}}')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+                                        </button>
+                                    </div>
                                     <!--form container-->
                                     <div class="flex flex-col justify-center items-center pt-5">
                                         <form method="POST" action="{% url 'update_supplier' supplier_id=supplier.supplier_id %}">
@@ -154,10 +153,11 @@
                             <!--delete supplier modal-->
                             <div id="deleteModal-{{supplier.supplier_id}}" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
                                 <div class="bg-white rounded-lg p-6 space-y-4 relative">
-                                    <button 
-                                        class="text-black  rounded-full top-2 left-[20rem] absolute"
-                                        onclick="closeModal('deleteModal-{{supplier.supplier_id}}')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
-                                    </button>
+                                    <div class="top-1 left-[20rem] absolute">
+                                        <button class="text-black  rounded-full ml-2"
+                                            onclick="closeModal('deleteModal-{{supplier.supplier_id}}')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+                                        </button>
+                                    </div>
                                     <h2 class="text-lg font-bold">Are you sure you wanna delete this?</h2>
                                     <div class="flex justify-center items-center">
                                         <form method="POST" action="{% url 'delete_supplier' supplier_id=supplier.supplier_id %}">
@@ -189,10 +189,11 @@
     <!--Add supplier modal-->
     <div id="AddModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
         <div class="bg-white rounded-lg p-6 space-y-4 relative">
-            <button 
-                class="text-black  rounded-full top-2 left-[21rem] absolute"
+            <div class="top-1 left-[21rem] absolute">
+                <button class="text-black  rounded-full ml-2"
                     onclick="closeModal('AddModal')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
-            </button>
+                </button>
+            </div>
             <!--form container-->
             <div class="flex flex-col justify-center items-center pt-5">
                 <form method="POST" action="{% url 'admin_supplier' %}">

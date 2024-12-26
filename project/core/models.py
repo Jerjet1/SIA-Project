@@ -24,6 +24,7 @@ class Account(models.Model):
     account_fname = models.CharField(max_length=25)
     account_lname = models.CharField(max_length=25)
     account_contactno = models.CharField(max_length=25)
+    account_address = models.CharField(max_length=25)
     account_user = models.CharField(max_length=25)
     account_pass = models.CharField(max_length=25)
     account_role = models.CharField(max_length=25, choices=ROLE_CHOICES)
@@ -37,7 +38,9 @@ class Admin(models.Model):
     admin_id = models.AutoField(primary_key=True)
     admin_fname = models.CharField(max_length=25)
     admin_lname = models.CharField(max_length=25)
-    account = models.ForeignKey(Account, models.DO_NOTHING, blank=True, null=True)
+    admin_contactno = models.CharField(max_length=15)
+    admin_address = models.CharField(max_length=50)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         db_table = 'admin'
@@ -46,7 +49,9 @@ class Worker(models.Model):
     worker_id = models.AutoField(primary_key=True)
     worker_fname = models.CharField(max_length=25)
     worker_lname = models.CharField(max_length=25)
-    account = models.ForeignKey(Account, models.DO_NOTHING, blank=True, null=True)
+    worker_contactno = models.CharField(max_length=15)
+    worker_address = models.CharField(max_length=50)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         db_table = 'worker'
@@ -55,7 +60,9 @@ class Custodian(models.Model):
     custodian_id = models.AutoField(primary_key=True)
     custodian_fname = models.CharField(max_length=25)
     custodian_lname = models.CharField(max_length=25)
-    account = models.ForeignKey(Account, models.DO_NOTHING, blank=True, null=True)
+    custodian_contactno = models.CharField(max_length=15)
+    custodian_address = models.CharField(max_length=50)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         db_table = 'custodian'
@@ -85,15 +92,16 @@ class Request(models.Model):
 
     request_id = models.AutoField(primary_key=True)
     request_type = models.CharField(max_length=25, choices=REQUEST_TYPE)
+    request_user = models.CharField(max_length=50, blank=False, null=False)
     request_item_quantity = models.SmallIntegerField(blank=True, null=True)
     request_repair_details = models.CharField(max_length=255, blank=True, null=True)
     request_item_name = models.CharField(max_length=50, blank=True, null=True)
     request_date = models.DateField(auto_now_add=True)
     request_status = models.CharField(max_length=25, choices=STATUS_CHOICE, default='Pending')
-    item = models.ForeignKey(Item, models.DO_NOTHING, blank=True, null=True)
-    worker = models.ForeignKey(Worker, models.DO_NOTHING, blank=True, null=True)
-    custodian = models.ForeignKey(Custodian, models.DO_NOTHING, blank=True, null=True)
-    admin = models.ForeignKey(Admin, models.DO_NOTHING, blank=True, null=True)
+    item = models.ForeignKey(Item, models.SET_NULL, blank=True, null=True)
+    worker = models.ForeignKey(Worker, models.SET_NULL, blank=True, null=True)
+    custodian = models.ForeignKey(Custodian, models.SET_NULL, blank=True, null=True)
+    admin = models.ForeignKey(Admin, models.SET_NULL, blank=True, null=True)
 
     class Meta:
         db_table = 'request'
@@ -112,7 +120,7 @@ class Supplier(models.Model):
     supplier_contactno = models.CharField(max_length=25)
     supplier_price = models.DecimalField(max_digits=10, decimal_places=2)
     supplier_grade = models.CharField(max_length=10, choices=GRADE_CHOICE)
-    item = models.ForeignKey(Item, models.DO_NOTHING)
+    item = models.ForeignKey(Item, models.SET_NULL, blank=True, null=True)
 
     class Meta:
         db_table = 'supplier'
@@ -120,7 +128,37 @@ class Supplier(models.Model):
 class Inventory(models.Model):
     inventory_id = models.AutoField(primary_key=True)
     inventory_quantity = models.SmallIntegerField(default= 0)
-    item = models.ForeignKey(Item, models.DO_NOTHING)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'inventory'
+
+class Delivery(models.Model):
+
+    status = [
+        ('Pending', 'Pending'),
+        ('Delivered', 'Delivered'),
+        ('Returned', 'Returned'),
+    ]
+
+    delivery_id = models.AutoField(primary_key=True)
+    delivery_item = models.CharField(max_length=50)
+    delivery_quantity = models.CharField(max_length=25)
+    delivery_supplier = models.CharField(max_length=25)
+    delivery_total = models.DecimalField(max_digits=10, decimal_places=2)
+    delivery_status = models.CharField(max_length=25, choices=status, default='Pending')
+    supplier = models.ForeignKey(Supplier, models.SET_NULL, blank=True, null=True)
+    item = models.ForeignKey(Item, models.SET_NULL, blank=True, null=True)
+
+    class Meta:
+        db_table = 'delivery'
+
+class Reports(models.Model):
+    report_id = models.AutoField(primary_key=True)
+    report_date = models.DateField(auto_now_add=True)
+    report_reason = models.CharField(max_length=255, blank=True, null=True)
+    request = models.ForeignKey(Request, models.SET_NULL, blank=True, null=True)
+    delivery = models.ForeignKey(Delivery, models.SET_NULL, blank=True, null=True)
+
+    class Meta:
+        db_table = 'reports'

@@ -44,31 +44,23 @@
                         <!--hover submenu-->
                         <ul class="absolute left-[5.5rem] mt-1 hidden group-hover:block bg-gray-2 rounded-md">
                             <li class="w-[9rem] text-center">
-                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
+                                <a href="{% url 'custodian_item_reports' %}" class="block px-3 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
                                     Item Requests
                                 </a>
                             </li>
                             <li class="w-[9rem] text-center">
-                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
-                                    Job Requests
-                                </a>
-                            </li>
-                            <li class="w-[9rem] text-center">
-                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
-                                    Order History
-                                </a>
-                            </li>
-                            <li class="w-[9rem] text-center">
-                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
-                                    Returned items
-                                </a>
-                            </li>
-                            <li class="w-[9rem] text-center">
-                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
-                                    Delivery History
+                                <a href="{% url 'custodian_order_reports' %}" class="block px-3 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
+                                    Order Requests
                                 </a>
                             </li>
                         </ul>
+                    </li>
+                    <!--Delivery-->
+                    <li class="flex flex-col items-center min-w-full hover:bg-slate-900 hover:text-orange-500 pt-1">
+                        <a href="{% url 'delivery_page' %}" class="mt-1">
+                            <img src="{% static 'images/delivery.png' %}" alt="Inventory" class="w-8 h-8 ml-3">
+                            Delivery
+                        </a>
                     </li>
                 </ul>
                 <!--logout-->
@@ -88,9 +80,9 @@
                 <!--search and add item container-->
                 <div class=" min-w-full h-20 pt-2 flex justify-between">
                     <!--search-->
-                    <input type="text" placeholder="Search" class="h-9 rounded-3xl hover:border-blue-700 mt-5" id="search-input" oninput="filterItems(this)">
+                    <input type="text" placeholder="Search" class="h-9 rounded-3xl hover:border-blue-700 mt-6" id="search-input" oninput="filterItems(this)">
                     <!--add item-->
-                    <div class="pr-4 mt-5">
+                    <div class="pr-4 mt-6">
                         <button class="bg-gray-2 py-2 px-4 rounded-2xl text-md text-white hover:text-orange-500" 
                         onclick="openModal('AddModal')">
                             Add Item
@@ -129,11 +121,11 @@
                                     <div id="Update-{{item.inventory_id}}" class="modal hidden fixed inset-0 
                                     bg-black bg-opacity-50 items-center justify-center">
                                         <div class="bg-white rounded-lg p-6 space-y-4 relative">
-                                            <button type="button"
-                                            class="text-black  rounded-full top-2 left-[21rem] absolute"
-                                                onclick="closeModal('Update-{{item.inventory_id}}')">
-                                                <img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
-                                            </button>
+                                            <div class="top-1 left-[21rem] absolute">
+                                                <button class="text-black  rounded-full ml-2"
+                                                    onclick="closeModal('Update-{{item.inventory_id}}')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+                                                </button>
+                                            </div>
                                             <h2 class="text-lg font-bold">Update Material</h2>
                                             <!--form container-->
                                             <div class="flex flex-col justify-center items-center pt-5">
@@ -161,7 +153,7 @@
                                                         </label>
                                                         <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
                                                         text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                                        name="stocks" id="stocks" type="number" min="1" value="{{item.inventory_quantity}}" 
+                                                        name="stocks" id="stocks" type="text" placeholder="0" value="{{item.inventory_quantity}}" 
                                                         oninput="validatestocks(this)">
                                                     </div>
                                                     <div class=" flex justify-center items-center">
@@ -179,12 +171,11 @@
                                     bg-black bg-opacity-50 items-center justify-center">
                                         <div class="bg-white rounded-lg p-6 space-y-4 relative">
                                             <button type="button"
-                                                class="text-black  rounded-full top-2 left-[20rem] absolute"
+                                                class="text-black  rounded-full top-1 left-[20.5rem] absolute"
                                                 onclick="closeModal('Delete-{{item.inventory_id}}')">
                                                 <img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
                                             </button>
                                             <h2 class="text-lg font-bold">Are you sure you wanna delete this?</h2>
-                                            <!--????-->
                                             <div class="flex justify-center items-center">
                                                 <form method="POST" action="{% url 'delete_item_inventory' inventory_id=item.inventory_id %}">
                                                     {%csrf_token%}
@@ -205,10 +196,11 @@
         <!--add modal-->
         <div id="AddModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
             <div class="bg-white rounded-lg p-6 space-y-4 relative">
-                <button 
-                class="text-black  rounded-full top-2 left-[21rem] absolute" type="button"
-                    onclick="closeModal('AddModal')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
-                </button>
+                <div class="top-1 left-[21rem] absolute">
+                    <button class="text-black  rounded-full ml-2"
+                        onclick="closeModal('AddModal')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+                    </button>
+                </div>
                 <h2 class="text-lg font-bold">Add material</h2>
                 <!--form container-->
                 <div class="flex flex-col justify-center items-center pt-5">

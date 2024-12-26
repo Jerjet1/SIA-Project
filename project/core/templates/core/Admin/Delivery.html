@@ -1,0 +1,207 @@
+{% extends "core/Admin/Dashboard.html" %}
+{% load static tailwind_tags %}
+{% block content %}
+<div class="w-full bg-white flex justify-center items-center">
+    <div class="w-[50rem] h-[35rem]  mt-10">
+        <!--search-->
+        <div class=" min-w-full h-20 pt-2 flex justify-between">
+            <input type="text" placeholder="Search" class="h-9 mt-6 rounded-3xl hover:border-blue-700">
+            <!--add item-->
+            <div class="pr-4 mt-6">
+                <button class="bg-gray-2 py-2 px-4 rounded-2xl text-md text-white hover:text-orange-500" 
+                onclick="openModal('CreateModal')">
+                    Create Delivery
+                </button>
+            </div>
+        </div>
+        <!--table container-->
+        <div class="min-w-full h-[26rem] bg-gray-3">
+            <table class="w-full table-auto">
+                <thead class="bg-gray-200 border-b-3 border-gray-200">
+                    <tr class="">
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Delivey ID</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Item</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Quantity</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Supplier</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">total</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">status</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="">
+                    {% for delivery in pending_delivery%}
+                    <tr class="text-center">
+                        <td class="pt-1 mt-1">{{delivery.delivery_id}}</td>
+                        <td class="pt-1 mt-1">{{delivery.delivery_item}}</td>
+                        <td class="pt-1 mt-1">{{delivery.delivery_quantity}}</td>
+                        <td class="pt-1 mt-1">{{delivery.delivery_supplier}}</td>
+                        <td class="pt-1 mt-1">₱{{delivery.delivery_total}}</td>
+                        <td class="pt-1">
+                            <span class="bg-orange-600 text-white px-3 py-1.5 rounded-xl text-base">
+                                {{delivery.delivery_status}}
+                            </span>
+                        </td>
+                        <td class="pt-1 mt-1">
+                            <button class="bg-gray-2 text-white px-3 py-1 rounded-lg" 
+                            onclick="openModal('update-{{delivery.delivery_id}}')">Update</button>
+                            <button class="bg-gray-2 text-white px-3 py-1 rounded-lg" 
+                            onclick="openModal('delete-{{delivery.delivery_id}}')">Delete</button>
+                        </td>
+                        <!--Delete Modal-->
+                        <div id="delete-{{delivery.delivery_id}}" class="modal hidden fixed inset-0 
+                            bg-black bg-opacity-50 items-center justify-center">
+                            <div class="bg-white rounded-lg p-6 space-y-4 relative">
+                                <button type="button"
+                                    class="text-black  rounded-full top-1 left-[20.5rem] absolute"
+                                    onclick="closeModal('delete-{{delivery.delivery_id}}')">
+                                    <img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+                                </button>
+                                <h2 class="text-lg font-bold">Are you sure you wanna delete this?</h2>
+                                <div class="flex justify-center items-center">
+                                    <form method="POST" action="{% url 'admin_delete_delivery' delivery_id=delivery.delivery_id %}">
+                                        {%csrf_token%}
+                                        <button type="submit" class="bg-gray-2 text-white px-4 py-2 rounded-2xl 
+                                        hover:text-orange-500">Yes</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--CreateModal-->
+    <div id="CreateModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+        <div class="bg-white rounded-lg p-6 space-y-4 relative">
+            <div class="top-1 left-[21rem] absolute">
+                <button class="text-black  rounded-full ml-2"
+                    onclick="closeModal('CreateModal')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+                </button>
+            </div>
+            <div class="flex justify-center items-center">
+                <h2 class="text-lg font-bold">Create Delivery</h2>
+            </div>
+            <form method="POST" action="{% url 'create_delivery'%}">
+                {%csrf_token%}
+                <div class="space-y-4 w-[22rem]">
+                    <!--items dropdown-->
+                    <div class="flex flex-col justify-start items-start">
+                        <div class="flex justify-between space-x-5">
+                            <label class="font-bold text-lg mt-1 ">Item: </label>
+                            <select required class="shadow appearance-none border rounded py-2 px-3 mb-1 w-[15rem]
+                                text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    id="item-inventory" name="item">
+                                    <option value="">Select item</option>
+                                    {% for item in items%}
+                                        <option value="{{item.item_id}}">{{item.item_name}}</option>
+                                    {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Supplier Dropdown -->
+                    <div class="flex flex-col justify-start items-start">
+                        <div class="flex justify-between space-x-2">
+                            <label class="font-bold text-lg mt-1">Supplier:</label>
+                            <select id="supplier-dropdown" name="supplier_id" required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 mb-0.5 
+                            text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                {% for item_id, suppliers in grouped_suppliers.items %}
+                                    <optgroup data-item-id="{{ item_id }}">
+                                        {% for supplier in suppliers %}
+                                            <option value="{{ supplier.supplier_id }}" data-price="{{ supplier.supplier_price }}">
+                                                {{ supplier.supplier_name }}</option>
+                                        {% endfor %}
+                                    </optgroup>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Quantity Input -->
+                    <div class="flex flex-col justify-start items-start">
+                        <div class="flex justify-between space-x-2">
+                            <label class="font-bold text-lg mt-1">Quantity:</label>
+                            <input type="text" id="quantity-input" name="quantity" class="shadow appearance-none border rounded py-2 px-3 mb-0.5 
+                            text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter quantity" required oninput="validatestocks(this)">
+                        </div>
+                    </div>
+                    <!-- Total Price Display -->
+                    <div class="flex flex-col justify-start items-start">
+                        <p id="price" class="font-bold text-lg mt-3">Price: ₱</p>
+                        <p id="total-display" class="font-bold text-lg mt-3">Total: ₱0.00</p>
+                        <input type="hidden" id="total-input" name="total">
+                    </div>
+                    <div class="flex justify-center items-center">
+                        <button type="submit" class="bg-gray-2 text-white px-5 
+                            py-2 rounded-2xl hover:text-orange-500">
+                            Create
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    function validatestocks(input) { 
+        input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters 
+    }
+    function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('hidden'); // Remove hidden class
+        modal.classList.add('flex'); // Add flex for centering
+    }
+
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('flex'); // Remove flex to prevent display issues
+        modal.classList.add('hidden'); // Add hidden class to hide modal
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const itemDropdown = document.getElementById('item-inventory');
+        const supplierDropdown = document.getElementById('supplier-dropdown');
+        const quantityInput = document.getElementById('quantity-input');
+        const totalDisplay = document.getElementById('total-display');
+        const supplier_price = document.getElementById('price')
+
+        supplierDropdown.disabled = true;
+        quantityInput.disabled= true;
+        // Show relevant suppliers based on the selected item
+        itemDropdown.addEventListener('change', function () {
+            const selectedItemId = this.value;
+
+            supplierDropdown.disabled = !selectedItemId;
+            quantityInput.disabled = false;
+            Array.from(supplierDropdown.children).forEach(optgroup => {
+                if (optgroup.tagName === 'OPTGROUP') {
+                    optgroup.style.display = optgroup.dataset.itemId === selectedItemId ? '' : 'none';
+                }
+            });
+            supplierDropdown.value = '';
+            totalDisplay.textContent = 'Total: ₱0.00';
+        });
+
+        // Calculate total price
+        const calculateTotal = () => {
+            const selectedSupplier = supplierDropdown.selectedOptions[0];
+            const quantity = parseFloat(quantityInput.value) || 0;
+            const totalInput = document.getElementById('total-input');
+            if (selectedSupplier && quantity) {
+                const price = parseFloat(selectedSupplier.dataset.price);
+                const total = price * quantity;
+                totalDisplay.textContent = `Total: ₱${(price * quantity).toFixed(2)}`;
+                totalInput.value = total.toFixed(2);
+            } else {
+                const price = parseFloat(selectedSupplier.dataset.price);
+                supplier_price.textContent = 'Price: ₱'+ price;
+                totalDisplay.textContent = 'Total: ₱0.00';
+                totalInput.value = '';
+            }
+        };
+
+        supplierDropdown.addEventListener('change', calculateTotal);
+        quantityInput.addEventListener('input', calculateTotal);
+    });
+</script>
+{% endblock %}
