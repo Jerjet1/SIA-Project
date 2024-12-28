@@ -1,47 +1,124 @@
 {% extends "core/Admin/Dashboard.html" %}
+{% load static tailwind_tags %}
 {% block content %}
 <div class="w-full bg-white flex justify-center items-center">
     <div class="w-[50rem] h-[35rem]  mt-10">
-        <form action="" class="flex items-center space-x-2">
-            <input type="text" placeholder="Search" class="h-8 rounded-3xl hover:border-blue-700">
-            <button type="submit" class="rounded-xl pt-1 pb-1 px-5 text-md bg-gray-2 text-white hover:text-orange-500">
-                Search
-            </button>
-        </form>
+        <!--search and add item container-->
+        <div class=" min-w-full h-14 pt-2 flex justify-between">
+            <!--search-->
+            <input type="text" placeholder="Search" class="h-9 rounded-3xl hover:border-blue-700 mt-4" 
+            id="search-input" oninput="filterItems(this)">
+            <!--add item-->
+            <div class="pr-4 mt-4">
+                <button class="bg-gray-2 py-2 px-4 rounded-2xl text-md text-white hover:text-orange-500" 
+                onclick="openModal('AddModal')">
+                    Add Item
+                </button>
+            </div>
+        </div>
         <!--table container-->
-        <div class="min-w-full h-[26rem] bg-gray-3 mt-6">
-            <table class="w-full ">
+        <div class="min-w-full h-[26rem] bg-gray-3 mt-4 table-auto overflow-auto">
+            <table class="w-full">
                 <thead class="bg-gray-200 border-b-2 border-gray-200">
                     <tr class="">
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Item ID</th>
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Name</th>
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Description</th>
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">stocks</th>
-                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Action</th>
                     </tr>
                 </thead>
-                {% for item in items %}
-                <tbody >
+                <tbody id="inventory-table">
+                    {% for item in items %}
                     <tr class="text-center">
                         <td class="pt-1">{{item.inventory_id}}</td>
                         <td class="pt-1">{{item.item__item_name}}</td>
                         <td class="pt-1">{{item.item__item_description}}</td>
                         <td class="pt-1">{{item.inventory_quantity}}</td>
-                        <td class="pt-1">
-                            <button class="bg-gray-2 px-3 py-1 rounded-lg text-white hover:text-orange-500" 
-                            onclick="openModal('Update')">
-                                Update
-                            </button>
-                            <button class="bg-gray-2 px-3 py-1 rounded-lg text-white hover:text-orange-500" 
-                            onclick="openModal('Delete')">
-                                Delete
-                            </button>
-                        </td>
                     </tr>
+                    {% endfor %}
                 </tbody>
-                {% endfor %}
             </table>
         </div>
     </div>
 </div>
+<!--add modal-->
+<div id="AddModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+    <div class="bg-white rounded-lg p-6 space-y-4 relative">
+        <div class="top-1 left-[21rem] absolute">
+            <button class="text-black  rounded-full ml-2"
+                onclick="closeModal('AddModal')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
+            </button>
+        </div>
+        <h2 class="text-lg font-bold">Add material</h2>
+        <!--form container-->
+        <div class="flex flex-col justify-center items-center pt-5">
+            <form method="POST" action="{% url 'admin_inventory'%}">
+                {%csrf_token%}
+                <div class="mb-4 flex justify-between">
+                    <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="first-name">
+                        Name
+                    </label>
+                    <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
+                    text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                    name="name" id="Name" type="text" placeholder="Name">
+                </div>
+                <div class="mb-4 flex justify-between">
+                    <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="first-name">
+                        Description
+                    </label>
+                    <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
+                    text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                    name="description" id="Description" type="text" placeholder="Description">
+                </div>
+                <div class=" flex justify-center items-center">
+                    <button type="submit" class="mt-5 bg-gray-2 py-2 px-5 text-white rounded-2xl hover:text-orange-500">
+                        Add
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    
+    function openModal(modalId) {
+        console.log('Opening modal:', modalId);
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('hidden'); // Remove hidden class
+        modal.classList.add('flex'); // Add flex for centering
+    }
+
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('flex'); // Remove flex to prevent display issues
+        modal.classList.add('hidden'); // Add hidden class to hide modal
+    }
+
+    function filterItems() {
+        var input = document.getElementById('search-input');
+        var filter = input.value.toLowerCase();
+        var table = document.getElementById('inventory-table');
+        var rows = table.getElementsByTagName('tr');
+
+        for (var i = 0; i < rows.length; i++) { // Start from 1 to skip header row
+            var row = rows[i];
+            var cells = row.getElementsByTagName('td');
+            var match = false;
+            
+            for (var j = 0; j < cells.length; j++) {
+                var cell = cells[j];
+                if (cell.textContent.toLowerCase().indexOf(filter) > -1) {
+                    match = true;
+                    break;
+                }
+            }
+            
+            if (match) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    }
+</script>
 {% endblock %}

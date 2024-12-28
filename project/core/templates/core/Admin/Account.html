@@ -7,6 +7,18 @@
         </div>
         <!--Create account container-->
         <div class="p-8 flex flex-col justify-center items-center shadow-2xl">
+            <!-- Messages Section -->
+            {% if messages %}
+            <div class="hidden mb-4 w-full">
+                {% for message in messages %}
+                <div class="p-5 rounded text-white {% if message.tags == 'error' %}bg-red-500{% elif message.tags == 'success' %}
+                    bg-green-500
+                    {% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
             <form method="POST" action="{% url 'admin_create_account' %}">
                 {%csrf_token%}
                 <div class="mb-2 flex justify-between">
@@ -31,7 +43,15 @@
                     </label>
                     <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 
                     text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                    name="contactno" id="contact-no" type="text" placeholder="+63" oninput="validateContactNo(this)">
+                    name="contactno" id="contact-no" type="text" pattern="\d{11}" placeholder="+63" oninput="validateContactNo(this)">
+                </div>
+                <div class="mb-2 flex justify-between">
+                    <label class="block text-gray-700 text-sm font-bold mt-2" for="address">
+                        Address
+                    </label>
+                    <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 
+                    text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                    name="address" id="address" type="text"  placeholder="City street" >
                 </div>
                 <div class="mb-2 flex justify-between">
                     <label class="block text-gray-700 text-sm font-bold mt-2" for="username">

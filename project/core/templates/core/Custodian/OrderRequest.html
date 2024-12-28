@@ -1,0 +1,87 @@
+{% extends "core/Custodian/Inventory.html" %}
+{% block content %}
+<div class="w-full bg-white flex justify-center items-center">
+    <div class="w-[50rem] h-[27rem] mt-10">
+        <!--table container-->
+        <div class="min-w-full h-[26rem] bg-gray-3 table-auto overflow-auto">
+            <table class="w-full ">
+                <thead class="bg-gray-200 border-b-2 border-gray-200">
+                    <tr>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">History ID</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Request Type</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Date</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Status</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="request-table">
+                    {% for request in requests%}
+                    <tr class="text-center">
+                        <td class="pt-1">{{request.report_id}}</td>
+                        <td class="pt-1">{{request.request__request_type}}</td>
+                        <td class="pt-1">{{request.report_date}}</td>
+                        <td class="pt-1">
+                            <span class="{% if request.request__request_status == 'Approve' %} 
+                            bg-green-600 {% else %} bg-red-600 {% endif %} 
+                            text-white px-3 py-1.5 rounded-xl text-base">
+                                {{request.request__request_status}}
+                            </span>
+                        </td>
+                        <td class="pt-1">
+                            <button class="bg-gray-2 px-4 py-1 rounded-lg text-white" type="button" 
+                            onclick="openModal('viewModal-{{request.report_id}}')">view</button>
+                        </td>
+                        <!--view Modal-->
+                        <div id="viewModal-{{request.report_id}}" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+                            <div class="bg-white rounded-lg p-6 space-y-4">
+                                <div class="flex justify-center items-center">
+                                    <h2 class="text-lg font-bold">View Request</h2>
+                                </div>
+                                <div class="flex justify-start items-start flex-col space-y-2">
+                                    <p>
+                                        <strong>Request Type:</strong> {{ request.request__request_type }}
+                                    </p>
+                                    <p>
+                                        <strong>Request ID:</strong> {{ request.request }}
+                                    </p>
+                                    <p>
+                                        <strong>Custodian name:</strong> {{ request.request__request_user }}
+                                    </p>
+                                    <p>
+                                        <strong>Request Date:</strong> {{ request.request__request_date }}
+                                    </p>
+                                    <p>
+                                        <strong>item name:</strong> {{ request.request__request_item_name }}
+                                    </p>
+                                    <p>
+                                        <strong>item quantity:</strong> {{ request.request__request_item_quantity }}
+                                    </p>
+                                </div>
+                                <button 
+                                    class="bg-gray-2 text-white px-4 py-1 rounded-lg" type="button"
+                                    onclick="closeModal('viewModal-{{request.report_id}}')">Close
+                                </button>
+                            </div>
+                        </div>
+                    </tr>
+                    {% endfor %}                 
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    function openModal(modalId) {
+        console.log(modalId)
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('hidden'); // Remove hidden class
+        modal.classList.add('flex'); // Add flex for centering
+    }
+
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('flex'); // Remove flex to prevent display issues
+        modal.classList.add('hidden'); // Add hidden class to hide modal
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "core/Admin/Dashboard.html" %}
+{% block content %}
+<div class="w-full bg-white flex justify-center items-center">
+    <div class="w-[50rem] h-[30rem] mt-10">
+        <!--table container-->
+        <div class="min-w-full h-[26rem] bg-gray-3 table-auto overflow-auto">
+            <table class="w-full">
+                <thead class="bg-gray-200 border-b-3 border-gray-200">
+                    <tr class="">
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">History ID</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Item</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Date</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Status</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="request-table">
+                    {% for report in reports %}
+                    <tr class="text-center">
+                        <td class="pt-1 mt-1">{{report.report_id}}</td>
+                        <td class="pt-1 mt-1">{{report.delivery__delivery_item}}</td>
+                        <td class="pt-1 mt-1">{{report.report_date}}</td>
+                        <td class="pt-1">
+                            <span class="{% if report.delivery__delivery_status == 'Delivered' %}bg-green-600 {% else %}
+                             bg-red-600 {% endif %}text-white px-3 py-1.5 rounded-xl" id="status">
+                                {{report.delivery__delivery_status}}
+                            </span>
+                        </td>
+                        <td class="pt-1">
+                            <button class="bg-gray-2 text-white px-4 py-1 rounded-lg" type="button"
+                            onclick="openModal('viewModal-{{report.report_id}}')">view</button>
+                        </td>
+                        <!--view Modal-->
+                        <div id="viewModal-{{report.report_id}}" class="modal hidden fixed inset-0 
+                        bg-black bg-opacity-50 items-center justify-center">
+                            <div class="bg-white rounded-lg p-6 space-y-4 w-[23rem]">
+                                <div class="flex justify-center items-center">
+                                    <h2 class="text-lg font-bold">Delivery Receipt</h2>
+                                </div>
+                                <div class="flex justify-start items-start flex-col space-y-2">
+                                    <p>
+                                        <strong>Delivery ID:</strong> {{ report.delivery__delivery_id }}
+                                    </p>
+                                    <p>
+                                        <strong>Supplier name:</strong> {{ report.delivery__delivery_supplier }}
+                                    </p>
+                                    <p>
+                                        <strong>Quantity:</strong> {{ report.delivery__delivery_quantity }}
+                                    </p>
+                                    <p>
+                                        <strong>price:</strong> ₱{{ report.delivery__supplier__supplier_price }}
+                                    </p>
+                                    <p>
+                                        <strong>Total:</strong> ₱{{ report.delivery__delivery_total }}
+                                    </p>
+                                    {% if report.delivery__delivery_status == 'Returned'%}
+                                        <div class="flex justify-start items-start space-x-1">
+                                            <strong>Reason:</strong>
+                                            <p class="flex-1">
+                                                {{ report.report_reason }}
+                                            </p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <button 
+                                    class="bg-gray-2 text-white px-4 py-1 rounded-lg" type="button"
+                                    onclick="closeModal('viewModal-{{report.report_id}}')">Close</button>
+                            </div>
+                        </div>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.classList.remove('hidden'); // Remove hidden class
+    modal.classList.add('flex'); // Add flex for centering
+    }
+
+    function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.classList.remove('flex'); // Remove flex to prevent display issues
+    modal.classList.add('hidden'); // Add hidden class to hide modal
+    }
+</script>
+{% endblock %}

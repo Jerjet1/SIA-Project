@@ -64,27 +64,22 @@
                         <!--hover submenu-->
                         <ul class="absolute left-[5.5rem] mt-1 hidden group-hover:block bg-gray-2 rounded-md">
                             <li class="w-[9rem] text-center">
-                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
+                                <a href="{% url 'item_request_reports'%}" class="block px-3 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
                                     Item Requests
                                 </a>
                             </li>
                             <li class="w-[9rem] text-center">
-                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
+                                <a href="{% url 'job_request_reports'%}" class="block px-3 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
                                     Job Requests
                                 </a>
                             </li>
                             <li class="w-[9rem] text-center">
-                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
-                                    Order History
+                                <a href="{% url 'purchase_order_reports'%}" class="block px-3 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
+                                    Order Requests
                                 </a>
                             </li>
                             <li class="w-[9rem] text-center">
-                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
-                                    Returned items
-                                </a>
-                            </li>
-                            <li class="w-[9rem] text-center">
-                                <a href="#" class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
+                                <a href="{% url 'delivery_history_reports' %}" class="block px-3 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
                                     Delivery History
                                 </a>
                             </li>
@@ -93,11 +88,18 @@
                     <!--Supplier-->
                     <li class="flex flex-col items-center hover:bg-slate-900 hover:text-orange-500 min-w-full pt-1">
                         <a href="{% url 'admin_supplier' %}" class="mt-1">
-                            <img src="{% static 'images/Supplier.png' %}" alt="Supplier" class="w-6 h-6 ml-4">
+                            <img src="{% static 'images/Supplier.png' %}" alt="Supplier" class="w-7 h-7 ml-4">
                             Supplier
                         </a>
                     </li>
                 </ul>
+                <!--Delivery-->
+                <li class="group flex flex-col items-center hover:bg-slate-900 hover:text-orange-500 min-w-full pt-1">
+                    <a href="{% url 'create_delivery' %}" class="mt-1">
+                        <img src="{% static 'images/delivery.png' %}" alt="Inventory" class="w-8 h-8 ml-4">
+                        Delivery
+                    </a>
+                </li>
                 <!--Logout-->
                 <ul class="mt-auto min-w-full hover:text-orange-500">
                     <li class="flex flex-col items-center min-w-full hover:bg-slate-900 pt-2">
@@ -111,18 +113,11 @@
         </div>
         {% block content %}
         <!--container div-->
-        <div class="w-full bg-white flex justify-center items-center">
-            <div class="w-[50rem] h-[35rem]  mt-10">
-                <div class=" min-w-full h-20 pt-2">
-                    <input type="text" placeholder="Search" class="h-8 rounded-3xl hover:border-blue-700">
-                    <button type="button" 
-                        class="rounded-xl pt-1 pb-1 px-5 text-md hover:text-orange-500 bg-gray-2 text-white">
-                        Search
-                    </button>
-                </div>
+        <div class="w-full bg-white flex justify-center items-center mt-10">
+            <div class="w-[50rem] h-[30rem]">
                 <!--table container-->
                 <div class="min-w-full h-[25rem] bg-gray-3 overflow-auto" id="request-container">
-                    <table class="w-full" >
+                    <table class="w-full">
                         <thead class="bg-gray-200 border-b-3 border-gray-200">
                             <tr class="">
                                 <th class="p-3 text-sm font-semibold tracking-wide text-center">Request ID</th>
@@ -150,20 +145,65 @@
                                     <!-- View Modal -->
                                     <div id="viewModal-{{request.request_id}}"
                                         class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
-                                        <div class="bg-white rounded-lg p-6 space-y-4 flex justify-start items-start flex-col relative">
+                                        <div class="bg-white rounded-lg p-6 space-y-4 justify-start items-start flex-col relative w-[23rem]">
                                             <button 
-                                                class="text-black  rounded-full top-2 left-[17.5rem] absolute"
+                                                class="text-black  rounded-full top-1 left-[21rem] absolute"
                                                 onclick="closeModal('viewModal-{{ request.request_id }}')">
                                                 <img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
                                             </button>
-                                            <h2 class="text-lg font-bold">View Request</h2>
-                                            <p><strong>Request ID:</strong> {{ request.request_id }}</p>
-                                            <p><strong>Request Type:</strong> {{ request.request_type }}</p>
-                                            <p><strong>Date:</strong> {{ request.request_date }}</p>
-                                            <p>Details about the job request go here.</p>
-                                            <!--
-                                                logic for request type here to 
-                                            -->
+                                            <div class="flex justify-center items-center">
+                                                <h2 class="text-lg font-bold">View Request</h2>
+                                            </div>
+                                            <div class="flex justify-start items-start flex-col space-y-2 ">
+                                                <p ><strong >Request Type:</strong>{{ request.request_type }}</p>
+                                                <p><strong >Date:</strong>{{ request.request_date }}</p>
+                                            </div>
+                                            <!--item Request-->
+                                            {% if request.request_type == 'Item Request'%}
+                                                <div class="flex justify-start items-start flex-col space-y-1">
+                                                    <p>
+                                                        <strong>Worker name:</strong> {{ request.request_user}}
+                                                    </p>
+                                                    <p>
+                                                        <strong>item name:</strong> {{ request.request_item_name }}
+                                                    </p>
+                                                    <p>
+                                                        <strong>item quantity:</strong> {{ request.request_item_quantity }}
+                                                    </p>
+                                                </div>
+                                                <!--job request-->
+                                            {% elif request.request_type == 'Job Request' %}
+                                                <div class="flex justify-start items-start flex-col space-y-1">
+                                                    <p>
+                                                        <strong>Custodian name:</strong> {{ request.request_user}}
+                                                    </p>
+                                                    <p>
+                                                        <strong>Item name: </strong> {{request.request_item_name}}
+                                                    </p>
+                                                    <p>
+                                                        <strong>Quantity: </strong> {{request.request_item_quantity}}
+                                                    </p>
+                                                    <div class="flex justify-start items-start space-x-1">
+                                                        <strong >Repair details: </strong>
+                                                        <p class="flex-1">{{request.request_repair_details}}</p>
+                                                    </div>
+                                                </div>
+                                            <!--Purchase order-->
+                                            {% elif request.request_type == 'Purchase Order' %}
+                                                <div class="flex justify-start items-start flex-col space-y-1">
+                                                    <p>
+                                                        <strong>Custodian name:</strong> {{ request.request_user}} 
+                                                    </p>
+                                                    <p>
+                                                        <strong>Item name: </strong>
+                                                        {{request.request_item_name}}
+                                                    </p>
+                                                    <p>
+                                                        <strong>Quantity: </strong>
+                                                        {{request.request_item_quantity}}
+                                                    </p>
+                                                </div>
+                                            {% endif %}
                                             <div class="flex justify-center items-center w-full space-x-5">
                                                 <button class="bg-gray-2 px-2 py-1 hover:text-orange-500 rounded-lg text-white" 
                                                     onclick="openModal('approveModal-{{request.request_id}}')">
@@ -182,14 +222,16 @@
                                         <div class="bg-white rounded-lg p-6 space-y-4">
                                             <h2 class="text-lg font-bold">Approve Request</h2>
                                             <p>Are you sure you want to approve this request?</p>
-                                            <div class="flex justify-end space-x-2">
-                                                <form action="">
+                                            <div class="flex justify-center items-center space-x-2">
+                                                <form method="POST" action="{% url 'admin_status_request' request_id=request.request_id %}">
+                                                    {%csrf_token%}
+                                                    <input type="hidden" value="approve" name="status">
                                                     <button 
-                                                        class="bg-green-500 text-white px-4 py-2 rounded-lg" type="submit"
+                                                        class="bg-gray-2 text-white px-5 py-1.5 rounded-lg" type="submit"
                                                         onclick="closeModal('approveModal-{{request.request_id}}')">Yes</button>
                                                     </form>
                                                 <button 
-                                                    class="bg-gray-300 px-4 py-2 rounded-lg"
+                                                    class="bg-gray-2 px-5 py-1.5 rounded-lg text-white"
                                                     onclick="closeModal('approveModal-{{request.request_id}}')">Cancel</button>
                                             </div>
                                         </div>
@@ -200,15 +242,17 @@
                                         <div class="bg-white rounded-lg p-6 space-y-4">
                                             <h2 class="text-lg font-bold">Decline Request</h2>
                                             <p>Are you sure you want to decline this request?</p>
-                                            <div class="flex justify-end space-x-2">
-                                                <form action="">
+                                            <div class="flex justify-center items-center space-x-2">
+                                                <form method="POST" action="{% url 'admin_status_request' request_id=request.request_id %}">
+                                                    {%csrf_token%}
+                                                    <input type="hidden" value="decline" name="status">
                                                     <button 
-                                                        class="bg-red-500 text-white px-4 py-2 rounded-lg"
+                                                        class="bg-gray-2 text-white px-4 py-2 rounded-lg"
                                                         onclick="closeModal('declineModal-{{request.request_id}}')" 
                                                         type="submit">Yes</button>
                                                 </form>
                                                 <button 
-                                                    class="bg-gray-300 px-4 py-2 rounded-lg"
+                                                    class="bg-gray-2 px-4 py-2 text-white rounded-lg" type="button"
                                                     onclick="closeModal('declineModal-{{request.request_id}}')">Cancel</button>
                                             </div>
                                         </div>
@@ -229,14 +273,8 @@
             {
                 console.log('Opening modal:', modalId);
                 const modal = document.getElementById(modalId);
-                if(modal)
-                {
-                    modal.classList.remove('hidden'); // Remove hidden class
-                    modal.classList.add('flex'); // Add flex for centering
-                }
-                else {
-                    console.error('Modal not found:', modalId);
-                }
+                modal.classList.remove('hidden'); // Remove hidden class
+                modal.classList.add('flex'); // Add flex for centering
             }
     
             function closeModal(modalId) {
