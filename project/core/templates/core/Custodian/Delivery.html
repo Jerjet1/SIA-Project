@@ -5,11 +5,12 @@
     <div class="w-[50rem] h-[35rem]  mt-10">
         <!--search-->
         <div class=" min-w-full h-20 pt-2">
-            <input type="text" placeholder="Search" class="h-9 mt-6 rounded-3xl hover:border-blue-700">
+            <input type="text" placeholder="Search" class="h-9 mt-6 rounded-3xl hover:border-blue-700" id="search-input" 
+            oninput="filterDelivery(this)">
         </div>
         <!--table container-->
-        <div class="min-w-full h-[26rem] bg-gray-3">
-            <table class="w-full table-auto">
+        <div class="min-w-full h-[26rem] bg-gray-3 overflow-auto table-auto">
+            <table class="w-full">
                 <thead class="bg-gray-200 border-b-3 border-gray-200">
                     <tr class="">
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Delivey ID</th>
@@ -21,7 +22,7 @@
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Action</th>
                     </tr>
                 </thead>
-                <tbody class="">
+                <tbody id="delivery-table">
                     {% for delivery in check_deliveries %}
                     <tr class="text-center">
                         <td class="pt-1 mt-1">{{delivery.delivery_id}}</td>
@@ -35,9 +36,9 @@
                             </span>
                         </td>
                         <td class="pt-1 mt-1">
-                            <button class="bg-gray-2 text-white px-3 py-1 rounded-lg" 
+                            <button class="bg-gray-2 text-white px-3 py-1 rounded-lg hover:text-orange-500" 
                             onclick="openModal('accept-{{delivery.delivery_id}}')">accept</button>
-                            <button class="bg-gray-2 text-white px-3 py-1 rounded-lg" 
+                            <button class="bg-gray-2 text-white px-3 py-1 rounded-lg hover:text-orange-500" 
                             onclick="openModal('return-{{delivery.delivery_id}}')">return</button>
                         </td>
                         <!--accept modal-->
@@ -62,24 +63,25 @@
                                 </div>
                             </div>
                         </div>
-                        <!--accept modal-->
-                        <div id="return-{{delivery.delivery_id}}" class="modal hidden fixed inset-0 
-                        bg-black bg-opacity-50 items-center justify-center">
-                            <div class="bg-white rounded-lg p-6 space-y-4 relative">
-                                <div class="top-1 left-[26rem] absolute">
-                                    <button type="button"
-                                        class="text-black  rounded-full ml-4"
-                                        onclick="closeModal('return-{{delivery.delivery_id}}')">
-                                        <img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
-                                    </button>
-                                </div>
+                        <!--Return modal-->
+                        <div id="return-{{delivery.delivery_id}}" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+                            <div class="bg-white rounded-lg p-6 space-y-4 relative w-[23rem]">
+                                <button type="button" class="text-black rounded-full absolute top-1 left-[21rem]" 
+                                    onclick="closeModal('return-{{delivery.delivery_id}}')">
+                                    <img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7">
+                                </button>
                                 <h2 class="text-lg font-bold text-center">Confirm Order</h2>
-                                <p class="text-center text-gray-600">Click <strong>Yes</strong> to process the transaction for the delivered order.</p>
-                                <div class="flex justify-center items-center">
-                                    <form method="POST" action="">
-                                        {%csrf_token%}
-                                        <button type="submit" class="bg-gray-2 text-white px-4 py-2 rounded-2xl 
-                                        hover:text-orange-500">Yes</button>
+                                <div class="flex flex-col justify-center items-center">
+                                    <form method="POST" action="{% url 'return_delivery' delivery_id=delivery.delivery_id %}">
+                                        {% csrf_token %}
+                                        <div class="flex flex-col">
+                                            <label class="font-semibold text-lg">State the reason</label>
+                                            <textarea name="reason" required class="shadow appearance-none border rounded w-[20rem] h-20 py-2 px-3 
+                                            text-gray-700 leading-tight focus:outline-none focus:shadow-outline resize-none" maxlength="255"></textarea>
+                                        </div>
+                                        <div class="mt-2">
+                                            <button type="submit" class="bg-gray-2 text-white px-4 py-2 rounded-2xl hover:text-orange-500">Yes</button>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
@@ -103,6 +105,32 @@
     modal.classList.remove('flex'); // Remove flex to prevent display issues
     modal.classList.add('hidden'); // Add hidden class to hide modal
     }
-</script>
 
+    function filterDelivery() {
+        var input = document.getElementById('search-input');
+        var filter = input.value.toLowerCase();
+        var table = document.getElementById('delivery-table');
+        var rows = table.getElementsByTagName('tr');
+        
+        for (var i = 0; i < rows.length; i++) { // Start from 1 to skip header row
+            var row = rows[i];
+            var cells = row.getElementsByTagName('td');
+            var match = false;
+            
+            for (var j = 0; j < cells.length; j++) {
+                var cell = cells[j];
+                if (cell.textContent.toLowerCase().indexOf(filter) > -1) {
+                    match = true;
+                    break;
+                }
+            }
+            
+            if (match) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    }
+</script>
 {% endblock %}

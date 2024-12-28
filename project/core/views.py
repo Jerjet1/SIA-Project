@@ -10,6 +10,8 @@ from django.db.models import Q
 
 # Create your views here.
 def Login(request):
+    
+
     return render(request, 'core/login.html')
 
 def approve_disapprove_request(request, request_id):
@@ -214,19 +216,21 @@ def account_user_status(request, account_id):
             user_account.save()
             return redirect('Account_list')
     return redirect('Account_list')
+
 #display account list
 def AccountList(request):
     accounts = Account.objects.all()
     return render(request, 'core/Admin/AccountList.html', {"accounts": accounts})
 
+#report for job request
 def job_request(request):
     requests = Reports.objects.all().select_related('request').values(
         'report_id', 'report_date', 'request__request_type', 'request__request_item_quantity', 'request', 'request__request_date',
         'request__request_item_name', 'request__request_user', 'request__request_status', 'request__request_repair_details',
     ).filter(request__request_type = 'Job Request')
-    #requests = Request.objects.all().filter(request_type = 'Job Request', request_status__in = ['Approve', 'Decline'])
     return render(request, 'core/Admin/JobRequest.html', {'requests': requests})
 
+#report for purchase order
 def purchase_order(request):
     requests = Reports.objects.all().select_related('request').values(
         'report_id', 'report_date', 'request__request_type',
@@ -235,6 +239,7 @@ def purchase_order(request):
     ).filter(request__request_type = 'Purchase Order')
     return render(request, 'core/Admin/OrderRequest.html', {'requests': requests})
 
+#report for item_request
 def item_request(request):
     requests = Reports.objects.all().select_related('request').values(
         'report_id', 'report_date', 'request__request_type', 'request__request_item_name',
@@ -242,11 +247,12 @@ def item_request(request):
     ).filter(request__request_type = 'Item Request')
     return render(request, 'core/Admin/RequestReport.html', {'requests': requests})
 
+#report for deliver history
 def delivery_history(request):
-    reports = Reports.objects.all().select_related('delivery').values(
+    reports = Reports.objects.all().select_related('delivery', 'delivery__supplier').values(
         'report_id', 'report_date', 'report_reason', 'delivery__delivery_item', 'delivery__delivery_quantity', 'delivery__delivery_supplier',
-        'delivery__delivery_total', 'delivery__delivery_status', 'delivery__delivery_id'
-    ).filter(delivery__delivery_status__in = ['Delivered', 'Returned'])
+        'delivery__delivery_total', 'delivery__delivery_status', 'delivery__delivery_id', 'delivery__supplier__supplier_price', 
+    ).filter(delivery__delivery_status__in = ['Delivered', 'Returned']).order_by('-report_date')
     return render(request, 'core/Admin/DeliveryReport.html', {'reports': reports})
 
 #update supplier
@@ -363,6 +369,41 @@ def AdminSupplier(request):
         return redirect('admin_supplier')
 
     return render(request, 'core/Admin/Supplier.html', display_data)
+
+#update delivery
+def update_delivery(request, delivery_id):
+    if request.method == 'POST':
+        try:
+            update_deliver = get_object_or_404(Delivery, delivery_id = delivery_id)
+            delivery_update_item = request.POST.get('item')
+            delivery_update_supplier = request.POST.get('supplier_id')
+            delivery_update_quantity = request.POST.get('quantity')
+            total = request.POST.get('total')
+
+            try:
+                delivery_update_total = float(total)
+            except ValueError:
+                # Add appropriate error message or handling
+                return redirect('create_delivery')
+            
+            item = get_object_or_404(Item, item_id = delivery_update_item)
+            supplied = get_object_or_404(Supplier, supplier_id = delivery_update_supplier)
+
+            update_deliver.delivery_item = item.item_name
+            update_deliver.delivery_supplier = supplied.supplier_name
+            update_deliver.delivery_quantity = delivery_update_quantity
+            update_deliver.delivery_total = delivery_update_total
+            update_deliver.supplier = supplied
+            update_deliver.item = item
+            update_deliver.save()
+            print('Update successfully')
+            #message here...
+            return redirect('create_delivery')
+        except:
+            #message here..
+            print('Unexpected error')
+            return redirect('create_delivery')
+    return redirect('create_delivery')
 
 def delete_delivery(request, delivery_id):
     if request.method == 'POST':
@@ -641,6 +682,31 @@ def accept_deliveries(request, delivery_id):
             #message here..
             return redirect('delivery_page')
         except:
+            print('unexpected error occured.')
+            return redirect('delivery_page')
+    return redirect('delivery_page')
+
+def return_deliveries(request, delivery_id):
+
+    if request.method == 'POST':
+        try:
+            returned = request.POST.get('reason', "").strip()
+            status = 'Returned'
+            delivery = get_object_or_404(Delivery, delivery_id = delivery_id)
+
+            if not returned:
+                #message here..
+                return redirect('delivery_page')
+
+            delivery.delivery_status = status
+            delivery.save()
+            Reports.objects.create(
+                delivery = delivery,
+                report_reason = returned
+            )
+            return redirect('delivery_page')
+        except:
+            #message here..
             return redirect('delivery_page')
     return redirect('delivery_page')
 

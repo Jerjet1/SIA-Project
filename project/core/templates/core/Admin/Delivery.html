@@ -5,7 +5,8 @@
     <div class="w-[50rem] h-[35rem]  mt-10">
         <!--search-->
         <div class=" min-w-full h-20 pt-2 flex justify-between">
-            <input type="text" placeholder="Search" class="h-9 mt-6 rounded-3xl hover:border-blue-700">
+            <input type="text" placeholder="Search" class="h-9 mt-6 rounded-3xl hover:border-blue-700" id="search-input" 
+                oninput="filterDelivery(this)">
             <!--add item-->
             <div class="pr-4 mt-6">
                 <button class="bg-gray-2 py-2 px-4 rounded-2xl text-md text-white hover:text-orange-500" 
@@ -15,8 +16,8 @@
             </div>
         </div>
         <!--table container-->
-        <div class="min-w-full h-[26rem] bg-gray-3">
-            <table class="w-full table-auto">
+        <div class="min-w-full h-[26rem] bg-gray-3 overflow-auto table-auto">
+            <table class="w-full">
                 <thead class="bg-gray-200 border-b-3 border-gray-200">
                     <tr class="">
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Delivey ID</th>
@@ -28,7 +29,7 @@
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Action</th>
                     </tr>
                 </thead>
-                <tbody class="">
+                <tbody id="delivery-table">
                     {% for delivery in pending_delivery%}
                     <tr class="text-center">
                         <td class="pt-1 mt-1">{{delivery.delivery_id}}</td>
@@ -42,11 +43,87 @@
                             </span>
                         </td>
                         <td class="pt-1 mt-1">
-                            <button class="bg-gray-2 text-white px-3 py-1 rounded-lg" 
+                            <button class="bg-gray-2 text-white px-3 py-1 rounded-lg hover:text-orange-500" 
                             onclick="openModal('update-{{delivery.delivery_id}}')">Update</button>
-                            <button class="bg-gray-2 text-white px-3 py-1 rounded-lg" 
+                            <button class="bg-gray-2 text-white px-3 py-1 rounded-lg hover:text-orange-500" 
                             onclick="openModal('delete-{{delivery.delivery_id}}')">Delete</button>
                         </td>
+                        <!-- Update Modal -->
+                        <div id="update-{{delivery.delivery_id}}" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+                            <div class="bg-white rounded-lg p-6 space-y-4 relative w-[23rem]">
+                                <div class="top-1 left-[20rem] absolute">
+                                    <button class="text-black rounded-full ml-4"
+                                        onclick="closeModal('update-{{delivery.delivery_id}}')">
+                                        <img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7">
+                                    </button>
+                                </div>
+                                <div class="flex justify-center items-center">
+                                    <h2 class="text-lg font-bold">Update Delivery</h2>
+                                </div>
+                                <form method="POST" action="{% url 'admin_update_delivery' delivery_id=delivery.delivery_id %}">
+                                    {% csrf_token %}
+                                    <div class="space-y-4 w-[22rem]">
+                                        <!-- Item Dropdown -->
+                                        <div class="flex flex-col justify-start items-start">
+                                            <div class="flex justify-between space-x-5">
+                                                <label class="font-bold text-lg mt-1">Item:</label>
+                                                <select required class="shadow appearance-none border rounded py-2 px-3 text-gray-700 w-[15rem]
+                                                leading-tight focus:outline-none focus:shadow-outline" id="item-inventory-update-{{delivery.delivery_id}}" name="item">
+                                                    <option value="">Select item</option>
+                                                    {% for item in items %}
+                                                        <option value="{{ item.item_id }}" {% if item.item_id == delivery.item_id %}selected{% endif %}>
+                                                            {{ item.item_name }}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <!-- Supplier Dropdown -->
+                                        <div class="flex flex-col justify-start items-start">
+                                            <div class="flex justify-between space-x-2">
+                                                <label class="font-bold text-lg mt-1">Supplier:</label>
+                                                <select id="supplier-dropdown-update-{{delivery.delivery_id}}" name="supplier_id" required 
+                                                class="shadow appearance-none border rounded w-[15rem] py-2 px-3 text-gray-700 
+                                                leading-tight focus:outline-none focus:shadow-outline">
+                                                    {% for item_id, suppliers in grouped_suppliers.items %}
+                                                        <optgroup data-item-id="{{ item_id }}">
+                                                            {% for supplier in suppliers %}
+                                                                <option value="{{ supplier.supplier_id }}" data-price="{{ supplier.supplier_price }}"
+                                                                    {% if supplier.supplier_id == delivery.supplier_id %}selected{% endif %}>
+                                                                    {{ supplier.supplier_name }}
+                                                                </option>
+                                                            {% endfor %}
+                                                        </optgroup>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <!-- Quantity Input -->
+                                        <div class="flex flex-col justify-start items-start">
+                                            <div class="flex justify-between space-x-2">
+                                                <label class="font-bold text-lg mt-1">Quantity:</label>
+                                                <input type="text" id="quantity-input-update-{{delivery.delivery_id}}" name="quantity" 
+                                                class="shadow appearance-none border rounded py-2 px-3 w-[15rem] text-gray-700 leading-tight focus:outline-none 
+                                                focus:shadow-outline" placeholder="Enter quantity" value="{{delivery.delivery_quantity}}" 
+                                                required oninput="validatestocks(this)">
+                                            </div>
+                                        </div>
+                                        <!-- Total Price Display -->
+                                        <div class="flex flex-col justify-start items-start">
+                                            <p id="price-update-{{delivery.delivery_id}}" class="font-bold text-lg mt-3">Price: ₱</p>
+                                            <p id="total-display-update-{{delivery.delivery_id}}" class="font-bold text-lg mt-3">Total: ₱{{delivery.delivery_total}}</p>
+                                            <input type="hidden" id="total-input-update-{{delivery.delivery_id}}" name="total" value="{{delivery.delivery_total}}">
+                                        </div>
+                                        <!-- Submit Button -->
+                                        <div class="flex justify-center items-center">
+                                            <button type="submit" class="bg-gray-2 text-white px-5 py-2 rounded-2xl hover:text-orange-500">
+                                                Update
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         <!--Delete Modal-->
                         <div id="delete-{{delivery.delivery_id}}" class="modal hidden fixed inset-0 
                             bg-black bg-opacity-50 items-center justify-center">
@@ -74,9 +151,9 @@
     </div>
     <!--CreateModal-->
     <div id="CreateModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
-        <div class="bg-white rounded-lg p-6 space-y-4 relative">
-            <div class="top-1 left-[21rem] absolute">
-                <button class="text-black  rounded-full ml-2"
+        <div class="bg-white rounded-lg p-6 space-y-4 relative w-[23rem]">
+            <div class="top-1 left-[20rem] absolute">
+                <button class="text-black  rounded-full ml-4"
                     onclick="closeModal('CreateModal')"><img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
                 </button>
             </div>
@@ -127,7 +204,7 @@
                     </div>
                     <!-- Total Price Display -->
                     <div class="flex flex-col justify-start items-start">
-                        <p id="price" class="font-bold text-lg mt-3">Price: ₱</p>
+                        <p id="price" class="font-bold text-lg mt-3">Price: ₱0.00</p>
                         <p id="total-display" class="font-bold text-lg mt-3">Total: ₱0.00</p>
                         <input type="hidden" id="total-input" name="total">
                     </div>
@@ -159,49 +236,138 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
+        // Create Modal Elements
         const itemDropdown = document.getElementById('item-inventory');
         const supplierDropdown = document.getElementById('supplier-dropdown');
         const quantityInput = document.getElementById('quantity-input');
         const totalDisplay = document.getElementById('total-display');
-        const supplier_price = document.getElementById('price')
+        const supplierPrice = document.getElementById('price');
+        const totalInput = document.getElementById('total-input');
 
-        supplierDropdown.disabled = true;
-        quantityInput.disabled= true;
-        // Show relevant suppliers based on the selected item
-        itemDropdown.addEventListener('change', function () {
-            const selectedItemId = this.value;
+        // Update Modal Elements
+        const modals = document.querySelectorAll('[id^="update-"]');
 
-            supplierDropdown.disabled = !selectedItemId;
-            quantityInput.disabled = false;
+        // Function to filter suppliers based on selected item
+        const filterSuppliers = (itemDropdown, supplierDropdown, totalDisplay, priceDisplay) => {
+            const selectedItemId = itemDropdown.value;
+
             Array.from(supplierDropdown.children).forEach(optgroup => {
                 if (optgroup.tagName === 'OPTGROUP') {
                     optgroup.style.display = optgroup.dataset.itemId === selectedItemId ? '' : 'none';
+                    Array.from(optgroup.children).forEach(option => {
+                        option.style.display = optgroup.dataset.itemId === selectedItemId ? '' : 'none';
+                    });
                 }
             });
-            supplierDropdown.value = '';
-            totalDisplay.textContent = 'Total: ₱0.00';
-        });
 
-        // Calculate total price
-        const calculateTotal = () => {
+            supplierDropdown.value = '';
+            supplierDropdown.disabled = !selectedItemId;
+            totalDisplay.textContent = 'Total: ₱0.00';
+            if (priceDisplay) {
+                priceDisplay.textContent = 'Price: ₱0.00';
+            }
+        };
+
+        // Function to calculate total
+        const calculateTotal = (supplierDropdown, quantityInput, totalDisplay, priceDisplay, totalInput) => {
             const selectedSupplier = supplierDropdown.selectedOptions[0];
             const quantity = parseFloat(quantityInput.value) || 0;
-            const totalInput = document.getElementById('total-input');
+
             if (selectedSupplier && quantity) {
                 const price = parseFloat(selectedSupplier.dataset.price);
                 const total = price * quantity;
-                totalDisplay.textContent = `Total: ₱${(price * quantity).toFixed(2)}`;
+                if (priceDisplay) {
+                    priceDisplay.textContent = `Price: ₱${price.toFixed(2)}`;
+                }
+                totalDisplay.textContent = `Total: ₱${total.toFixed(2)}`;
                 totalInput.value = total.toFixed(2);
             } else {
-                const price = parseFloat(selectedSupplier.dataset.price);
-                supplier_price.textContent = 'Price: ₱'+ price;
+                if (priceDisplay) {
+                    const price = parseFloat(selectedSupplier.dataset.price);
+                    priceDisplay.textContent = 'Price: ₱' + price;
+                }
                 totalDisplay.textContent = 'Total: ₱0.00';
                 totalInput.value = '';
             }
         };
 
-        supplierDropdown.addEventListener('change', calculateTotal);
-        quantityInput.addEventListener('input', calculateTotal);
+        // Initialize Create Modal
+        if (itemDropdown) {
+            supplierDropdown.disabled = true;
+            quantityInput.disabled = true;
+
+            itemDropdown.addEventListener('change', function () {
+                filterSuppliers(itemDropdown, supplierDropdown, totalDisplay, supplierPrice);
+                quantityInput.disabled = !this.value;
+            });
+
+            supplierDropdown.addEventListener('change', function () {
+                calculateTotal(supplierDropdown, quantityInput, totalDisplay, supplierPrice, totalInput);
+            });
+
+            quantityInput.addEventListener('input', function () {
+                calculateTotal(supplierDropdown, quantityInput, totalDisplay, supplierPrice, totalInput);
+            });
+        }
+
+        // Initialize Update Modals
+        modals.forEach(modal => {
+            const modalId = modal.id;
+            const itemDropdown = modal.querySelector(`[id^="item-inventory-update-"]`);
+            const supplierDropdown = modal.querySelector(`[id^="supplier-dropdown-update-"]`);
+            const quantityInput = modal.querySelector(`[id^="quantity-input-update-"]`);
+            const totalDisplay = modal.querySelector(`[id^="total-display-update-"]`);
+            const priceDisplay = modal.querySelector(`[id^="price-update-"]`);
+            const totalInput = modal.querySelector(`[id^="total-input-update-"]`);
+
+            if (itemDropdown && supplierDropdown) {
+                supplierDropdown.disabled = !itemDropdown.value;
+                quantityInput.disabled = !itemDropdown.value;
+
+                itemDropdown.addEventListener('change', function () {
+                    filterSuppliers(itemDropdown, supplierDropdown, totalDisplay, priceDisplay);
+                    quantityInput.disabled = !this.value;
+                });
+
+                supplierDropdown.addEventListener('change', function () {
+                    calculateTotal(supplierDropdown, quantityInput, totalDisplay, priceDisplay, totalInput);
+                });
+
+                quantityInput.addEventListener('input', function () {
+                    calculateTotal(supplierDropdown, quantityInput, totalDisplay, priceDisplay, totalInput);
+                });
+
+                // Trigger filtering logic on page load for Update Modals
+                filterSuppliers(itemDropdown, supplierDropdown, totalDisplay, priceDisplay);
+            }
+        });
     });
+
+    function filterDelivery() {
+        var input = document.getElementById('search-input');
+        var filter = input.value.toLowerCase();
+        var table = document.getElementById('delivery-table');
+        var rows = table.getElementsByTagName('tr');
+        
+        for (var i = 0; i < rows.length; i++) { // Start from 1 to skip header row
+            var row = rows[i];
+            var cells = row.getElementsByTagName('td');
+            var match = false;
+            
+            for (var j = 0; j < cells.length; j++) {
+                var cell = cells[j];
+                if (cell.textContent.toLowerCase().indexOf(filter) > -1) {
+                    match = true;
+                    break;
+                }
+            }
+            
+            if (match) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    }
 </script>
 {% endblock %}

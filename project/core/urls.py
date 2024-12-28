@@ -8,6 +8,7 @@ urlpatterns = [
     path('Admin/Request/Status/<int:request_id>', views.approve_disapprove_request, name='admin_status_request'),
     path('Admin/Delivery/', views.create_delivery, name='create_delivery'),
     path('Admin/Delivery/Delete/<int:delivery_id>', views.delete_delivery, name='admin_delete_delivery'),
+    path('Admin/Delivery/update/<int:delivery_id>', views.update_delivery, name='admin_update_delivery'),
     path('Admin/Request/', views.RequestAdmin, name='admin_request'),
     path('Admin/Inventory/', views.AdminInventory, name='admin_inventory'),
     #Admin Account url path
@@ -29,6 +30,7 @@ urlpatterns = [
     #custodian delivery urls path
     path('Custodian/Delivery/', views.delivery_order, name='delivery_page'),
     path('Custodian/Delivery/Accept/<int:delivery_id>', views.accept_deliveries, name='accept_delivery'),
+    path('Custodian/Delivery/Returned/<int:delivery_id>', views.return_deliveries, name='return_delivery'),
     #custodian inventory url path
     path('Custodian/Inventory/', views.CustodianInv, name='custodian_inventory'),
     path('Custodian/Inventory/Update/<int:inventory_id>', views.updateInventory, name='update_inventory'),
