@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FERMA STAINLESS WORKS</title>
+    <link rel="icon" href="{% static 'images/Logo.png'%}" type="image/png">
     {% tailwind_css %}
 </head>
 <body class="font-Nats overflow-auto">
@@ -19,11 +20,11 @@
             <div class="flex flex-col flex-grow items-center min-w-full mx-2">
                 <div class="flex flex-col items-center mb-10 py-4">
                     <img src="{% static 'images/user-icon.png'%}" alt="user-icon" class="w-7 h-7 mb-1">
-                    <p class="text-white items-center text-sm">Luffy</p>
+                    <p class="text-white items-center text-sm">{{worker_display_name}}</p>
                     <p class="text-white items-center text-sm">Worker</p>
                 </div>
                 <ul class="flex flex-col items-center space-y-2 min-w-full">
-                    <li class="flex flex-col items-center hover:bg-slate-900 min-w-full pt-1">
+                    <li class="flex flex-col items-center hover:bg-slate-900 min-w-full pt-1 hover:text-orange-500">
                         <a href="{% url 'worker_request' %}" class="text-md mt-1">
                             <img src="{% static 'images/Request.png' %}" alt="Request" class="w-6 h-6 ml-5">
                             Request
@@ -31,8 +32,8 @@
                     </li>
                 </ul>
                 <ul class="mt-auto min-w-full">
-                    <li class="flex flex-col items-center min-w-full hover:bg-slate-900 pt-2">
-                        <a href="{% url 'Login' %}" class="">
+                    <li class="flex flex-col items-center min-w-full hover:bg-slate-900 pt-2 hover:text-orange-500">
+                        <a href="{% url 'Logout' %}" class="">
                             <img src="{% static 'images/logout.png'%}" alt="logout" class="w-6 h-6 ml-2">
                             <p class="text-sm mt-2 pb-3">Log out</p>
                         </a>

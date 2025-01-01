@@ -51,6 +51,11 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
+LOGIN_URL = '/'
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 3600  # Session expires in 1 hour
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 # NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
 NPM_BIN_PATH = which("npm")
 

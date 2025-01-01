@@ -1,145 +1,287 @@
-#from django.urls import reverse
+from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect, get_object_or_404
-#from django.core.serializers import serialize
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, HttpResponse
-from django.shortcuts import get_list_or_404
+from django.http import Http404
 from core.models import Request, Admin, Custodian, Worker, Item, Supplier, Account, Inventory, Delivery,Reports
 from django.contrib import messages
 from django.db.models import Q
+from django.shortcuts import redirect
+
+def Admin_user(request,user_id):
+    try:
+        admin_user = Account.objects.get(account_id = user_id)
+        if admin_user.account_role == 'Admin':
+            return True
+        elif admin_user.account_role == 'Workers':
+            messages.warning(request, 'You do not have permission to access this page.')
+            print('You do not have permission to access this page.')
+            return redirect('worker_home')
+        elif admin_user.account_role == 'Custodian':
+            messages.warning(request, 'You do not have permission to access this page.')
+            print('You do not have permission to access this page.')
+            return redirect('custodian_request')
+    except Account.DoesNotExist:
+        messages.error(request, 'Account does not exist')
+        return redirect('Login')
+    
+def Custodian_user(request, user_id):
+    try:
+        custodian_user = Account.objects.get(account_id = user_id)
+        if custodian_user.account_role == 'Custodian':
+            return True
+        elif custodian_user.account_role == 'Workers':
+            messages.warning(request, 'You do not have permission to access this page.')
+            return redirect('worker_home')
+        else:
+            messages.warning(request, 'You do not have permission to access this page.')
+            return redirect('admin_request')
+    except Account.DoesNotExist:
+        messages.error(request, 'Account does not exist')
+        return redirect('Login')
+    
+def Worker_user(request, user_id):
+    try:
+        worker_user = Account.objects.get(account_id = user_id)
+        if worker_user.account_role == 'Workers':
+            return True
+        elif worker_user.account_role == 'Custodian':
+            messages.warning(request, 'You do not have permission to access this page.')
+            return redirect('custodian_request')
+        else:
+            messages.warning(request, 'You do not have permission to access this page.')
+            return redirect('admin_request')
+    except Account.DoesNotExist:
+        messages.error(request, 'Account does not exist')
+        return redirect('Login')
 
 # Create your views here.
+def Logout(request):
+    request.session.flush()
+    messages.success(request, 'Logout successfully!')
+    return redirect('Login')
+
 def Login(request):
     
+    if request.session.get('account_id'):
+        user_id = request.session.get('account_id')
+        try:
+            user = Account.objects.get(account_id=user_id)
+            # Redirect user based on their role if they are already logged in
+            if user.account_role == 'Workers': 
+                return redirect('worker_home')
+            elif user.account_role == 'Custodian':
+                return redirect('custodian_request')
+            else:
+                return redirect('admin_request')
+        except Account.DoesNotExist:
+            messages.error(request, 'Account does not exist')
+            return redirect('Login')
 
+    if request.method == 'POST':
+        username = request.POST.get('user').strip()
+        password = request.POST.get('password').strip()
+        try:
+            user = Account.objects.get(account_user = username)
+            if user.account_pass == password:
+                if user.account_status == 'active':
+                    request.session['account_id'] = user.account_id
+                    request.session['account_role'] = user.account_role
+                    if user.account_role == 'Workers':
+                        return redirect('worker_home')
+                    elif user.account_role == 'Custodian':
+                        return redirect('custodian_request')
+                    else:
+                        print('Login successfully')
+                        return redirect('admin_request')
+                else:
+                    messages.error(request,'Account has been deactivate contact your admin')
+                    return redirect('Login')
+            else:
+                print('Invalid password')
+                messages.error(request, 'invalid password')
+                return redirect('Login')
+        except Account.DoesNotExist:
+            print('Invalid user')
+            messages.error(request, 'Account does not exist')
+            return redirect('Login')
     return render(request, 'core/login.html')
 
+#approve/disapprove for admin
 def approve_disapprove_request(request, request_id):
-
-    try:
-        requested_form = get_object_or_404(Request, request_id = request_id)
-    except:
-        return redirect('admin_request')
-    
-    approve_status = "Approve"
-    decline_status = "Decline"
     if request.method == 'POST':
-        status = request.POST.get("status")
-        if status == 'approve':
-            requested_form.request_status = approve_status
-            requested_form.save()
-            Reports.objects.create(
-                request = requested_form
-            )
+        try:
+            requested_form = Request.objects.get(request_id = request_id)
+            status = request.POST.get("status")
+            approve_status = "Approve"
+            decline_status = "Decline"
+            if status == 'approve':
+                requested_form.request_status = approve_status
+                requested_form.save()
+                Reports.objects.create(
+                    request = requested_form
+                )
+                print('approve successful')
+                return redirect('admin_request')
+            if status == 'decline':
+                requested_form.request_status = decline_status
+                requested_form.save()
+                Reports.objects.create(
+                    request = requested_form
+                )
+                print('decline successful')
+                return redirect('admin_request')
+        except Http404:
+            print('the request has been deleted or not exist')
+            messages.error(request, 'the request has been deleted or not exist.')
             return redirect('admin_request')
-        if status == 'decline':
-            requested_form.request_status = decline_status
-            requested_form.save()
-            Reports.objects.create(
-                request = requested_form
-            )
+        except Exception as e:
+            print('unexpected error')
+            messages.error(request, f"unexpected error occured: {str(e)}")
             return redirect('admin_request')
     return redirect('admin_request')
 
+#Request page Admin
 def RequestAdmin(request):
-    requests = Request.objects.all().filter(request_status = 'Pending').order_by('request_date')
-    if not requests:
-        messages.warning(request, 'no data available')
-    return render(request, 'core/Admin/Dashboard.html', {'requests': requests})
+    user = request.session.get('account_id')
+    if not user:
+        return redirect('Login')
+    result = Admin_user(request, user)
+    if result == True:
+        requests = Request.objects.all().filter(request_status = 'Pending').order_by('request_date')
+        admin_user = Account.objects.get(account_id = user)
+        admin_name = admin_user.account_fname
+        display_data = {
+            'requests': requests,
+            'admin_name': admin_name,
+        }
+        if not requests:
+            messages.warning(request, 'no data available')
+        return render(request, 'core/Admin/Dashboard.html', display_data)
+    return result
 
 #add items in inventory
 def AdminInventory(request):
+    user = request.session.get('account_id')
+    if not user:
+        return redirect('Login')
+    result = Admin_user(request, user)
+    if result == True:
 
-    if request.method == "POST":
-        item_name = request.POST.get("name", "").strip().capitalize()
-        item_description = request.POST.get("description", "").strip().capitalize()
-
-        if not (item_name and item_description):
-            return redirect("admin_inventory")
-        
-        if Item.objects.filter(item_name=item_name).exists():
-            #message here
-            return redirect('admin_inventory')
-
-        item = Item.objects.create(
-            item_name = item_name,
-            item_description = item_description
+        #select_related joins in database query
+        admin_user = Account.objects.get(account_id = user)
+        admin_name = admin_user.account_fname
+        items = Inventory.objects.select_related('item').values(
+            'inventory_id',
+            'item__item_name',
+            'item__item_description',
+            'inventory_quantity',
         )
+        display_data = {
+            'admin_name': admin_name,
+            'items': items,
+        }
 
-        Inventory.objects.create(
-            item = item
-        )
-        return redirect("admin_inventory")
-    #select_related joins in database query
-    items = Inventory.objects.select_related('item').values(
-        'inventory_id',
-        'item__item_name',
-        'item__item_description',
-        'inventory_quantity',
-    )
-    return render(request, 'core/Admin/Inventory.html', {'items': items})
+        if request.method == "POST":
+            item_name = request.POST.get("name", "").strip().capitalize()
+            item_description = request.POST.get("description", "").strip().capitalize()
+
+            if not (item_name and item_description):
+                return redirect("admin_inventory")
+            
+            if Item.objects.filter(item_name=item_name).exists():
+                messages.error(request, 'item already exist')
+                return redirect('admin_inventory')
+            try:
+                item = Item.objects.create(
+                    item_name = item_name,
+                    item_description = item_description
+                )
+
+                Inventory.objects.create(
+                    item = item
+                )
+                return redirect("admin_inventory")
+            except ValidationError as e:
+                messages.error(request, 'Validation error occured'+ str(e))
+                return redirect('admin_inventory')
+        return render(request, 'core/Admin/Inventory.html', display_data)
+    return result
 
 #create Account
 def AdminAccount(request):
+    user = request.session.get('account_id')
+    if not user:
+        return redirect('Login')
+    result = Admin_user(request, user)
+    if result == True:
+        admin_user = Account.objects.get(account_id = user)
+        admin_name = admin_user.account_fname
+        if request.method == "POST":
+            account_fname = request.POST.get("fname").strip().capitalize()
+            account_lname = request.POST.get("lname").strip().capitalize()
+            account_contactno = request.POST.get("contactno", "")
+            account_address = request.POST.get("address","").strip().capitalize()
+            account_username = request.POST.get("username", "").strip()
+            account_password = request.POST.get("password", "").strip()
+            account_role = request.POST.get("role", "")
 
-    if request.method == "POST":
-        account_fname = request.POST.get("fname").strip().capitalize()
-        account_lname = request.POST.get("lname").strip().capitalize()
-        account_contactno = request.POST.get("contactno", "")
-        account_address = request.POST.get("address","").strip().capitalize()
-        account_username = request.POST.get("username", "").strip()
-        account_password = request.POST.get("password", "").strip()
-        account_role = request.POST.get("role", "")
+            if not (account_fname and account_lname and account_contactno 
+                    and account_username and account_password and account_role and account_address):
+                #message here..
+                return redirect('admin_create_account')
+            
+            # Check if account already exists
+            if Account.objects.filter(account_fname=account_fname, account_lname=account_lname, 
+                                    account_user=account_username).exists():
+                messages.error(request, "User already exist.")
+                print('user already exist')
+                return redirect('admin_create_account')
+            else:
+                try:
+                    account_create = Account.objects.create(
+                        account_fname = account_fname,
+                        account_lname = account_lname,
+                        account_contactno = account_contactno,
+                        account_address = account_address,
+                        account_user = account_username,
+                        account_pass = account_password,
+                        account_role = account_role
+                    )
 
-        if not (account_fname and account_lname and account_contactno 
-                and account_username and account_password and account_role and account_address):
-            #message here..
-            return redirect('admin_create_account')
-        
-        # Check if account already exists
-        if Account.objects.filter(account_fname=account_fname, account_lname=account_lname, 
-                                  account_user=account_username).exists():
-            messages.error(request, "An account with the same details already exists.")
-            print('user already exist')
-            return redirect('admin_create_account')
-        else:
-            account_create = Account.objects.create(
-                account_fname = account_fname,
-                account_lname = account_lname,
-                account_contactno = account_contactno,
-                account_address = account_address,
-                account_user = account_username,
-                account_pass = account_password,
-                account_role = account_role
-            )
-
-            if account_role == "Admin":
-                Admin.objects.create(
-                    admin_fname = account_fname,
-                    admin_lname = account_lname,
-                    admin_contactno = account_contactno,
-                    admin_address = account_address,
-                    account = account_create
-                )
-            if account_role == "Custodian":
-                Custodian.objects.create(
-                    custodian_fname = account_fname,
-                    custodian_lname = account_lname,
-                    custodian_contactno = account_contactno,
-                    custodian_address = account_address,
-                    account = account_create
-                )
-            if account_role == "Workers":
-                Worker.objects.create(
-                    worker_fname = account_fname,
-                    worker_lname = account_lname,
-                    worker_contactno = account_contactno,
-                    worker_address = account_address,
-                    account = account_create
-                )
-            messages.success(request, "Account successfully created.")
-            return redirect('admin_create_account')
-    return render(request, 'core/Admin/Account.html')
+                    if account_role == "Admin":
+                        Admin.objects.create(
+                            admin_fname = account_fname,
+                            admin_lname = account_lname,
+                            admin_contactno = account_contactno,
+                            admin_address = account_address,
+                            account = account_create
+                        )
+                    if account_role == "Custodian":
+                        Custodian.objects.create(
+                            custodian_fname = account_fname,
+                            custodian_lname = account_lname,
+                            custodian_contactno = account_contactno,
+                            custodian_address = account_address,
+                            account = account_create
+                        )
+                    if account_role == "Workers":
+                        Worker.objects.create(
+                            worker_fname = account_fname,
+                            worker_lname = account_lname,
+                            worker_contactno = account_contactno,
+                            worker_address = account_address,
+                            account = account_create
+                        )
+                    messages.success(request, "Account successfully created.")
+                    return redirect('admin_create_account')
+                except IntegrityError as e:
+                    messages.error(request, 'database error'+ str(e))
+                except ValidationError as e: #maximum lenghth of field or trying to insert a string in int/decimal field datatype
+                    messages.error(request, 'Validation error'+ str(e))
+                except Exception as e:
+                    messages.error(request, 'unexpected error occured'+ str(e))
+        return render(request, 'core/Admin/Account.html', {'admin_name': admin_name})
+    return result
 
 #delete account
 def DeleteAccount(request, account_id):
@@ -219,41 +361,101 @@ def account_user_status(request, account_id):
 
 #display account list
 def AccountList(request):
-    accounts = Account.objects.all()
-    return render(request, 'core/Admin/AccountList.html', {"accounts": accounts})
+    user = request.session.get('account_id')
+    if not user:
+        return redirect('Login')
+    result = Admin_user(request, user)
+    if result == True:
+        accounts = Account.objects.all()
+        admin_user = Account.objects.get(account_id = user)
+        admin_name = admin_user.account_fname
+        display_data = {
+            'accounts': accounts,
+            'admin_name': admin_name,
+        }
+        return render(request, 'core/Admin/AccountList.html', display_data)
+    return result
 
 #report for job request
 def job_request(request):
-    requests = Reports.objects.all().select_related('request').values(
-        'report_id', 'report_date', 'request__request_type', 'request__request_item_quantity', 'request', 'request__request_date',
-        'request__request_item_name', 'request__request_user', 'request__request_status', 'request__request_repair_details',
-    ).filter(request__request_type = 'Job Request')
-    return render(request, 'core/Admin/JobRequest.html', {'requests': requests})
+    user = request.session.get('account_id')
+    if not user:
+        return redirect('Login')
+    result = Admin_user(request, user)
+    if result == True:
+        requests = Reports.objects.all().select_related('request').values(
+            'report_id', 'report_date', 'request__request_type', 'request__request_item_quantity', 'request', 'request__request_date',
+            'request__request_item_name', 'request__request_user', 'request__request_status', 'request__request_repair_details',
+        ).filter(request__request_type = 'Job Request')
+        admin_user = Account.objects.get(account_id = user)
+        admin_name = admin_user.account_fname
+        display_data = {
+            'requests': requests,
+            'admin_name': admin_name,
+        }
+        return render(request, 'core/Admin/JobRequest.html', display_data)
+    return result
 
 #report for purchase order
 def purchase_order(request):
-    requests = Reports.objects.all().select_related('request').values(
-        'report_id', 'report_date', 'request__request_type',
-        'request__request_item_quantity', 'request__request_item_name', 'request__request_date',
-        'request__request_status', 'request__item', 'request', 'request__request_user'
-    ).filter(request__request_type = 'Purchase Order')
-    return render(request, 'core/Admin/OrderRequest.html', {'requests': requests})
+    user = request.session.get('account_id')
+    if not user:
+        return redirect('Login')
+    result = Admin_user(request, user)
+    if result == True:
+        requests = Reports.objects.all().select_related('request').values(
+            'report_id', 'report_date', 'request__request_type',
+            'request__request_item_quantity', 'request__request_item_name', 'request__request_date',
+            'request__request_status', 'request__item', 'request', 'request__request_user'
+        ).filter(request__request_type = 'Purchase Order')
+        admin_user = Account.objects.get(account_id = user)
+        admin_name = admin_user.account_fname
+        display_data = {
+            'requests': requests,
+            'admin_name': admin_name,
+        }
+        return render(request, 'core/Admin/OrderRequest.html', display_data)
+    return result
 
 #report for item_request
 def item_request(request):
-    requests = Reports.objects.all().select_related('request').values(
-        'report_id', 'report_date', 'request__request_type', 'request__request_item_name',
-        'request__request_item_quantity', 'request__request_date', 'request__request_status', 'request', 'request__request_user'
-    ).filter(request__request_type = 'Item Request')
-    return render(request, 'core/Admin/RequestReport.html', {'requests': requests})
+    user = request.session.get('account_id')
+    if not user:
+        return redirect('Login')
+    result = Admin_user(request, user)
+    if result == True:
+        requests = Reports.objects.all().select_related('request').values(
+            'report_id', 'report_date', 'request__request_type', 'request__request_item_name',
+            'request__request_item_quantity', 'request__request_date', 'request__request_status', 'request', 'request__request_user'
+        ).filter(request__request_type = 'Item Request')
+        admin_user = Account.objects.get(account_id = user)
+        admin_name = admin_user.account_fname
+        display_data = {
+            'requests': requests,
+            'admin_name': admin_name,
+        }
+        return render(request, 'core/Admin/RequestReport.html', display_data)
+    return result
 
 #report for deliver history
 def delivery_history(request):
-    reports = Reports.objects.all().select_related('delivery', 'delivery__supplier').values(
-        'report_id', 'report_date', 'report_reason', 'delivery__delivery_item', 'delivery__delivery_quantity', 'delivery__delivery_supplier',
-        'delivery__delivery_total', 'delivery__delivery_status', 'delivery__delivery_id', 'delivery__supplier__supplier_price', 
-    ).filter(delivery__delivery_status__in = ['Delivered', 'Returned']).order_by('-report_date')
-    return render(request, 'core/Admin/DeliveryReport.html', {'reports': reports})
+    user = request.session.get('account_id')
+    if not user:
+        return redirect('Login')
+    result = Admin_user(request, user)
+    if result == True:
+        reports = Reports.objects.all().select_related('delivery', 'delivery__supplier').values(
+            'report_id', 'report_date', 'report_reason', 'delivery__delivery_item', 'delivery__delivery_quantity', 'delivery__delivery_supplier',
+            'delivery__delivery_total', 'delivery__delivery_status', 'delivery__delivery_id', 'delivery__supplier__supplier_price', 
+        ).filter(delivery__delivery_status__in = ['Delivered', 'Returned']).order_by('-report_date')
+        admin_user = Account.objects.get(account_id = user)
+        admin_name = admin_user.account_fname
+        display_data = {
+            'reports': reports,
+            'admin_name': admin_name,
+        }
+        return render(request, 'core/Admin/DeliveryReport.html', display_data)
+    return result
 
 #update supplier
 def update_supplier(request, supplier_id):
@@ -323,52 +525,65 @@ def search_supplier(request):
 
 #add supplier also a landing page in supplier
 def AdminSupplier(request):
-    # Fetch items and suppliers for display
-    items = Item.objects.all()
-    #select_related joins in database query
-    suppliers = Supplier.objects.select_related('item').values('supplier_id','supplier_name','supplier_address',
-        'supplier_contactno','item__item_name','supplier_price','supplier_grade','item_id',
-    ).order_by('supplier_price')
+    user = request.session.get('account_id')
+    if not user:
+        return redirect('Login')
+    result = Admin_user(request, user)
+    if result == True:
+        # Fetch items and suppliers for display
+        items = Item.objects.all()
+        #select_related joins in database query
+        suppliers = Supplier.objects.select_related('item').values('supplier_id','supplier_name','supplier_address',
+            'supplier_contactno','item__item_name','supplier_price','supplier_grade','item_id',
+        ).order_by('supplier_price')
+        admin_user = Account.objects.get(account_id = user)
+        admin_name = admin_user.account_fname
+        display_data = {
+            'suppliers': suppliers,
+            'items': items,
+            'admin_name': admin_name,
+        }
 
-    display_data = {
-        'suppliers': suppliers,
-        'items': items,
-    }
+        if request.method == 'POST':
+            # Retrieve and sanitize inputs
+            supplier_name = request.POST.get("name", "").strip().title()
+            supplier_address = request.POST.get("address", "").strip().title()
+            supplier_contactno = request.POST.get("contact_no", "")
+            supplier_price = request.POST.get("price", "")
+            supplier_grade = request.POST.get("grade", "")
+            item_id = request.POST.get("items")
 
-    if request.method == 'POST':
-        # Retrieve and sanitize inputs
-        supplier_name = request.POST.get("name", "").strip().title()
-        supplier_address = request.POST.get("address", "").strip().title()
-        supplier_contactno = request.POST.get("contact_no", "")
-        supplier_price = request.POST.get("price", "")
-        supplier_grade = request.POST.get("grade", "")
-        item_id = request.POST.get("items")
+            # Validate input fields
+            if not (supplier_name and supplier_address and supplier_contactno and supplier_price and supplier_grade and item_id):
+                # Return an error message (can also pass this to the template)
+                return redirect('admin_supplier')
 
-        # Validate input fields
-        if not (supplier_name and supplier_address and supplier_contactno and supplier_price and supplier_grade and item_id):
-            # Return an error message (can also pass this to the template)
-            return redirect('admin_supplier')
+            # Check if the supplier name already exists
+            if Supplier.objects.filter(supplier_name=supplier_name).exists():
+                return redirect('admin_supplier')
+            try:
+                # Fetch the associated item
+                item = get_object_or_404(Item, item_id=item_id)
 
-        # Check if the supplier name already exists
-        if Supplier.objects.filter(supplier_name=supplier_name).exists():
-            return redirect('admin_supplier')
-
-        # Fetch the associated item
-        item = get_object_or_404(Item, item_id=item_id)
-
-        # Create and save the new supplier
-        Supplier.objects.create(
-            supplier_name=supplier_name,
-            supplier_address=supplier_address,
-            supplier_contactno=supplier_contactno,
-            supplier_price=supplier_price,
-            supplier_grade=supplier_grade,
-            item=item
-        )
-        #message here
-        return redirect('admin_supplier')
-
-    return render(request, 'core/Admin/Supplier.html', display_data)
+                # Create and save the new supplier
+                Supplier.objects.create(
+                    supplier_name=supplier_name,
+                    supplier_address=supplier_address,
+                    supplier_contactno=supplier_contactno,
+                    supplier_price=supplier_price,
+                    supplier_grade=supplier_grade,
+                    item=item
+                )
+                messages.success(request, 'supplier create successfully')
+                return redirect('admin_supplier')
+            except Http404:
+                messages.error(request, 'item not found')
+                return redirect('admin_supplier')
+            except ValidationError as e:
+                messages.error(request, 'Validation error'+ str(e))
+                return redirect('admin_supplier')
+        return render(request, 'core/Admin/Supplier.html', display_data)
+    return result
 
 #update delivery
 def update_delivery(request, delivery_id):
@@ -398,9 +613,11 @@ def update_delivery(request, delivery_id):
             update_deliver.save()
             print('Update successfully')
             #message here...
+            messages.success(request, 'Update successfully')
             return redirect('create_delivery')
-        except:
+        except Http404:
             #message here..
+            messages.error(request, 'object not found 404')
             print('Unexpected error')
             return redirect('create_delivery')
     return redirect('create_delivery')
@@ -418,55 +635,69 @@ def delete_delivery(request, delivery_id):
     return redirect('create_delivery')
 
 def create_delivery(request):
-    items = Item.objects.all()
-    suppliers = Supplier.objects.all()
-    pending_delivery = Delivery.objects.all().filter(delivery_status = 'Pending')
-
-    grouped_suppliers = {}
-    for item in items:
-        grouped_suppliers[item.item_id] = suppliers.filter(item = item)
-    
-    if request.method == 'POST':
-        create_delivery_item = request.POST.get('item', "")
-        create_delivery_quantity = request.POST.get('quantity', "")
-        create_delivery_supplier = request.POST.get('supplier_id', "")
-        total = request.POST.get('total', "")
-
-        try:
-            create_delivery_total = float(total)
-        except ValueError:
-            # Add appropriate error message or handling
-            return redirect('create_delivery')
+    user = request.session.get('account_id')
+    if not user:
+        return redirect('Login')
+    result = Admin_user(request, user)
+    if result == True:
+        items = Item.objects.all()
+        suppliers = Supplier.objects.all()
+        pending_delivery = Delivery.objects.all().filter(delivery_status = 'Pending')
+        admin_user = Account.objects.get(account_id = user)
+        admin_name = admin_user.account_fname
+        grouped_suppliers = {}
+        for item in items:
+            grouped_suppliers[item.item_id] = suppliers.filter(item = item)
         
-        quantity = int(create_delivery_quantity)
-        if not (create_delivery_item and create_delivery_quantity and create_delivery_supplier and total):
-            #message here..
-            return redirect('create_delivery')
-        
-        if quantity <= 0:
-            #message here...
-            return redirect('create_delivery')
-        
-        item = get_object_or_404(Item, item_id = create_delivery_item)
-        supplied = get_object_or_404(Supplier, supplier_id = create_delivery_supplier)
+        display_data = {
+            'items': items,
+            'grouped_suppliers': grouped_suppliers,
+            'pending_delivery': pending_delivery,
+            'admin_name': admin_name,
+        }
 
-        Delivery.objects.create(
-            delivery_item = item.item_name,
-            delivery_quantity = create_delivery_quantity,
-            delivery_supplier = supplied.supplier_name,
-            delivery_total = create_delivery_total,
-            supplier = supplied,
-            item = item,
-        )
-        #message...
-        return redirect('create_delivery')
+        if request.method == 'POST':
+            create_delivery_item = request.POST.get('item', "")
+            create_delivery_quantity = request.POST.get('quantity', "")
+            create_delivery_supplier = request.POST.get('supplier_id', "")
+            total = request.POST.get('total', "")
 
-    display_data = {
-        'items': items,
-        'grouped_suppliers': grouped_suppliers,
-        'pending_delivery': pending_delivery,
-    }
-    return render(request, 'core/Admin/Delivery.html', display_data)
+            try:
+                create_delivery_total = float(total)
+            except ValueError:
+                # Add appropriate error message or handling
+                return redirect('create_delivery')
+            
+            quantity = int(create_delivery_quantity)
+            if not (create_delivery_item and create_delivery_quantity and create_delivery_supplier and total):
+                #message here..
+                return redirect('create_delivery')
+            
+            if quantity <= 0:
+                #message here...
+                return redirect('create_delivery')
+            try:
+                item = get_object_or_404(Item, item_id = create_delivery_item)
+                supplied = get_object_or_404(Supplier, supplier_id = create_delivery_supplier)
+
+                Delivery.objects.create(
+                    delivery_item = item.item_name,
+                    delivery_quantity = create_delivery_quantity,
+                    delivery_supplier = supplied.supplier_name,
+                    delivery_total = create_delivery_total,
+                    supplier = supplied,
+                    item = item,
+                )
+                #message...
+                return redirect('create_delivery')
+            except Http404:
+                messages.error(request, 'object not found')
+                return redirect('create_delivery')
+            except ValidationError as e:
+                messages.error(request, 'Validation error')
+                return redirect('Create_delivery')
+        return render(request, 'core/Admin/Delivery.html', display_data)
+    return result
 
 def deleteItem(request, inventory_id):
     if request.method == "POST":
@@ -509,32 +740,42 @@ def updateInventory(request, inventory_id):
 
 #add items in inventory
 def CustodianInv(request):
-    
-    if request.method == "POST":
-        item_name = request.POST.get("name", "").strip().capitalize()
-        item_description = request.POST.get("description", "").strip().capitalize()
+    user = request.session.get('account_id')
+    if not user:
+        return redirect('Login')
+    result = Custodian_user(request, user)
+    if result == True:
+        #select_related joins in database query
+        items = Inventory.objects.select_related('item').values('inventory_id','item__item_name',
+            'item__item_description','inventory_quantity','item').order_by('inventory_quantity')
+        custodian_user = Account.objects.get(account_id = user)
+        custodian_name = custodian_user.account_fname
+        display_data = {
+            'items': items,
+            'custodian_name': custodian_name
+        }
 
-        if not (item_name and item_description):
-            return redirect("custodian_inventory")
-        
-        if Item.objects.filter(item_name=item_name).exists():
-            #message here
-            return redirect('custodian_inventory')
+        if request.method == "POST":
+            item_name = request.POST.get("name", "").strip().capitalize()
+            item_description = request.POST.get("description", "").strip().capitalize()
 
-        item = Item.objects.create(
-            item_name = item_name,
-            item_description = item_description
-        )
+            if not (item_name and item_description):
+                return redirect("custodian_inventory")
+            
+            if Item.objects.filter(item_name=item_name).exists():
+                #message here
+                return redirect('custodian_inventory')
 
-        Inventory.objects.create(
-            item = item
-        )
+            item = Item.objects.create(
+                item_name = item_name,
+                item_description = item_description
+            )
 
-    #select_related joins in database query
-    items = Inventory.objects.select_related('item').values('inventory_id','item__item_name',
-        'item__item_description','inventory_quantity','item').order_by('inventory_quantity')
-
-    return render(request, 'core/Custodian/Inventory.html', {'items': items})
+            Inventory.objects.create(
+                item = item
+            )
+        return render(request, 'core/Custodian/Inventory.html', display_data)
+    return result
 
 def update_request_custodian(request, request_id):
     
@@ -599,72 +840,82 @@ def delete_request_custodian(request, request_id):
 
 #custodian request job and purchase order
 def CustodianReq(request):
-    items = Item.objects.all()
-    request_custodian = Request.objects.filter(request_type__in = ["Job Request", "Purchase Order"], request_status = 'Pending')
-    try:
-        custodian_user = get_object_or_404(Custodian, custodian_id = 2)
-        user_request = custodian_user.custodian_fname + " " +custodian_user.custodian_lname
-    except:
+    user = request.session.get('account_id')
+    if not user:
         return redirect('Login')
-    if request.method == "POST":
-        custodian_request_type = request.POST.get("request-type")
-        
-        #purchase order
-        if custodian_request_type == "Purchase Order":
-            custodian_requst_item = request.POST.get("items")
-            quantity_value = request.POST.get("quantity")
+    result = Custodian_user(request, user)
+    if result == True:
+        items = Item.objects.all()
+        custodian_session = get_object_or_404(Custodian, account = user)
+        request_custodian = Request.objects.filter(request_type__in = ["Job Request", "Purchase Order"], 
+                                                   request_status = 'Pending', custodian = custodian_session)
+        custodian_user = Account.objects.get(account_id = user)
+        custodian_name = custodian_user.account_fname
+        custodian_user_name = custodian_user.account_fname + ' ' + custodian_user.account_lname
 
-            custodian_request_quantity = int(quantity_value)
-            #validation
-            if not (custodian_requst_item and quantity_value.isdigit()):
-                #message here..
-                return redirect('custodian_request')
-            if custodian_request_quantity <= 0:
-                #message here..
-                return redirect('custodian_request')
+        if request.method == "POST":
+            custodian_request_type = request.POST.get("request-type")
             
-            request_item = get_object_or_404(Item, item_id = custodian_requst_item)
-            Request.objects.create(
-                request_type = custodian_request_type,
-                request_user = user_request,
-                request_item_name = request_item.item_name,
-                request_item_quantity = custodian_request_quantity,
-                item = request_item,
-                custodian = custodian_user
-            )
-            #message
-            return redirect('custodian_request')
-        else:
-            #job order field
-            custodian_request_item_job = request.POST.get("item").strip().capitalize()
-            custodian_request_quantity_job = int(request.POST.get("quantity"))
-            custodian_request_repair_details = request.POST.get("repair").strip().capitalize()
+            #purchase order
+            if custodian_request_type == "Purchase Order":
+                custodian_requst_item = request.POST.get("items")
+                quantity_value = request.POST.get("quantity")
 
-            #validation
-            if not (custodian_request_item_job and custodian_request_quantity_job and custodian_request_repair_details):
-                #message here..
+                custodian_request_quantity = int(quantity_value)
+                #validation
+                if not (custodian_requst_item and quantity_value.isdigit()):
+                    #message here..
+                    return redirect('custodian_request')
+                if custodian_request_quantity <= 0:
+                    #message here..
+                    return redirect('custodian_request')
+                try:
+                    request_item = get_object_or_404(Item, item_id = custodian_requst_item)
+                    Request.objects.create(
+                        request_type = custodian_request_type,
+                        request_user = custodian_user_name,
+                        request_item_name = request_item.item_name,
+                        request_item_quantity = custodian_request_quantity,
+                        item = request_item,
+                        custodian = custodian_session
+                    )
+                    #message
+                    return redirect('custodian_request')
+                except Http404:
+                    messages.error(request, 'object not found')
+                    return redirect('custodian_request')
+            else:
+                #job order field
+                custodian_request_item_job = request.POST.get("item").strip().capitalize()
+                custodian_request_quantity_job = int(request.POST.get("quantity"))
+                custodian_request_repair_details = request.POST.get("repair").strip().capitalize()
+
+                #validation
+                if not (custodian_request_item_job and custodian_request_quantity_job and custodian_request_repair_details):
+                    #message here..
+                    return redirect('custodian_request')
+                
+                if custodian_request_quantity_job <= 0:
+                    #message here..
+                    return redirect('custodian_request')
+                
+                Request.objects.create(
+                    request_type = custodian_request_type,
+                    request_item_quantity = custodian_request_quantity_job,
+                    request_repair_details = custodian_request_repair_details,
+                    request_item_name = custodian_request_item_job,
+                    request_user = custodian_user_name,
+                    custodian = custodian_session
+                )
                 return redirect('custodian_request')
             
-            if custodian_request_quantity_job <= 0:
-                #message here..
-                return redirect('custodian_request')
-            
-            Request.objects.create(
-                request_type = custodian_request_type,
-                request_item_quantity = custodian_request_quantity_job,
-                request_repair_details = custodian_request_repair_details,
-                request_item_name = custodian_request_item_job,
-                request_user = user_request,
-                custodian = custodian_user
-            )
-            return redirect('custodian_request')
-        
-    display_data = {
-        'items': items,
-        'request_custodian': request_custodian
-    }
-            
-    return render(request, 'core/Custodian/Request.html', display_data)
+        display_data = {
+            'items': items,
+            'request_custodian': request_custodian,
+            'custodian_name': custodian_name,
+        }                
+        return render(request, 'core/Custodian/Request.html', display_data)
+    return result
 
 # accept/return order
 def accept_deliveries(request, delivery_id):
@@ -712,24 +963,60 @@ def return_deliveries(request, delivery_id):
 
 #display deliveries
 def delivery_order(request):
-    check_deliveries = Delivery.objects.all().filter(delivery_status = 'Pending')
-    return render(request, 'core/Custodian/Delivery.html', {'check_deliveries': check_deliveries})
+    user = request.session.get('account_id')
+    if not user:
+        return redirect('Login')
+    result = Custodian_user(request, user)
+    if result == True:
+        check_deliveries = Delivery.objects.all().filter(delivery_status = 'Pending')
+        custodian_user = Account.objects.get(account_id = user)
+        custodian_name = custodian_user.account_fname
+        display_data = {
+            'check_deliveries': check_deliveries,
+            'custodian_name': custodian_name,
+        }
+        return render(request, 'core/Custodian/Delivery.html', display_data)
+    return result
 
 #custodian reports
 def order_Reports(request):
-    requests = Reports.objects.all().select_related('request').values(
-        'report_id', 'report_date', 'request__request_type',
-        'request__request_item_quantity', 'request__request_item_name', 'request__request_date',
-        'request__request_status', 'request__item', 'request', 'request__request_user'
-    ).filter(request__request_type = 'Purchase Order')
-    return render(request, 'core/Custodian/OrderRequest.html', {'requests': requests})
+    user = request.session.get('account_id')
+    if not user:
+        return redirect('Login')
+    result = Custodian_user(request, user)
+    if result == True:
+        requests = Reports.objects.all().select_related('request').values(
+            'report_id', 'report_date', 'request__request_type',
+            'request__request_item_quantity', 'request__request_item_name', 'request__request_date',
+            'request__request_status', 'request__item', 'request', 'request__request_user'
+        ).filter(request__request_type = 'Purchase Order')
+        custodian_user = Account.objects.get(account_id = user)
+        custodian_name = custodian_user.account_fname
+        display_data = {
+            'requests': requests,
+            'custodian_name': custodian_name,
+        }
+        return render(request, 'core/Custodian/OrderRequest.html', display_data)
+    return result
 
 def Item_Reports(request):
-    requests = Reports.objects.all().select_related('request').values(
-        'report_id', 'report_date', 'request__request_type', 'request__request_item_name',
-        'request__request_item_quantity', 'request__request_date', 'request__request_status', 'request', 'request__request_user'
-    ).filter(request__request_type = 'Item Request')
-    return render(request, 'core/Custodian/RequestReports.html', {'requests': requests})
+    user = request.session.get('account_id')
+    if not user:
+        return redirect('Login')
+    result = Custodian_user(request, user)
+    if result == True:
+        requests = Reports.objects.all().select_related('request').values(
+            'report_id', 'report_date', 'request__request_type', 'request__request_item_name',
+            'request__request_item_quantity', 'request__request_date', 'request__request_status', 'request', 'request__request_user'
+        ).filter(request__request_type = 'Item Request')
+        custodian_user = Account.objects.get(account_id = user)
+        custodian_name = custodian_user.account_fname
+        display_data = {
+            'requests': requests,
+            'custodian_name': custodian_name,
+        }
+        return render(request, 'core/Custodian/RequestReports.html', display_data)
+    return result
 
 # Worker Delete Request
 def delete_request_worker(request, request_id):
@@ -764,53 +1051,63 @@ def update_request_worker(request, request_id):
     
 # Worker create request(partial)
 def WorkerReq(request):
-    try:
-        workers_id = get_object_or_404(Worker, worker_id = 2)
-        user_request = workers_id.worker_fname + " " + workers_id.worker_lname
-    except:
+    user = request.session.get('account_id')
+    if not user:
         return redirect('Login')
-    worker_request_type = Request.objects.all().filter(request_type ="Item Request", request_status = 'Pending')
-    inventory_item = Inventory.objects.select_related('item').values(
-        'item__item_id',
-        'inventory_quantity',
-        'item__item_name',
-    )
-    display_data = {
-        'inventory_item': inventory_item,
-        'worker_request_type': worker_request_type
-    }
-
-    if request.method == "POST":
-        item_request_type = request.POST.get("request-type")
-        item_request = request.POST.get("items")
-        quantity_item = request.POST.get("quantity")
-        item_request_quantity = int(quantity_item)
-        #validation
-        if not (quantity_item.isdigit() and item_request_type):  
-            #message here...
-            return redirect('worker_request')
+    result = Worker_user(request, user)
+    if result == True:
         try:
-            inventory = get_object_or_404(Inventory, item = item_request)
-        except:
-            return redirect('worker_request')
-        
-        if item_request_quantity <= 0 or item_request_quantity > inventory.inventory_quantity:
-            #message here...
-            print('insufficient stocks')
-            return redirect('worker_request')
-        
-        try:
-            item = get_object_or_404(Item, item_id = item_request)
-        except:
-            return redirect('worker_request')
-
-        Request.objects.create(
-            request_type = item_request_type,
-            request_item_name = item.item_name,
-            request_item_quantity = item_request_quantity,
-            request_user = user_request,
-            item = item,
-            worker = workers_id
+            workers_id = get_object_or_404(Worker, account = user)
+        except Worker.DoesNotExist:
+            messages.error(request, 'Unexpected occured')
+            return redirect('Login')
+        worker_request_type = Request.objects.all().filter(request_type ="Item Request",
+                                                            request_status = 'Pending', worker = workers_id)
+        inventory_item = Inventory.objects.select_related('item').values(
+            'item__item_id',
+            'inventory_quantity',
+            'item__item_name',
         )
-        return redirect('worker_request')
-    return render(request, 'core/Workers/Request.html', display_data)
+        worker_display_name = workers_id.worker_fname
+        worker_user = workers_id.worker_fname + ' '+ workers_id.worker_lname
+        display_data = {
+            'inventory_item': inventory_item,
+            'worker_request_type': worker_request_type,
+            'worker_display_name': worker_display_name,
+        }
+
+        if request.method == "POST":
+            item_request_type = request.POST.get("request-type")
+            item_request = request.POST.get("items")
+            quantity_item = request.POST.get("quantity")
+            item_request_quantity = int(quantity_item)
+            #validation
+            if not (quantity_item.isdigit() and item_request_type):  
+                #message here...
+                return redirect('worker_request')
+            try:
+                inventory = get_object_or_404(Inventory, item = item_request)
+            except:
+                return redirect('worker_request')
+            
+            if item_request_quantity <= 0 or item_request_quantity > inventory.inventory_quantity:
+                #message here...
+                print('insufficient stocks')
+                return redirect('worker_request')
+            
+            try:
+                item = get_object_or_404(Item, item_id = item_request)
+            except:
+                return redirect('worker_request')
+
+            Request.objects.create(
+                request_type = item_request_type,
+                request_item_name = item.item_name,
+                request_item_quantity = item_request_quantity,
+                request_user = worker_user,
+                item = item,
+                worker = workers_id
+            )
+            return redirect('worker_request')
+        return render(request, 'core/Workers/Request.html', display_data)
+    return result

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FERMA STAINLESS WORKS</title>
+    <link rel="icon" href="{% static 'images/Logo.png'%}" type="image/png">
     {% tailwind_css %}
 </head>
 <body class="font-Nats overflow-auto">
@@ -16,10 +17,10 @@
         <!--vertical navbar-->
         <div class="min-w-fit min-h-screen flex flex-col bg-gray-2 w-[6rem] text-white items-center">
             <!--container-->
-            <div class="flex flex-col flex-grow items-center min-w-full mx-2">
+            <div class="flex flex-col flex-grow items-center w-full mx-2">
                 <div class="flex flex-col items-center mb-10 py-4">
                     <img src="{% static 'images/user-icon.png'%}" alt="user-icon" class="w-7 h-7 mb-1">
-                    <p class="text-white items-center text-sm">Spongebob</p>
+                    <p class="text-white items-center text-sm">{{custodian_name}}</p>
                     <p class="text-white items-center text-sm">Custodian</p>
                 </div>
                 <ul class="flex flex-col items-center space-y-2 min-w-full">
@@ -66,7 +67,7 @@
                 <!--logout-->
                 <ul class="mt-auto min-w-full">
                     <li class="flex flex-col items-center min-w-full hover:bg-slate-900 hover:text-orange-500 pt-2">
-                        <a href="{% url 'Login' %}" class="">
+                        <a href="{% url 'Logout' %}" class="">
                             <img src="{% static 'images/logout.png'%}" alt="logout" class="w-6 h-6 ml-2">
                             <p class="text-sm mt-2 pb-3">Log out</p>
                         </a>

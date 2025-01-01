@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}FERMA STAINLESS WORKS{% endblock %}</title>
+    <link rel="icon" href="{% static 'images/Logo.png'%}" type="image/png">
     {% tailwind_css %}
 </head>
 <body class="font-Nats overflow-hidden">
@@ -12,20 +13,40 @@
         <img src="{% static 'images/Logo.png'%}" alt="Ferma Steel works" class="ml-20 w-28 h-20">
         <h1 class="text-white font-bold mt-5 ml-2 sm:text-xs md:text-4xl">FERMA STAINLESS WORKS</h1>
     </header>
-    <main class="flex justify-center items-center w-full min-h-screen bg-white overflow-hidden">
+    <main class="relative flex justify-center items-center w-full min-h-screen bg-white overflow-hidden">
+        <!--message notif-->
+        {% if messages %}
+            {% for message in messages %}
+            <div id="floating-message" class="absolute top-10 right-60 text-white px-4 py-2 rounded shadow-lg
+            {% if message.tags == 'error' %} bg-red-600 {% elif message.tags == 'success'%} bg-green-500 {% endif %}">
+                {{message}}
+            </div>
+            {% endfor %}
+        {% endif %}
         <!--Login container-->
         <div class="w-[25rem] h-[24rem] bg-gray-3 mb-10 rounded-2xl">
             <!--Label container-->
-            <div class="min-w-full h-20 bg-gray-1 flex justify-center rounded-t-2xl">
+            <div class="min-w-full h-20 bg-gray-1 flex justify-center rounded-t-2xl" >
                 <h2 class="text-white text-4xl pt-5">Sign-in</h2>
             </div>
             <!--input container-->
             <div class="min-w-full h-[19rem] bg-gray-3 flex items-center justify-center rounded-b-2xl">
-                <div class="w-[20rem] h-[12rem] flex justify-center items-center flex-col mt-5">
-                    <input type="text" placeholder="UserName" class="rounded-2xl "><br>
-                    <input type="password" placeholder="password" class="rounded-2xl"><br>
-                    <button type="button" class="w-[5rem] h-[2rem] bg-gray-1 text-white rounded-2xl">Sign-in</button>
-                </div>
+                <form method="POST" action="{% url 'Login' %}">
+                    {%csrf_token%}
+                    <div class="w-[20rem] h-[15rem] flex justify-center items-center flex-col mt-5 space-y-2">
+                        <div class="flex flex-col space-y-2">
+                            <label for="username" class="ml-2 text-lg font-thin">UserName</label>
+                            <input type="text" placeholder="UserName" class="rounded-2xl" name="user">
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <label for="password" class="ml-2 text-lg font-thin">Password</label>
+                            <input type="password" placeholder="password" class="rounded-2xl" name="password">
+                        </div>
+                        <div class="p-5">
+                            <button type="submit" class="px-4 py-2 bg-gray-1 text-white rounded-xl">Sign-in</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </main>
