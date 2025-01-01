@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     #login url path
     path('', views.Login, name='Login'),
+    path('Logout/', views.Logout, name='Logout'),
     #admin urls path
     path('Admin/Request/Status/<int:request_id>', views.approve_disapprove_request, name='admin_status_request'),
     path('Admin/Delivery/', views.create_delivery, name='create_delivery'),
