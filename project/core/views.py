@@ -13,15 +13,10 @@ def Admin_user(request,user_id):
         if admin_user.account_role == 'Admin':
             return True
         elif admin_user.account_role == 'Workers':
-            messages.warning(request, 'You do not have permission to access this page.')
-            print('You do not have permission to access this page.')
             return redirect('worker_home')
         elif admin_user.account_role == 'Custodian':
-            messages.warning(request, 'You do not have permission to access this page.')
-            print('You do not have permission to access this page.')
             return redirect('custodian_request')
     except Account.DoesNotExist:
-        messages.error(request, 'Account does not exist')
         return redirect('Login')
     
 def Custodian_user(request, user_id):
@@ -30,13 +25,10 @@ def Custodian_user(request, user_id):
         if custodian_user.account_role == 'Custodian':
             return True
         elif custodian_user.account_role == 'Workers':
-            messages.warning(request, 'You do not have permission to access this page.')
             return redirect('worker_home')
         else:
-            messages.warning(request, 'You do not have permission to access this page.')
             return redirect('admin_request')
     except Account.DoesNotExist:
-        messages.error(request, 'Account does not exist')
         return redirect('Login')
     
 def Worker_user(request, user_id):
@@ -45,19 +37,15 @@ def Worker_user(request, user_id):
         if worker_user.account_role == 'Workers':
             return True
         elif worker_user.account_role == 'Custodian':
-            messages.warning(request, 'You do not have permission to access this page.')
             return redirect('custodian_request')
         else:
-            messages.warning(request, 'You do not have permission to access this page.')
             return redirect('admin_request')
     except Account.DoesNotExist:
-        messages.error(request, 'Account does not exist')
         return redirect('Login')
 
 # Create your views here.
 def Logout(request):
     request.session.flush()
-    messages.success(request, 'Logout successfully!')
     return redirect('Login')
 
 def Login(request):
@@ -91,7 +79,6 @@ def Login(request):
                     elif user.account_role == 'Custodian':
                         return redirect('custodian_request')
                     else:
-                        print('Login successfully')
                         return redirect('admin_request')
                 else:
                     messages.error(request,'Account has been deactivate contact your admin')
@@ -101,7 +88,6 @@ def Login(request):
                 messages.error(request, 'invalid password')
                 return redirect('Login')
         except Account.DoesNotExist:
-            print('Invalid user')
             messages.error(request, 'Account does not exist')
             return redirect('Login')
     return render(request, 'core/login.html')
@@ -120,7 +106,6 @@ def approve_disapprove_request(request, request_id):
                 Reports.objects.create(
                     request = requested_form
                 )
-                print('approve successful')
                 return redirect('admin_request')
             if status == 'decline':
                 requested_form.request_status = decline_status
@@ -128,15 +113,12 @@ def approve_disapprove_request(request, request_id):
                 Reports.objects.create(
                     request = requested_form
                 )
-                print('decline successful')
                 return redirect('admin_request')
         except Http404:
-            print('the request has been deleted or not exist')
             messages.error(request, 'the request has been deleted or not exist.')
             return redirect('admin_request')
-        except Exception as e:
-            print('unexpected error')
-            messages.error(request, f"unexpected error occured: {str(e)}")
+        except Exception:
+            messages.error(request, "unexpected error occured")
             return redirect('admin_request')
     return redirect('admin_request')
 
@@ -154,8 +136,6 @@ def RequestAdmin(request):
             'requests': requests,
             'admin_name': admin_name,
         }
-        if not requests:
-            messages.warning(request, 'no data available')
         return render(request, 'core/Admin/Dashboard.html', display_data)
     return result
 
@@ -200,6 +180,7 @@ def AdminInventory(request):
                 Inventory.objects.create(
                     item = item
                 )
+                messages.success(request, 'added successfully')
                 return redirect("admin_inventory")
             except ValidationError as e:
                 messages.error(request, 'Validation error occured'+ str(e))
@@ -229,12 +210,14 @@ def AdminAccount(request):
                     and account_username and account_password and account_role and account_address):
                 #message here..
                 return redirect('admin_create_account')
-            
+            check_user = len(Account.objects.filter(account_fname=account_fname, account_lname=account_lname))
+            check_username = len(Account.objects.filter(account_user = account_username))
             # Check if account already exists
-            if Account.objects.filter(account_fname=account_fname, account_lname=account_lname, 
-                                    account_user=account_username).exists():
+            if check_username:
+                messages.error(request, "Username already exist.")
+                return redirect('admin_create_account')
+            if check_user:
                 messages.error(request, "User already exist.")
-                print('user already exist')
                 return redirect('admin_create_account')
             else:
                 try:
@@ -386,7 +369,7 @@ def job_request(request):
         requests = Reports.objects.all().select_related('request').values(
             'report_id', 'report_date', 'request__request_type', 'request__request_item_quantity', 'request', 'request__request_date',
             'request__request_item_name', 'request__request_user', 'request__request_status', 'request__request_repair_details',
-        ).filter(request__request_type = 'Job Request')
+        ).filter(request__request_type = 'Job Request').order_by('-report_date')
         admin_user = Account.objects.get(account_id = user)
         admin_name = admin_user.account_fname
         display_data = {
@@ -407,7 +390,7 @@ def purchase_order(request):
             'report_id', 'report_date', 'request__request_type',
             'request__request_item_quantity', 'request__request_item_name', 'request__request_date',
             'request__request_status', 'request__item', 'request', 'request__request_user'
-        ).filter(request__request_type = 'Purchase Order')
+        ).filter(request__request_type = 'Purchase Order').order_by('-report_date', 'request__request_status')
         admin_user = Account.objects.get(account_id = user)
         admin_name = admin_user.account_fname
         display_data = {
@@ -427,7 +410,7 @@ def item_request(request):
         requests = Reports.objects.all().select_related('request').values(
             'report_id', 'report_date', 'request__request_type', 'request__request_item_name',
             'request__request_item_quantity', 'request__request_date', 'request__request_status', 'request', 'request__request_user'
-        ).filter(request__request_type = 'Item Request')
+        ).filter(request__request_type = 'Item Request').order_by('-report_date')
         admin_user = Account.objects.get(account_id = user)
         admin_name = admin_user.account_fname
         display_data = {
@@ -484,7 +467,6 @@ def update_supplier(request, supplier_id):
         suppliers.supplier_price = supplier_price
         suppliers.supplier_grade = supplier_grade
         suppliers.item = item
-
         suppliers.save()
         return redirect('admin_supplier')
     return redirect('admin_supplier')
@@ -560,6 +542,7 @@ def AdminSupplier(request):
 
             # Check if the supplier name already exists
             if Supplier.objects.filter(supplier_name=supplier_name).exists():
+                messages.error(request, 'supplier already exist')
                 return redirect('admin_supplier')
             try:
                 # Fetch the associated item
@@ -598,7 +581,7 @@ def update_delivery(request, delivery_id):
             try:
                 delivery_update_total = float(total)
             except ValueError:
-                # Add appropriate error message or handling
+                messages.error(request, 'unexpected error')
                 return redirect('create_delivery')
             
             item = get_object_or_404(Item, item_id = delivery_update_item)
@@ -611,14 +594,11 @@ def update_delivery(request, delivery_id):
             update_deliver.supplier = supplied
             update_deliver.item = item
             update_deliver.save()
-            print('Update successfully')
-            #message here...
             messages.success(request, 'Update successfully')
             return redirect('create_delivery')
         except Http404:
             #message here..
             messages.error(request, 'object not found 404')
-            print('Unexpected error')
             return redirect('create_delivery')
     return redirect('create_delivery')
 
@@ -763,7 +743,7 @@ def CustodianInv(request):
                 return redirect("custodian_inventory")
             
             if Item.objects.filter(item_name=item_name).exists():
-                #message here
+                messages.error(request, 'item already exist')
                 return redirect('custodian_inventory')
 
             item = Item.objects.create(
@@ -774,6 +754,7 @@ def CustodianInv(request):
             Inventory.objects.create(
                 item = item
             )
+            messages.success(request, 'added successfully')
         return render(request, 'core/Custodian/Inventory.html', display_data)
     return result
 
@@ -800,7 +781,7 @@ def update_request_custodian(request, request_id):
             custodian_request.request_item_quantity = custodian_request_quantity
             custodian_request.request_repair_details = custodian_request_details
             custodian_request.save()
-            #message
+            messages.success(request, 'update successfully')
             return redirect('custodian_request')
         else:
             #purchase order
@@ -820,7 +801,7 @@ def update_request_custodian(request, request_id):
             custodian_request.request_item_quantity = custodian_request_quantity
             custodian_request.item = items
             custodian_request.save()
-            #message
+            messages.success(request, 'update successfully')
             return redirect('custodian_request')
     return redirect('custodian_request')
 
@@ -833,8 +814,8 @@ def delete_request_custodian(request, request_id):
             delete_request.delete()
             #message here..
             return redirect('custodian_request')
-        except:
-            #message here..
+        except Exception:
+            messages.error(request, 'unexpected error occured')
             return redirect('custodian_request')
     return redirect('custodian_request')
 
@@ -930,10 +911,10 @@ def accept_deliveries(request, delivery_id):
             Reports.objects.create(
                 delivery = delivery
             )
-            #message here..
+            messages.success(request, 'transaction complete')
             return redirect('delivery_page')
-        except:
-            print('unexpected error occured.')
+        except Exception:
+            messages.error(request, 'unexpected error occured')
             return redirect('delivery_page')
     return redirect('delivery_page')
 
@@ -955,9 +936,10 @@ def return_deliveries(request, delivery_id):
                 delivery = delivery,
                 report_reason = returned
             )
+            messages.success(request, 'transaction complete')
             return redirect('delivery_page')
-        except:
-            #message here..
+        except Exception:
+            messages.error(request, 'unexpected error occured')
             return redirect('delivery_page')
     return redirect('delivery_page')
 
@@ -989,7 +971,7 @@ def order_Reports(request):
             'report_id', 'report_date', 'request__request_type',
             'request__request_item_quantity', 'request__request_item_name', 'request__request_date',
             'request__request_status', 'request__item', 'request', 'request__request_user'
-        ).filter(request__request_type = 'Purchase Order')
+        ).filter(request__request_type = 'Purchase Order').order_by('-report_date')
         custodian_user = Account.objects.get(account_id = user)
         custodian_name = custodian_user.account_fname
         display_data = {
@@ -1008,7 +990,7 @@ def Item_Reports(request):
         requests = Reports.objects.all().select_related('request').values(
             'report_id', 'report_date', 'request__request_type', 'request__request_item_name',
             'request__request_item_quantity', 'request__request_date', 'request__request_status', 'request', 'request__request_user'
-        ).filter(request__request_type = 'Item Request')
+        ).filter(request__request_type = 'Item Request').order_by('-report_date')
         custodian_user = Account.objects.get(account_id = user)
         custodian_name = custodian_user.account_fname
         display_data = {
@@ -1046,6 +1028,7 @@ def update_request_worker(request, request_id):
         user_request.request_item_name = items.item_name
         user_request.item = items
         user_request.save()
+        messages.success(request, 'update successfully')
         return redirect('worker_request')
     return redirect('worker_request')
     
@@ -1091,8 +1074,7 @@ def WorkerReq(request):
                 return redirect('worker_request')
             
             if item_request_quantity <= 0 or item_request_quantity > inventory.inventory_quantity:
-                #message here...
-                print('insufficient stocks')
+                messages.error(request, 'insufficient stocks')
                 return redirect('worker_request')
             
             try:

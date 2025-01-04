@@ -43,7 +43,7 @@
                         <img src="{% static 'images/account.png' %}" alt="Account" class="w-6 h-6">
                             Account
                         <!--hover submenu-->
-                        <ul class="absolute left-[5.5rem] mt-1 hidden group-hover:block bg-gray-2 rounded-md">
+                        <ul class="absolute left-[5.5rem] mt-1 hidden group-hover:block bg-gray-2 rounded-md z-10">
                             <li>
                                 <a href="{% url 'admin_create_account' %}" 
                                     class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
@@ -54,7 +54,7 @@
                                 <a href="{% url 'Account_list' %}" 
                                     class="block px-4 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
                                         Accounts
-                                    </a>
+                                </a>
                             </li>
                         </ul>
                     </li>
@@ -63,7 +63,7 @@
                         <img src="{% static 'images/reports.png' %}" alt="Reports" class="w-6 h-6">
                             Reports
                         <!--hover submenu-->
-                        <ul class="absolute left-[5.5rem] mt-1 hidden group-hover:block bg-gray-2 rounded-md">
+                        <ul class="absolute left-[5.5rem] mt-1 hidden group-hover:block bg-gray-2 rounded-md z-10">
                             <li class="w-[9rem] text-center">
                                 <a href="{% url 'item_request_reports'%}" class="block px-3 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
                                     Item Requests
@@ -114,7 +114,17 @@
         </div>
         {% block content %}
         <!--container div-->
-        <div class="w-full bg-white flex justify-center items-center mt-10">
+        <div class="w-full bg-white flex justify-center items-center mt-10 relative">
+            <!-- Messages Section -->
+            {% if messages %}
+                {% for message in messages %}
+                <div id="notifications" class="px-4 py-2 rounded absolute top-2 left-1/2 transform -translate-x-1/2 
+                    text-white {% if message.tags == 'error' %}bg-red-500
+                    {% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
             <div class="w-[50rem] h-[30rem]">
                 <!--table container-->
                 <div class="min-w-full h-[25rem] bg-gray-3 overflow-auto" id="request-container">
@@ -270,6 +280,10 @@
             </div>
         </div>
         <script>
+
+            setTimeout(() => {
+                    document.getElementById('notifications').style.display = 'none';
+                }, 5000);
             function openModal(modalId) 
             {
                 console.log('Opening modal:', modalId);

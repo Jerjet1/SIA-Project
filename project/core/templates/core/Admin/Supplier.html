@@ -1,8 +1,19 @@
 {% extends "core/Admin/Dashboard.html" %}
 {% load static tailwind_tags %}
 {% block content %}
-<div class="w-full bg-white flex justify-center items-center">
-    <div class="w-[61rem] h-[38rem]  mt-10">
+<div class="w-full bg-white flex justify-center items-center relative">
+    <!-- Messages Section -->
+    {% if messages %}
+        {% for message in messages %}
+        <div id="notifications" class="px-4 py-2 rounded absolute top-10 left-1/2 transform -translate-x-1/2 
+            text-white {% if message.tags == 'error' %}bg-red-500{% elif message.tags == 'success' %}
+            bg-green-500
+            {% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+    <div class="w-[61rem] h-[38rem] mt-10">
         <!--Search and add supplier container-->
         <div class=" min-w-full h-[6rem] pt-2 flex justify-between">
             <!--search-->
@@ -30,8 +41,8 @@
             </div>
         </div>
         <!--table container-->
-        <div class="min-w-full h-[26rem] bg-gray-3 overflow-auto">
-            <table class="w-full">
+        <div class="w-full h-[26rem] bg-gray-3 overflow-auto">
+            <table class="w-full ">
                 <thead class="bg-gray-200 border-b-2 border-white">
                     <tr class="">
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Name</th>
@@ -47,17 +58,17 @@
                     {% for supplier in suppliers %}
                     <tr class="text-center ">
                         <td class="pt-1">{{supplier.supplier_name}}</td>
-                        <td class="pt-1">{{supplier.supplier_address}}</td>
+                        <td class="pt-1 break-all">{{supplier.supplier_address}}</td>
                         <td class="pt-1">{{supplier.supplier_contactno}}</td>
                         <td class="pt-1">{{supplier.item__item_name}}</td>
                         <td class="pt-1">₱{{supplier.supplier_price}}</td>
                         <td class="pt-1">{{supplier.supplier_grade}}</td>
                         <td class="pt-1">
-                            <button class="bg-gray-2 px-3 py-1 rounded-lg text-white hover:text-orange-500" 
+                            <button class="bg-gray-2 px-2 py-1 rounded-lg text-white hover:text-orange-500" 
                                 onclick="openModal('updateModal-{{supplier.supplier_id}}')">
                                 Update
                             </button>
-                            <button class="bg-gray-2 px-3 py-1 rounded-lg text-white hover:text-orange-500" 
+                            <button class="bg-gray-2 px-2 py-1 rounded-lg text-white hover:text-orange-500" 
                                 onclick="openModal('deleteModal-{{supplier.supplier_id}}')">
                                 Delete
                             </button>
@@ -214,7 +225,7 @@
                         </label>
                         <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
                         text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="address" name="address" type="text" placeholder="Address">
+                        id="address" name="address" type="text" placeholder="Address" maxlength="255">
                     </div>
                     <!--Contact No.-->
                     <div class="mb-4 flex justify-between">
@@ -245,7 +256,7 @@
                         </label>
                         <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
                         text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        id="price" name="price" type="text" pattern="^\d*\.?\d*$" placeholder="₱" oninput="validatePrice(this)">
+                        id="price" name="price" type="text" pattern="^\d*\.?\d*$" placeholder="₱" maxlength="10" oninput="validatePrice(this)">
                     </div>
                     <!--supplier grade-->
                     <div class="mb-4 flex justify-between">
@@ -333,5 +344,8 @@
             }
         }
     }
+    setTimeout(() => {
+        document.getElementById('notifications').style.display = 'none';
+    }, 5000);
 </script>
 {% endblock %}
