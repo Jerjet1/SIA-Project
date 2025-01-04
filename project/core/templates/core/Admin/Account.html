@@ -1,94 +1,95 @@
 {% extends "core/Admin/Dashboard.html" %}
 {% block content %}
-<div class="w-full bg-white flex justify-center items-center">
-    <div class="w-[40rem] h-[35rem]">
-        <div class=" min-w-full h-20 pt-2 bg-gray-3 drop-shadow-2xl flex justify-center items-center">
-            <h2 class="text-5xl font-bold">Create Account</h2>
-        </div>
-        <!--Create account container-->
-        <div class="p-8 flex flex-col justify-center items-center shadow-2xl">
-            <!-- Messages Section -->
-            {% if messages %}
-            <div class="hidden mb-4 w-full">
-                {% for message in messages %}
-                <div class="p-5 rounded text-white {% if message.tags == 'error' %}bg-red-500{% elif message.tags == 'success' %}
-                    bg-green-500
-                    {% endif %}">
-                    {{ message }}
-                </div>
-                {% endfor %}
+<div class="w-full bg-white">
+    <div class="flex justify-center items-center relative mt-9">
+        <!-- Messages Section -->
+        {% if messages %}
+            {% for message in messages %}
+            <div class="px-4 py-2 rounded absolute top-0 left-1/2 transform -translate-x-1/2 
+                text-white {% if message.tags == 'error' %}bg-red-500{% elif message.tags == 'success' %}
+                bg-green-500
+                {% endif %}">
+                {{ message }}
             </div>
-            {% endif %}
-            <form method="POST" action="{% url 'admin_create_account' %}">
-                {%csrf_token%}
-                <div class="mb-2 flex justify-between">
-                    <label class="block text-gray-700 text-sm font-bold mt-2" for="first-name">
-                        First Name
-                    </label>
-                    <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 ml-3 
-                    text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                    name="fname" id="first-name" type="text" placeholder="First Name">
-                </div>
-                <div class="mb-2 flex justify-between">
-                    <label class="block text-gray-700 text-sm font-bold mt-2" for="last-name">
-                        Last Name
-                    </label>
-                    <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 
-                    text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                    name="lname" id="last-name" type="text" placeholder="Last Name">
-                </div>
-                <div class="mb-2 flex justify-between">
-                    <label class="block text-gray-700 text-sm font-bold mt-2" for="contact-no">
-                        Contact No.
-                    </label>
-                    <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 
-                    text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                    name="contactno" id="contact-no" type="text" pattern="\d{11}" placeholder="+63" oninput="validateContactNo(this)">
-                </div>
-                <div class="mb-2 flex justify-between">
-                    <label class="block text-gray-700 text-sm font-bold mt-2" for="address">
-                        Address
-                    </label>
-                    <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 
-                    text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                    name="address" id="address" type="text"  placeholder="City street" >
-                </div>
-                <div class="mb-2 flex justify-between">
-                    <label class="block text-gray-700 text-sm font-bold mt-2" for="username">
-                        Username
-                    </label>
-                    <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3
-                     text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                    name="username" id="username" type="text" placeholder="Username">
-                </div>
-                <div class="mb-2 flex justify-between">
-                    <label class="block text-gray-700 text-sm font-bold mt-2" for="password">
-                        Password
-                    </label>
-                    <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 
-                    text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                    name="password" id="password" type="password" placeholder="Password">
-                </div>
-                <div class="mb-2 flex justify-between">
-                    <label class="block text-gray-700 text-sm font-bold mt-2" for="role">
-                        Role
-                    </label>
-                    <select required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 
-                    text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                    id="role" name="role">
-                        <option value="" disabled selected>Select Role</option>
-                        <option value="Admin">Admin</option>
-                        <option value="Custodian">Custodian</option>
-                        <option value="Workers">Worker</option>
-                    </select>
-                </div>
-                <div class="flex items-center justify-center">
-                    <button class="bg-gray-1 text-white font-bold py-2 px-4 rounded 
-                    focus:outline-none focus:shadow-outline" type="submit">
-                        Register
-                    </button>
-                </div>
-            </form>
+            {% endfor %}
+        {% endif %}
+        <div class="w-[40rem] h-[35rem] mt-16">
+            <div class=" min-w-full h-20 pt-2 bg-gray-3 drop-shadow-2xl flex justify-center items-center">
+                <h2 class="text-5xl font-bold">Create Account</h2>
+            </div>
+            <!--Create account container-->
+            <div class="p-8 flex flex-col justify-center items-center shadow-2xl">
+                <form method="POST" action="{% url 'admin_create_account' %}">
+                    {%csrf_token%}
+                    <div class="mb-2 flex justify-between">
+                        <label class="block text-gray-700 text-sm font-bold mt-2" for="first-name">
+                            First Name
+                        </label>
+                        <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 ml-3 
+                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        name="fname" id="first-name" type="text" placeholder="First Name">
+                    </div>
+                    <div class="mb-2 flex justify-between">
+                        <label class="block text-gray-700 text-sm font-bold mt-2" for="last-name">
+                            Last Name
+                        </label>
+                        <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 
+                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        name="lname" id="last-name" type="text" placeholder="Last Name">
+                    </div>
+                    <div class="mb-2 flex justify-between">
+                        <label class="block text-gray-700 text-sm font-bold mt-2" for="contact-no">
+                            Contact No.
+                        </label>
+                        <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 
+                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        name="contactno" id="contact-no" type="text" pattern="\d{11}" placeholder="+63" oninput="validateContactNo(this)">
+                    </div>
+                    <div class="mb-2 flex justify-between">
+                        <label class="block text-gray-700 text-sm font-bold mt-2" for="address">
+                            Address
+                        </label>
+                        <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 
+                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        name="address" id="address" type="text"  placeholder="City street" >
+                    </div>
+                    <div class="mb-2 flex justify-between">
+                        <label class="block text-gray-700 text-sm font-bold mt-2" for="username">
+                            Username
+                        </label>
+                        <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3
+                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        name="username" id="username" type="text" placeholder="Username">
+                    </div>
+                    <div class="mb-2 flex justify-between">
+                        <label class="block text-gray-700 text-sm font-bold mt-2" for="password">
+                            Password
+                        </label>
+                        <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 
+                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        name="password" id="password" type="password" placeholder="Password">
+                    </div>
+                    <div class="mb-2 flex justify-between">
+                        <label class="block text-gray-700 text-sm font-bold mt-2" for="role">
+                            Role
+                        </label>
+                        <select required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 
+                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        id="role" name="role">
+                            <option value="" disabled selected>Select Role</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Custodian">Custodian</option>
+                            <option value="Workers">Worker</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center justify-center">
+                        <button class="bg-gray-1 text-white font-bold py-2 px-4 rounded 
+                        focus:outline-none focus:shadow-outline" type="submit">
+                            Register
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>

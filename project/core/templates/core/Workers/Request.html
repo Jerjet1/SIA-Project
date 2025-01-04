@@ -41,7 +41,18 @@
                 </ul>
             </div>
         </div>
-        <div class="w-full bg-white flex justify-center items-center">
+        <div class="w-full bg-white flex justify-center items-center relative">
+                <!-- Messages Section -->
+            {% if messages %}
+                {% for message in messages %}
+                <div id="notifications" class="px-4 py-2 rounded absolute top-10 left-1/2 transform -translate-x-1/2 
+                    text-white {% if message.tags == 'error' %}bg-red-500{% elif message.tags == 'success' %}
+                    bg-green-500
+                    {% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
             <div class="w-[50rem] h-[35rem]  mt-10">
                 <!--search and create Request-->
                 <div class=" min-w-full h-20 pt-2 flex justify-end">
@@ -227,6 +238,7 @@
         </div>
     </main>
     <script>
+        
         function validatestocks(input) { 
             input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters 
         } 
@@ -241,6 +253,9 @@
             modal.classList.remove('flex'); // Remove flex to prevent display issues
             modal.classList.add('hidden'); // Add hidden class to hide modal
         }
+        setTimeout(() => {
+            document.getElementById('notifications').style.display = 'none';
+        }, 5000);
     </script>
 </body>
 </html>

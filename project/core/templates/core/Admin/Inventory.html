@@ -1,7 +1,18 @@
 {% extends "core/Admin/Dashboard.html" %}
 {% load static tailwind_tags %}
 {% block content %}
-<div class="w-full bg-white flex justify-center items-center">
+<div class="w-full bg-white flex justify-center items-center relative">
+    <!-- Messages Section -->
+    {% if messages %}
+        {% for message in messages %}
+        <div id="notifications" class="px-4 py-2 rounded absolute top-10 left-1/2 transform -translate-x-1/2 
+            text-white {% if message.tags == 'error' %}bg-red-500{% elif message.tags == 'success' %}
+            bg-green-500
+            {% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
     <div class="w-[50rem] h-[35rem]  mt-10">
         <!--search and add item container-->
         <div class=" min-w-full h-14 pt-2 flex justify-between">
@@ -17,8 +28,8 @@
             </div>
         </div>
         <!--table container-->
-        <div class="min-w-full h-[26rem] bg-gray-3 mt-4 table-auto overflow-auto">
-            <table class="w-full">
+        <div class="min-w-full h-[26rem] bg-gray-3 mt-4 overflow-auto">
+            <table class="w-full table-fixed">
                 <thead class="bg-gray-200 border-b-2 border-gray-200">
                     <tr class="">
                         <th class="p-3 text-sm font-semibold tracking-wide text-center">Item ID</th>
@@ -32,7 +43,7 @@
                     <tr class="text-center">
                         <td class="pt-1">{{item.inventory_id}}</td>
                         <td class="pt-1">{{item.item__item_name}}</td>
-                        <td class="pt-1">{{item.item__item_description}}</td>
+                        <td class="pt-1 break-all">{{item.item__item_description}}</td>
                         <td class="pt-1">{{item.inventory_quantity}}</td>
                     </tr>
                     {% endfor %}
@@ -80,7 +91,10 @@
     </div>
 </div>
 <script>
-    
+
+    setTimeout(() => {
+        document.getElementById('notifications').style.display = 'none';
+    }, 5000);
     function openModal(modalId) {
         console.log('Opening modal:', modalId);
         const modal = document.getElementById(modalId);

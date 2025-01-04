@@ -43,7 +43,7 @@
                         <img src="{% static 'images/reports.png' %}" alt="Reports" class="w-6 h-6">
                             Reports
                         <!--hover submenu-->
-                        <ul class="absolute left-[5.5rem] mt-1 hidden group-hover:block bg-gray-2 rounded-md">
+                        <ul class="absolute left-[5.5rem] mt-1 hidden group-hover:block bg-gray-2 rounded-md z-10">
                             <li class="w-[9rem] text-center">
                                 <a href="{% url 'custodian_item_reports' %}" class="block px-3 py-2 hover:bg-slate-900 hover:text-orange-500 rounded-md">
                                     Item Requests
@@ -76,8 +76,19 @@
             </div>
         </div>
     {% block content %}
-        <div class="w-full bg-white flex justify-center items-center">
-            <div class="w-[50rem] h-[35rem]  mt-10">
+        <div class="w-full bg-white flex justify-center items-center relative">
+            <!-- Messages Section -->
+            {% if messages %}
+                {% for message in messages %}
+                <div id="notifications" class="px-4 py-2 rounded absolute top-10 left-1/2 transform -translate-x-1/2 
+                    text-white {% if message.tags == 'error' %}bg-red-500{% elif message.tags == 'success' %}
+                    bg-green-500
+                    {% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+            <div class="w-[55rem] h-[35rem] mt-10">
                 <!--search and add item container-->
                 <div class=" min-w-full h-20 pt-2 flex justify-between">
                     <!--search-->
@@ -91,8 +102,8 @@
                     </div>
                 </div>
                 <!--table container-->
-                <div class="min-w-full h-[26rem] bg-gray-3">
-                    <table class="w-full ">
+                <div class="w-full h-[26rem] bg-gray-3">
+                    <table class="w-full table-fixed">
                         <thead class="bg-gray-200 border-b-2 border-gray-200">
                             <tr class="">
                                 <th class="p-3 text-sm font-semibold tracking-wide text-center">Item ID</th>
@@ -107,7 +118,7 @@
                             <tr class="text-center">
                                 <td class="pt-1">{{item.inventory_id}}</td>
                                 <td class="pt-1">{{item.item__item_name}}</td>
-                                <td class="pt-1">{{item.item__item_description}}</td>
+                                <td class="pt-1 break-all">{{item.item__item_description}}</td>
                                 <td class="pt-1">{{item.inventory_quantity}}</td>
                                 <td class="pt-1">
                                     <button class="bg-gray-2 px-3 py-1 rounded-lg text-white hover:text-orange-500" type="button"
@@ -276,6 +287,9 @@
                 }
             }
         }
+        setTimeout(() => {
+            document.getElementById('notifications').style.display = 'none';
+        }, 5000);
         </script>
     {% endblock %}
     </main>
