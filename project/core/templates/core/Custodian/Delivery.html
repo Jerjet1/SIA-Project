@@ -55,8 +55,8 @@
                         <!--accept modal-->
                         <div id="accept-{{delivery.delivery_id}}" class="modal hidden fixed inset-0 
                         bg-black bg-opacity-50 items-center justify-center">
-                            <div class="bg-white rounded-lg p-6 space-y-4 relative">
-                                <div class="top-1 left-[26rem] absolute">
+                            <div class="bg-white rounded-lg p-6 space-y-4 relative w-[24rem]">
+                                <div class="top-1 left-[21rem] absolute">
                                     <button type="button"
                                         class="text-black  rounded-full ml-4"
                                         onclick="closeModal('accept-{{delivery.delivery_id}}')">
@@ -64,11 +64,41 @@
                                     </button>
                                 </div>
                                 <h2 class="text-lg font-bold text-center">Confirm Order</h2>
-                                <p class="text-center text-gray-600">Click <strong>Yes</strong> to process the transaction for the delivered order.</p>
-                                <div class="flex justify-center items-center">
-                                    <form method="POST" action="{% url 'accept_delivery' delivery_id=delivery.delivery_id%}">
+                                <div class="flex flex-col justify-center items-center pt-5">
+                                    <form method="POST" action="{% url 'accept_delivery' delivery_id=delivery.delivery_id%}" id="deliveryForm">
                                         {%csrf_token%}
-                                        <button type="submit" class="bg-gray-2 text-white px-4 py-2 rounded-2xl 
+                                        <!--item-->
+                                        <div class="mb-2 flex items-center justify-center w-full">
+                                            <label for="item" class="block text-black text-lg font-bold w-15">Item</label>
+                                            <input type="text" disabled class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
+                                            text-black leading-tight focus:outline-none focus:shadow-outline ml-10" value="{{delivery.delivery_item}}">
+                                        </div>
+                                        <!--supplier-->
+                                        <div class="mb-2 flex items-center justify-center w-full">
+                                            <label for="supplier" class="block text-black text-lg font-bold w-15">Supplier</label>
+                                            <input type="text" disabled class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
+                                            text-black leading-tight focus:outline-none focus:shadow-outline ml-1.5" value="{{delivery.delivery_supplier}}">
+                                        </div>
+                                        <!--quantity-->
+                                        <div class="mb-2 flex items-center justify-center w-full">
+                                            <label for="quantity" class="block text-black text-lg font-bold w-15">Quantity</label>
+                                            <input type="text" name="quantity" id="quantity-{{delivery.delivery_id}}" required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
+                                            text-black leading-tight focus:outline-none focus:shadow-outline ml-1.5" 
+                                            value="{{delivery.delivery_quantity}}" oninput="validatestocks(this)">
+                                        </div>
+                                        <!--price-->
+                                        <div class="mb-2 flex items-center justify-center w-full">
+                                            <label for="price" class="block text-black text-lg font-bold w-15">price</label>
+                                            <input type="text" id="supplier-price-{{delivery.delivery_id}}" disabled class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
+                                            text-black leading-tight focus:outline-none focus:shadow-outline ml-9" value="{{delivery.supplier.supplier_price}}">
+                                        </div>
+                                        <!--total-->
+                                        <div class="mb-2 flex items-center justify-center w-full">
+                                            <label for="total" class="block text-black text-lg font-bold w-15">Total</label>
+                                            <input type="text" name="total" id="total-{{delivery.delivery_id}}" readonly class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
+                                            text-black leading-tight focus:outline-none focus:shadow-outline ml-9" value="{{delivery.delivery_total}}">
+                                        </div>
+                                        <button type="submit" class="bg-gray-2 text-white px-7 py-2 rounded-2xl mt-4
                                         hover:text-orange-500">Yes</button>
                                     </form>
                                 </div>
@@ -88,10 +118,10 @@
                                         <div class="flex flex-col">
                                             <label class="font-semibold text-lg">State the reason</label>
                                             <textarea name="reason" required class="shadow appearance-none border rounded w-[20rem] h-20 py-2 px-3 
-                                            text-gray-700 leading-tight focus:outline-none focus:shadow-outline resize-none" maxlength="255"></textarea>
+                                            text-black leading-tight focus:outline-none focus:shadow-outline resize-none" maxlength="255"></textarea>
                                         </div>
                                         <div class="mt-2">
-                                            <button type="submit" class="bg-gray-2 text-white px-4 py-2 rounded-2xl hover:text-orange-500">Yes</button>
+                                            <button type="submit" class="bg-gray-2 text-white px-7 py-2 rounded-2xl hover:text-orange-500 mt-3">Yes</button>
                                         </div>
                                     </form>
                                 </div>
@@ -105,6 +135,36 @@
     </div>
 </div>
 <script>
+    document.addEventListener('DOMContentLoaded', function (){
+        const quantityInputs = document.querySelectorAll('[id^="quantity-"]');
+        const totalInputs = document.querySelectorAll('[id^="total-"]');
+        const priceInputs = document.querySelectorAll('[id^="supplier-price-"]');
+
+        quantityInputs.forEach((quantityInput, index) => {
+        const totalInput = totalInputs[index];
+        const priceInput = priceInputs[index];
+
+        // Add event listener for real-time calculation
+        quantityInput.addEventListener('input', function () {
+            const price = parseFloat(priceInput.value) || 0;
+            const quantity = parseInt(quantityInput.value) || 0;
+            const total = price * quantity;
+            totalInput.value = total.toFixed(2); // Update the total dynamically
+            });
+        });
+    });
+
+    function validatestocks(input) { 
+        input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+        const value = parseInt(input.value, 10);
+
+        if(!value || value <= 0){
+            input.setCustomValidity('Enter quantity greater than 0');
+        } else {
+            input.setCustomValidity('');
+        }
+    }
+
     function openModal(modalId) {
     const modal = document.getElementById(modalId);
     modal.classList.remove('hidden'); // Remove hidden class
@@ -144,7 +204,10 @@
         }
     }
     setTimeout(() => {
-        document.getElementById('notifications').style.display = 'none';
+        var message = document.getElementById('notifications');
+        if (message){
+            message.style.display = 'none';
+        }
     }, 5000);
 </script>
 {% endblock %}

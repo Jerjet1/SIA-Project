@@ -1,9 +1,52 @@
 {% extends "core/Admin/Dashboard.html" %}
 {% block content %}
 <div class="w-full bg-white flex justify-center items-center">
-    <div class="w-[50rem] h-[30rem] mt-10">
+    <div class="w-[50rem] h-[30rem]">
+        <!--dropdown Filter-->
+        <div class="flex justify-between mb-4">
+            <div>
+                <form method="GET" action="{% url 'delivery_history_reports' %}">
+                    <select name="status" id="status" class="shadow appearance-none border rounded w-[8rem] py-2 px-3 
+                    text-black leading-tight focus:outline-none focus:shadow-outline" onchange="this.form.submit()">
+                        <option value="all" {% if status_filter == 'all' %}selected{% endif %} >All</option>
+                        <option value="Delivered" {% if status_filter == 'Delivered' %}selected{% endif %}>Delivered</option>
+                        <option value="Returned" {% if status_filter == 'Returned' %}selected{% endif %}>Returned</option>
+                    </select>
+                </form>
+            </div>
+            <!--Paginator-->
+            <div class="flex justify-between space-x-4">
+                <!--Previous Button-->
+                    {% if reports.has_previous %}
+                        <a href="?status={{ status_filter }}&page={{ reports.previous_page_number }}"
+                            class="px-5 py-2 rounded-lg bg-gray-2 text-white text-sm hover:text-orange-500
+                            {% if not reports.has_previous %} cursor-not-allowed bg-gray-400 {% endif %}">
+                            Prev
+                        </a>
+                    {% else %}
+                       <button class="px-5 rounded-lg bg-gray-2 text-white text-sm 
+                            {% if not reports.has_previous %} cursor-not-allowed bg-gray-400 {% endif %}">
+                            Prev
+                        </button>
+                    {% endif%}
+                <span class="text-md mt-2">{{reports.number}} of {{reports.paginator.num_pages}}</span>
+                <!--Next Button-->
+                    {% if reports.has_next %}
+                        <a href="?status={{ status_filter }}&page={{ reports.next_page_number }}" 
+                            class="px-5 py-2 rounded-lg bg-gray-2 text-white text-sm hover:text-orange-500
+                            {% if not reports.has_next %} cursor-not-allowed bg-gray-400 {% endif %}">
+                            Next
+                        </a>
+                    {% else %}
+                    <button class="px-5 rounded-lg bg-gray-2 text-white text-sm 
+                        {% if not reports.has_next %} cursor-not-allowed bg-gray-400 {% endif %}">
+                        Next
+                    </button>
+                    {% endif %}
+            </div>
+        </div>
         <!--table container-->
-        <div class="min-w-full h-[26rem] bg-gray-3 table-auto overflow-auto">
+        <div class="min-w-full h-[26rem] bg-gray-3 table-auto overflow-hidden">
             <table class="w-full">
                 <thead class="bg-gray-200 border-b-3 border-gray-200">
                     <tr class="">
@@ -27,7 +70,7 @@
                             </span>
                         </td>
                         <td class="pt-1">
-                            <button class="bg-gray-2 text-white px-4 py-1 rounded-lg" type="button"
+                            <button class="bg-gray-2 text-white px-4 py-1 rounded-lg hover:text-orange-500" type="button"
                             onclick="openModal('viewModal-{{report.report_id}}')">view</button>
                         </td>
                         <!--view Modal-->
@@ -63,7 +106,7 @@
                                     {% endif %}
                                 </div>
                                 <button 
-                                    class="bg-gray-2 text-white px-4 py-1 rounded-lg" type="button"
+                                    class="bg-gray-2 text-white px-4 py-1 rounded-lg hover:text-orange-500" type="button"
                                     onclick="closeModal('viewModal-{{report.report_id}}')">Close</button>
                             </div>
                         </div>

@@ -96,13 +96,13 @@
                                                 {%csrf_token%}
                                                 <input type="text" readonly value="Purchase Order" class=" hidden shadow 
                                                 appearance-none border rounded w-[20rem] py-2 px-3
-                                                text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="request-type">
+                                                text-black leading-tight focus:outline-none focus:shadow-outline" name="request-type">
                                                 <div class="mb-4 flex justify-between">
-                                                    <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="item">
+                                                    <label class="block text-black text-md font-bold mt-2 mr-2" for="item">
                                                         Item
                                                     </label>
                                                     <select name="items" class="shadow appearance-none border rounded 
-                                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                                    w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline">
                                                         {% for item in items %}
                                                         <option value="{{item.item_id}}" {% if item.item_id == request.item_id %} selected {% endif %}>
                                                             {{item.item_name}}
@@ -111,11 +111,11 @@
                                                     </select>
                                                 </div>
                                                 <div class="mb-4 flex justify-between">
-                                                    <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="quantity">
+                                                    <label class="block text-black text-md font-bold mt-2 mr-2" for="quantity">
                                                         Quantity
                                                     </label>
                                                     <input required class="shadow appearance-none border rounded
-                                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                    w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline" 
                                                     id="quantity" type="text" name="quantity" value="{{request.request_item_quantity}}" 
                                                     oninput="validatestocks(this)">
                                                 </div>
@@ -138,29 +138,29 @@
                                             <div class="mb-4">
                                                 <input type="text" readonly value="Job Request" class=" hidden shadow appearance-none border 
                                                 rounded w-[20rem] py-2 px-3
-                                                text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="request-type">
+                                                text-black leading-tight focus:outline-none focus:shadow-outline" name="request-type">
                                                 <div class="mb-4">
-                                                    <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="item">
+                                                    <label class="block text-black text-md font-bold mt-2 mr-2" for="item">
                                                         Item
                                                     </label>
                                                     <input required class="shadow appearance-none border rounded 
-                                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                    w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline" 
                                                     id="Item" name="item" type="text" value="{{request.request_item_name}}">
                                                 </div>
                                                 <div class="mb-4">
-                                                    <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="quantity">
+                                                    <label class="block text-black text-md font-bold mt-2 mr-2" for="quantity">
                                                         Quantity
                                                     </label>
                                                     <input required class="shadow appearance-none border rounded 
-                                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                    w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline" 
                                                     id="quantity" name="quantity" type="text" value="{{request.request_item_quantity}}" oninput="validatestocks(this)">
                                                 </div>
                                                 <div class="mb-4">
-                                                    <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="repair">
+                                                    <label class="block text-black text-md font-bold mt-2 mr-2" for="repair">
                                                         Repair details
                                                     </label>
                                                     <textarea name="repair" id="repair" required class="shadow appearance-none border rounded 
-                                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline 
+                                                    w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline 
                                                     resize-none" maxlength="255">{{request.request_repair_details}}</textarea>
                                                 </div>
                                             </div>
@@ -194,7 +194,7 @@
         <h2 class="text-lg font-bold">Requests</h2>
         <div class="flex flex-col justify-center items-center">
             <select required class="shadow appearance-none border rounded w-[20rem] py-2 px-3
-                 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+            text-black leading-tight focus:outline-none focus:shadow-outline" 
                     id="Request">
                     <option value="">Select Requests</option>
                     <option value="Purchase">Purchase Order</option>
@@ -208,29 +208,29 @@
                 {%csrf_token%}
                 <div class="mb-4">
                     <input type="text" readonly value="Job Request" class=" hidden shadow appearance-none border rounded w-[20rem] py-2 px-3
-                    text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="request-type">
+                    text-black leading-tight focus:outline-none focus:shadow-outline" name="request-type">
                     <div class="mb-4">
-                        <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="item">
+                        <label class="block text-black text-md font-bold mt-2 mr-2" for="item">
                             Item
                         </label>
                         <input required class="shadow appearance-none border rounded 
-                        w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline" 
                         id="item" name="item" type="text" placeholder="Name">
                     </div>
                     <div class="mb-4">
-                        <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="Quantity">
+                        <label class="block text-black text-md font-bold mt-2 mr-2" for="Quantity">
                             Quantity
                         </label>
                         <input required class="shadow appearance-none border rounded
-                         w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                         w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline" 
                         id="quantity" type="text" name="quantity" placeholder="0" oninput="validatestocks(this)">
                     </div>
                     <div class="mb-4">
-                        <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="repair">
+                        <label class="block text-black text-md font-bold mt-2 mr-2" for="repair">
                             Repair details
                         </label>
                         <textarea name="repair" id="repair" required class="shadow appearance-none border rounded 
-                        w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline resize-none" 
+                        w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline resize-none" 
                         maxlength="255"></textarea>
                     </div>
                 </div>
@@ -250,24 +250,24 @@
                 <form method="POST" action="{% url 'custodian_request' %}">
                     {%csrf_token%}
                     <input type="text" readonly value="Purchase Order" class=" hidden shadow appearance-none border rounded w-[20rem] py-2 px-3
-                    text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="request-type">
+                    text-black leading-tight focus:outline-none focus:shadow-outline" name="request-type">
                     <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="item">
+                        <label class="block text-black text-md font-bold mt-2 mr-2" for="item">
                             Item
                         </label>
                         <select name="items" class="shadow appearance-none border rounded 
-                        w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline">
                             {% for item in items %}
                             <option value="{{item.item_id}}">{{item.item_name}}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="Quantity">
+                        <label class="block text-black text-md font-bold mt-2 mr-2" for="Quantity">
                             Quantity
                         </label>
                         <input required class="shadow appearance-none border rounded
-                         w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                         w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline" 
                         id="quantity" type="text" name="quantity" placeholder="0" oninput="validatestocks(this)">
                     </div>
                     <div class="flex justify-center items-center">
@@ -285,7 +285,14 @@
 <!--Scripts for interactive buttons-->
 <script>
     function validatestocks(input) { 
-        input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters 
+        input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+        const value = parseInt(input.value, 10);
+
+        if(!value || value <= 0){
+            input.setCustomValidity('Enter quantity greater than 0');
+        } else {
+            input.setCustomValidity('');
+        } 
     }
     function openModal(modalId) {
         console.log(modalId)

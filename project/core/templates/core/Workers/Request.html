@@ -130,16 +130,16 @@
                                             <form method="POST" action="{% url 'update_worker_request' request_id=request.request_id%}">
                                                 {%csrf_token%}
                                                 <input type="text" disabled value="Item Request" class="shadow appearance-none border rounded w-[20rem] py-2 px-3
-                                                text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                                text-black leading-tight focus:outline-none focus:shadow-outline">
                                                 <!--item request-->
                                                 <div id="itemField" class="flex-col justify-center items-center pt-5">
                                                     <div class="mb-4">
                                                         <div class="mb-4 flex justify-between">
-                                                            <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="item">
+                                                            <label class="block text-black text-md font-bold mt-2 mr-2" for="item">
                                                                 Item
                                                             </label>
                                                             <select name="items" class="shadow appearance-none border rounded 
-                                                            w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                                            w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline">
                                                                 {% for item in inventory_item %}
                                                                     {% if item.inventory_quantity <= 0 %}
                                                                         <option disabled value="{{item.item__item_id}}"
@@ -155,11 +155,11 @@
                                                             </select>
                                                         </div>
                                                         <div class="mb-4 flex justify-between">
-                                                            <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="Quantity">
+                                                            <label class="block text-black text-md font-bold mt-2 mr-2" for="Quantity">
                                                                 Quantity
                                                             </label>
                                                             <input required class="shadow appearance-none border rounded 
-                                                            w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                            w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline" 
                                                             id="Quantity" name="quantity" type="text" value="{{request.request_item_quantity}}" oninput="validatestocks(this)">
                                                         </div>
                                                     </div>
@@ -193,17 +193,17 @@
                     <form method="POST" action="{% url 'worker_request'%}">
                         {%csrf_token%}
                         <input type="text" readonly value="Item Request" class="shadow appearance-none border rounded w-[20rem] py-2 px-3
-                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="request-type">
+                        text-black leading-tight focus:outline-none focus:shadow-outline" name="request-type">
                         <!--item request-->
                         <div id="itemField" class="flex-col justify-center items-center pt-5">
                             <div class="mb-4">
                                 <!--item details-->
                                 <div class="mb-4 flex justify-between">
-                                    <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="item">
+                                    <label class="block text-black text-md font-bold mt-2 mr-2" for="item">
                                         Item
                                     </label>
                                     <select name="items" class="shadow appearance-none border rounded 
-                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                    w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline">
                                         {% for item in inventory_item %}
                                             {% if item.inventory_quantity <= 0 %}
                                                 <option disabled value="{{item.item__item_id}}">{{item.item__item_name}} ({{item.inventory_quantity}})</option>
@@ -215,11 +215,11 @@
                                 </div>
                                 <!--Quantity details-->
                                 <div class="mb-4 flex justify-between">
-                                    <label class="block text-gray-700 text-md font-bold mt-2 mr-2" for="Quantity">
+                                    <label class="block text-black text-md font-bold mt-2 mr-2" for="Quantity">
                                         Quantity
                                     </label>
                                     <input required class="shadow appearance-none border rounded 
-                                    w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline" 
                                     id="Quantity" name="quantity" type="text" placeholder="0" oninput="validatestocks(this)">
                                 </div>
                             </div>
@@ -240,7 +240,14 @@
     <script>
         
         function validatestocks(input) { 
-            input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters 
+            input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+            const value = parseInt(input.value, 10);
+            
+            if(!value || value <= 0){
+                input.setCustomValidity('Enter quantity greater than 0');
+            } else {
+                input.setCustomValidity('');
+            }
         } 
         function openModal(modalId) {
             const modal = document.getElementById(modalId);
