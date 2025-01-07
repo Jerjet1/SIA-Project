@@ -75,10 +75,10 @@
                                     {% csrf_token %}
                                     <div class="space-y-4 w-[22rem]">
                                         <!-- Item Dropdown -->
-                                        <div class="flex flex-col justify-start items-start">
+                                        <div class="flex items-center justify-center w-full">
                                             <div class="flex justify-between space-x-5">
                                                 <label class="font-bold text-lg mt-1">Item:</label>
-                                                <select required class="shadow appearance-none border rounded py-2 px-3 text-gray-700 w-[15rem]
+                                                <select required class="shadow appearance-none border rounded py-2 px-3 text-black w-[15rem]
                                                 leading-tight focus:outline-none focus:shadow-outline" id="item-inventory-update-{{delivery.delivery_id}}" name="item">
                                                     <option value="">Select item</option>
                                                     {% for item in items %}
@@ -94,7 +94,7 @@
                                             <div class="flex justify-between space-x-2">
                                                 <label class="font-bold text-lg mt-1">Supplier:</label>
                                                 <select id="supplier-dropdown-update-{{delivery.delivery_id}}" name="supplier_id" required 
-                                                class="shadow appearance-none border rounded w-[15rem] py-2 px-3 text-gray-700 
+                                                class="shadow appearance-none border rounded w-[15rem] py-2 px-3 text-black 
                                                 leading-tight focus:outline-none focus:shadow-outline">
                                                     {% for item_id, suppliers in grouped_suppliers.items %}
                                                         <optgroup data-item-id="{{ item_id }}">
@@ -114,7 +114,7 @@
                                             <div class="flex justify-between space-x-2">
                                                 <label class="font-bold text-lg mt-1">Quantity:</label>
                                                 <input type="text" id="quantity-input-update-{{delivery.delivery_id}}" name="quantity" 
-                                                class="shadow appearance-none border rounded py-2 px-3 w-[15rem] text-gray-700 leading-tight focus:outline-none 
+                                                class="shadow appearance-none border rounded py-2 px-3 w-[15rem] text-black leading-tight focus:outline-none 
                                                 focus:shadow-outline" placeholder="Enter quantity" value="{{delivery.delivery_quantity}}" 
                                                 required oninput="validatestocks(this)">
                                             </div>
@@ -175,11 +175,11 @@
                 {%csrf_token%}
                 <div class="space-y-4 w-[22rem]">
                     <!--items dropdown-->
-                    <div class="flex flex-col justify-start items-start">
+                    <div class="flex items-center justify-center w-full">
                         <div class="flex justify-between space-x-5">
                             <label class="font-bold text-lg mt-1 ">Item: </label>
                             <select required class="shadow appearance-none border rounded py-2 px-3 mb-1 w-[15rem]
-                                text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                text-black leading-tight focus:outline-none focus:shadow-outline" 
                                     id="item-inventory" name="item">
                                     <option value="">Select item</option>
                                     {% for item in items%}
@@ -193,7 +193,7 @@
                         <div class="flex justify-between space-x-2">
                             <label class="font-bold text-lg mt-1">Supplier:</label>
                             <select id="supplier-dropdown" name="supplier_id" required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 mb-0.5 
-                            text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            text-black leading-tight focus:outline-none focus:shadow-outline">
                                 {% for item_id, suppliers in grouped_suppliers.items %}
                                     <optgroup data-item-id="{{ item_id }}">
                                         {% for supplier in suppliers %}
@@ -209,8 +209,8 @@
                     <div class="flex flex-col justify-start items-start">
                         <div class="flex justify-between space-x-2">
                             <label class="font-bold text-lg mt-1">Quantity:</label>
-                            <input type="text" id="quantity-input" name="quantity" class="shadow appearance-none border rounded py-2 px-3 mb-0.5 
-                            text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter quantity" required oninput="validatestocks(this)">
+                            <input type="text" id="quantity-input" name="quantity" class="shadow appearance-none border rounded py-2 px-3 mb-0.5 w-[15rem]
+                            text-black leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter quantity" required oninput="validatestocks(this)">
                         </div>
                     </div>
                     <!-- Total Price Display -->

@@ -88,40 +88,40 @@
                                             <!--supplier name-->
                                             <input type="hidden" name="supplier_id" value="{{ supplier.supplier_id }}">
                                             <div class="mb-4 flex justify-between">
-                                                <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="name">
+                                                <label class="block text-black text-sm font-bold mt-2 mr-2" for="name">
                                                     Name
                                                 </label>
                                                 <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
-                                                text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                text-black leading-tight focus:outline-none focus:shadow-outline" 
                                                 id="name" name="name" type="text" value="{{supplier.supplier_name}}">
                                             </div>
                                             <!--supplier address-->
                                             <div class="mb-4 flex justify-between">
-                                                <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="address">
+                                                <label class="block text-black text-sm font-bold mt-2 mr-2" for="address">
                                                     Address
                                                 </label>
                                                 <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
-                                                text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                text-black leading-tight focus:outline-none focus:shadow-outline" 
                                                 id="address" name="address" type="text" value="{{supplier.supplier_address}}">
                                             </div>
                                             <!--supplier contact no-->
                                             <div class="mb-4 flex justify-between">
-                                                <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="Contact-no">
+                                                <label class="block text-black text-sm font-bold mt-2 mr-2" for="Contact-no">
                                                     Contact No.
                                                 </label>
                                                 <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
-                                                text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                text-black leading-tight focus:outline-none focus:shadow-outline" 
                                                 id="contact_no" name="contactno" type="text" pattern="\d{11}" 
                                                 value="{{supplier.supplier_contactno}}" maxlength="11" 
                                                 oninput="validateContactNo(this)">
                                             </div>
                                             <!--supplier item-->
                                             <div class="mb-4 flex justify-between">
-                                                <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="items">
+                                                <label class="block text-black text-sm font-bold mt-2 mr-2" for="items">
                                                     Item
                                                 </label>
                                                 <select name="items" class="shadow appearance-none border rounded 
-                                                w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                                w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline">
                                                     {% for item in items %}
                                                         <option value="{{item.item_id}}" 
                                                         {% if item.item_id == supplier.item_id%}selected{% endif %}>
@@ -132,21 +132,21 @@
                                             </div>
                                             <!--supplier price-->
                                             <div class="mb-4 flex justify-between">
-                                                <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="price">
+                                                <label class="block text-black text-sm font-bold mt-2 mr-2" for="price">
                                                     Price
                                                 </label>
                                                 <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
-                                                text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                text-black leading-tight focus:outline-none focus:shadow-outline" 
                                                 id="price" name="price" type="text" pattern="^\d*\.?\d*$" value="{{supplier.supplier_price}}" 
                                                 oninput="validatePrice(this)">
                                             </div>
                                             <!--supplier item grade-->
                                             <div class="mb-4 flex justify-between">
-                                                <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="grade">
+                                                <label class="block text-black text-sm font-bold mt-2 mr-2" for="grade">
                                                     Grade
                                                 </label>
                                                 <select name="grade" id="grade" class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
-                                                    text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                                    text-black leading-tight focus:outline-none focus:shadow-outline">
                                                     <option value="" disabled>Select grade</option>
                                                     <option value="A" {% if supplier.supplier_grade == "A" %}selected{% endif %}>A</option>
                                                     <option value="B" {% if supplier.supplier_grade == "B" %}selected{% endif %}>B</option>
@@ -211,39 +211,39 @@
                     {%csrf_token%}
                     <!--supplier name-->
                     <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="name">
+                        <label class="block text-black text-sm font-bold mt-2 mr-2" for="name">
                             Name
                         </label>
                         <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
-                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        text-black leading-tight focus:outline-none focus:shadow-outline" 
                         id="name" name="name" type="text" placeholder="Name">
                     </div>
                     <!--supplier address-->
                     <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="address">
+                        <label class="block text-black text-sm font-bold mt-2 mr-2" for="address">
                             Address
                         </label>
                         <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
-                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        text-black leading-tight focus:outline-none focus:shadow-outline" 
                         id="address" name="address" type="text" placeholder="Address" maxlength="255">
                     </div>
                     <!--Contact No.-->
                     <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="contact_no">
+                        <label class="block text-black text-sm font-bold mt-2 mr-2" for="contact_no">
                             Contact No.
                         </label>
                         <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
-                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        text-black leading-tight focus:outline-none focus:shadow-outline" 
                         id="contact_no" name="contact_no" type="text" pattern="\d{11}" placeholder="+63" maxlength="11" 
                         oninput="validateContactNo(this)">
                     </div>
                     <!--supplier item-->
                     <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="items">
+                        <label class="block text-black text-sm font-bold mt-2 mr-2" for="items">
                             Item
                         </label>
                         <select name="items" class="shadow appearance-none border rounded 
-                        w-[15rem] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline">
                             {% for item in items %}
                             <option value="{{item.item_id}}">{{item.item_name}}</option>
                             {% endfor %}
@@ -251,20 +251,20 @@
                     </div>
                     <!--supplier price-->
                     <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="price">
+                        <label class="block text-black text-sm font-bold mt-2 mr-2" for="price">
                             Price
                         </label>
                         <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
-                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        text-black leading-tight focus:outline-none focus:shadow-outline" 
                         id="price" name="price" type="text" pattern="^\d*\.?\d*$" placeholder="₱" maxlength="10" oninput="validatePrice(this)">
                     </div>
                     <!--supplier grade-->
                     <div class="mb-4 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="grade">
+                        <label class="block text-black text-sm font-bold mt-2 mr-2" for="grade">
                             Grade
                         </label>
                         <select name="grade" id="grade" class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
-                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        text-black leading-tight focus:outline-none focus:shadow-outline">
                             <option value="" disabled selected>Select grade</option>
                             <option value="A">A</option>
                             <option value="B">B</option>

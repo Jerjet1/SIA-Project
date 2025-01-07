@@ -6,6 +6,7 @@ from core.models import Request, Admin, Custodian, Worker, Item, Supplier, Accou
 from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import redirect
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 def Admin_user(request,user_id):
     try:
@@ -42,6 +43,20 @@ def Worker_user(request, user_id):
             return redirect('admin_request')
     except Account.DoesNotExist:
         return redirect('Login')
+    
+# function for pagination
+def pagination_history(request ,requests_history):
+
+    paginator = Paginator(requests_history, 10)
+    page = request.GET.get('page', 1)
+    try:
+        paginated = paginator.page(page)
+    except PageNotAnInteger:
+        paginated = paginator.page(1)
+    except EmptyPage:
+        paginated = paginator.page(paginator.num_pages)
+    
+    return paginated
 
 # Create your views here.
 def Logout(request):
@@ -101,12 +116,28 @@ def approve_disapprove_request(request, request_id):
             approve_status = "Approve"
             decline_status = "Decline"
             if status == 'approve':
-                requested_form.request_status = approve_status
-                requested_form.save()
-                Reports.objects.create(
-                    request = requested_form
-                )
-                return redirect('admin_request')
+                if requested_form.request_type == 'Item Request':
+                    items = Inventory.objects.get(item = requested_form.item)
+                    if items.inventory_quantity < requested_form.request_item_quantity:
+                        messages.error(request,'insufficient stocks')
+                        return redirect('admin_request')
+                    else:
+                        quantity = items.inventory_quantity - requested_form.request_item_quantity
+                        items.inventory_quantity = quantity
+                        items.save()
+                        requested_form.request_status = approve_status
+                        requested_form.save()
+                        Reports.objects.create(
+                            request = requested_form
+                        )
+                        return redirect('admin_request')
+                else:
+                    requested_form.request_status = approve_status
+                    requested_form.save()
+                    Reports.objects.create(
+                        request = requested_form
+                    )
+                    return redirect('admin_request')
             if status == 'decline':
                 requested_form.request_status = decline_status
                 requested_form.save()
@@ -129,7 +160,7 @@ def RequestAdmin(request):
         return redirect('Login')
     result = Admin_user(request, user)
     if result == True:
-        requests = Request.objects.all().filter(request_status = 'Pending').order_by('request_date')
+        requests = Request.objects.all().filter(request_status = 'Pending').order_by('-request_date')
         admin_user = Account.objects.get(account_id = user)
         admin_name = admin_user.account_fname
         display_data = {
@@ -155,7 +186,7 @@ def AdminInventory(request):
             'item__item_name',
             'item__item_description',
             'inventory_quantity',
-        )
+        ).order_by('inventory_quantity')
         display_data = {
             'admin_name': admin_name,
             'items': items,
@@ -349,7 +380,7 @@ def AccountList(request):
         return redirect('Login')
     result = Admin_user(request, user)
     if result == True:
-        accounts = Account.objects.all()
+        accounts = Account.objects.all().order_by('account_role', 'account_status')
         admin_user = Account.objects.get(account_id = user)
         admin_name = admin_user.account_fname
         display_data = {
@@ -366,15 +397,34 @@ def job_request(request):
         return redirect('Login')
     result = Admin_user(request, user)
     if result == True:
-        requests = Reports.objects.all().select_related('request').values(
-            'report_id', 'report_date', 'request__request_type', 'request__request_item_quantity', 'request', 'request__request_date',
-            'request__request_item_name', 'request__request_user', 'request__request_status', 'request__request_repair_details',
-        ).filter(request__request_type = 'Job Request').order_by('-report_date')
+        
+        status_filter = request.GET.get('status-job', 'all')
+
+        if status_filter == 'Approve':
+            requests = Reports.objects.all().select_related('request').values(
+                'report_id', 'report_date', 'request__request_type', 'request__request_item_quantity', 'request', 'request__request_date',
+                'request__request_item_name', 'request__request_user', 'request__request_status', 'request__request_repair_details',
+            ).filter(request__request_type = 'Job Request', request__request_status = 'Approve').order_by('-report_date', '-report_id')
+            print("Status Filter:", status_filter)
+        elif status_filter == 'Decline':
+            requests = Reports.objects.all().select_related('request').values(
+                'report_id', 'report_date', 'request__request_type', 'request__request_item_quantity', 'request', 'request__request_date',
+                'request__request_item_name', 'request__request_user', 'request__request_status', 'request__request_repair_details',
+            ).filter(request__request_type = 'Job Request', request__request_status = 'Decline').order_by('-report_date', '-report_id')
+            print("Status Filter:", status_filter)
+        else:
+            requests = Reports.objects.all().select_related('request').values(
+                'report_id', 'report_date', 'request__request_type', 'request__request_item_quantity', 'request', 'request__request_date',
+                'request__request_item_name', 'request__request_user', 'request__request_status', 'request__request_repair_details',
+            ).filter(request__request_type = 'Job Request').order_by('-report_date', '-report_id')
+
+        paginated = pagination_history(request, requests)
         admin_user = Account.objects.get(account_id = user)
         admin_name = admin_user.account_fname
         display_data = {
-            'requests': requests,
+            'requests': paginated,
             'admin_name': admin_name,
+            'status_filter': status_filter,
         }
         return render(request, 'core/Admin/JobRequest.html', display_data)
     return result
@@ -386,15 +436,33 @@ def purchase_order(request):
         return redirect('Login')
     result = Admin_user(request, user)
     if result == True:
-        requests = Reports.objects.all().select_related('request').values(
-            'report_id', 'report_date', 'request__request_type',
-            'request__request_item_quantity', 'request__request_item_name', 'request__request_date',
-            'request__request_status', 'request__item', 'request', 'request__request_user'
-        ).filter(request__request_type = 'Purchase Order').order_by('-report_date', 'request__request_status')
+        status_filter = request.GET.get('status-order', 'all')
+        if status_filter == 'Approve':
+            requests = Reports.objects.all().select_related('request').values(
+                'report_id', 'report_date', 'request__request_type',
+                'request__request_item_quantity', 'request__request_item_name', 'request__request_date',
+                'request__request_status', 'request__item', 'request', 'request__request_user'
+            ).filter(request__request_type = 'Purchase Order', request__request_status = 'Approve').order_by('-report_date','-report_id')
+        elif status_filter == 'Decline':
+            requests = Reports.objects.all().select_related('request').values(
+                'report_id', 'report_date', 'request__request_type',
+                'request__request_item_quantity', 'request__request_item_name', 'request__request_date',
+                'request__request_status', 'request__item', 'request', 'request__request_user'
+            ).filter(request__request_type = 'Purchase Order', request__request_status = 'Decline').order_by('-report_date','-report_id')
+        else:
+            requests = Reports.objects.all().select_related('request').values(
+                'report_id', 'report_date', 'request__request_type',
+                'request__request_item_quantity', 'request__request_item_name', 'request__request_date',
+                'request__request_status', 'request__item', 'request', 'request__request_user'
+            ).filter(request__request_type = 'Purchase Order').order_by('-report_date','-report_id')
+
+
+        paginated = pagination_history(request, requests)
         admin_user = Account.objects.get(account_id = user)
         admin_name = admin_user.account_fname
         display_data = {
-            'requests': requests,
+            'status_filter': status_filter,
+            'requests': paginated,
             'admin_name': admin_name,
         }
         return render(request, 'core/Admin/OrderRequest.html', display_data)
@@ -407,14 +475,29 @@ def item_request(request):
         return redirect('Login')
     result = Admin_user(request, user)
     if result == True:
-        requests = Reports.objects.all().select_related('request').values(
-            'report_id', 'report_date', 'request__request_type', 'request__request_item_name',
-            'request__request_item_quantity', 'request__request_date', 'request__request_status', 'request', 'request__request_user'
-        ).filter(request__request_type = 'Item Request').order_by('-report_date')
+        status_filter = request.GET.get('status-item', 'all')
+        if status_filter == 'Approve':
+            requests = Reports.objects.all().select_related('request').values(
+                'report_id', 'report_date', 'request__request_type', 'request__request_item_name',
+                'request__request_item_quantity', 'request__request_date', 'request__request_status', 'request', 'request__request_user'
+            ).filter(request__request_type = 'Item Request', request__request_status = 'Approve').order_by('-report_date', '-report_id')
+        elif status_filter == 'Decline':
+            requests = Reports.objects.all().select_related('request').values(
+                'report_id', 'report_date', 'request__request_type', 'request__request_item_name',
+                'request__request_item_quantity', 'request__request_date', 'request__request_status', 'request', 'request__request_user'
+            ).filter(request__request_type = 'Item Request', request__request_status = 'Decline').order_by('-report_date', '-report_id')
+        else:
+            requests = Reports.objects.all().select_related('request').values(
+                'report_id', 'report_date', 'request__request_type', 'request__request_item_name',
+                'request__request_item_quantity', 'request__request_date', 'request__request_status', 'request', 'request__request_user'
+            ).filter(request__request_type = 'Item Request').order_by('-report_date', '-report_id')
+        
+        paginated = pagination_history(request, requests)
         admin_user = Account.objects.get(account_id = user)
         admin_name = admin_user.account_fname
         display_data = {
-            'requests': requests,
+            'status_filter': status_filter,
+            'requests': paginated,
             'admin_name': admin_name,
         }
         return render(request, 'core/Admin/RequestReport.html', display_data)
@@ -427,15 +510,32 @@ def delivery_history(request):
         return redirect('Login')
     result = Admin_user(request, user)
     if result == True:
-        reports = Reports.objects.all().select_related('delivery', 'delivery__supplier').values(
-            'report_id', 'report_date', 'report_reason', 'delivery__delivery_item', 'delivery__delivery_quantity', 'delivery__delivery_supplier',
-            'delivery__delivery_total', 'delivery__delivery_status', 'delivery__delivery_id', 'delivery__supplier__supplier_price', 
-        ).filter(delivery__delivery_status__in = ['Delivered', 'Returned']).order_by('-report_date')
+        status_filter = request.GET.get('status', 'all')
+
+        if status_filter == 'Returned':
+            reports = Reports.objects.all().select_related('delivery', 'delivery__supplier').values(
+                'report_id', 'report_date', 'report_reason', 'delivery__delivery_item', 'delivery__delivery_quantity', 'delivery__delivery_supplier',
+                'delivery__delivery_total', 'delivery__delivery_status', 'delivery__delivery_id', 'delivery__supplier__supplier_price', 
+            ).filter(delivery__delivery_status = 'Returned').order_by('-report_date', '-report_id')
+        elif status_filter == 'Delivered':
+            reports = Reports.objects.all().select_related('delivery', 'delivery__supplier').values(
+                'report_id', 'report_date', 'report_reason', 'delivery__delivery_item', 'delivery__delivery_quantity', 'delivery__delivery_supplier',
+                'delivery__delivery_total', 'delivery__delivery_status', 'delivery__delivery_id', 'delivery__supplier__supplier_price', 
+            ).filter(delivery__delivery_status = 'Delivered').order_by('-report_date', '-report_id')
+        else:
+            reports = Reports.objects.all().select_related('delivery', 'delivery__supplier').values(
+                'report_id', 'report_date', 'report_reason', 'delivery__delivery_item', 'delivery__delivery_quantity', 'delivery__delivery_supplier',
+                'delivery__delivery_total', 'delivery__delivery_status', 'delivery__delivery_id', 'delivery__supplier__supplier_price', 
+            ).filter(delivery__delivery_status__in = ['Delivered', 'Returned']).order_by('-report_date', '-report_id')
+
+        paginated_reports = pagination_history(request, reports)
         admin_user = Account.objects.get(account_id = user)
         admin_name = admin_user.account_fname
         display_data = {
-            'reports': reports,
+            'status_filter': status_filter,
+            # 'reports': reports,
             'admin_name': admin_name,
+            'reports': paginated_reports,
         }
         return render(request, 'core/Admin/DeliveryReport.html', display_data)
     return result
@@ -683,7 +783,7 @@ def deleteItem(request, inventory_id):
     if request.method == "POST":
         inventory_item = get_object_or_404(Inventory, inventory_id = inventory_id)
         if inventory_item and inventory_item.inventory_quantity !=0:
-            print("cannot delete still have stocks")
+            messages.error(request, 'cannot delete still have stocks')
             return redirect('custodian_inventory')
         else:
             delete_item = inventory_item.item
@@ -903,9 +1003,20 @@ def accept_deliveries(request, delivery_id):
     
     if request.method == 'POST':
         try:
+            quantity = request.POST.get('quantity', '')
+            total = request.POST.get('total', '')
+            updated_total = float(total)
+            updated_quantity = int(quantity)
             status = 'Delivered'
             delivery = get_object_or_404(Delivery, delivery_id = delivery_id)
+            inventory = Inventory.objects.get(item = delivery.item)         
+            total_quantity = inventory.inventory_quantity + updated_quantity
+            
+            inventory.inventory_quantity = total_quantity
+            inventory.save()
 
+            delivery.delivery_quantity = quantity
+            delivery.delivery_total = updated_total
             delivery.delivery_status = status
             delivery.save()
             Reports.objects.create(
@@ -950,7 +1061,7 @@ def delivery_order(request):
         return redirect('Login')
     result = Custodian_user(request, user)
     if result == True:
-        check_deliveries = Delivery.objects.all().filter(delivery_status = 'Pending')
+        check_deliveries = Delivery.objects.all().filter(delivery_status = 'Pending').select_related('supplier')
         custodian_user = Account.objects.get(account_id = user)
         custodian_name = custodian_user.account_fname
         display_data = {
@@ -967,15 +1078,33 @@ def order_Reports(request):
         return redirect('Login')
     result = Custodian_user(request, user)
     if result == True:
-        requests = Reports.objects.all().select_related('request').values(
-            'report_id', 'report_date', 'request__request_type',
-            'request__request_item_quantity', 'request__request_item_name', 'request__request_date',
-            'request__request_status', 'request__item', 'request', 'request__request_user'
-        ).filter(request__request_type = 'Purchase Order').order_by('-report_date')
+        status_filter = request.GET.get('status-order', 'all')
+
+        if status_filter == 'Approve':
+            requests = Reports.objects.all().select_related('request').values(
+                'report_id', 'report_date', 'request__request_type',
+                'request__request_item_quantity', 'request__request_item_name', 'request__request_date',
+                'request__request_status', 'request__item', 'request', 'request__request_user'
+            ).filter(request__request_type = 'Purchase Order', request__request_status = 'Approve').order_by('-report_date')
+        elif status_filter == 'Decline':
+            requests = Reports.objects.all().select_related('request').values(
+                'report_id', 'report_date', 'request__request_type',
+                'request__request_item_quantity', 'request__request_item_name', 'request__request_date',
+                'request__request_status', 'request__item', 'request', 'request__request_user'
+            ).filter(request__request_type = 'Purchase Order', request__request_status = 'Decline').order_by('-report_date')
+        else:
+            requests = Reports.objects.all().select_related('request').values(
+                'report_id', 'report_date', 'request__request_type',
+                'request__request_item_quantity', 'request__request_item_name', 'request__request_date',
+                'request__request_status', 'request__item', 'request', 'request__request_user'
+            ).filter(request__request_type = 'Purchase Order').order_by('-report_date')
+
+        paginated = pagination_history(request, requests)
         custodian_user = Account.objects.get(account_id = user)
         custodian_name = custodian_user.account_fname
         display_data = {
-            'requests': requests,
+            'status_filter' : status_filter,
+            'requests': paginated,
             'custodian_name': custodian_name,
         }
         return render(request, 'core/Custodian/OrderRequest.html', display_data)
@@ -987,14 +1116,29 @@ def Item_Reports(request):
         return redirect('Login')
     result = Custodian_user(request, user)
     if result == True:
-        requests = Reports.objects.all().select_related('request').values(
-            'report_id', 'report_date', 'request__request_type', 'request__request_item_name',
-            'request__request_item_quantity', 'request__request_date', 'request__request_status', 'request', 'request__request_user'
-        ).filter(request__request_type = 'Item Request').order_by('-report_date')
+        status_filter = request.GET.get('status-item', 'all')
+        if status_filter == 'Approve':
+            requests = Reports.objects.all().select_related('request').values(
+                'report_id', 'report_date', 'request__request_type', 'request__request_item_name',
+                'request__request_item_quantity', 'request__request_date', 'request__request_status', 'request', 'request__request_user'
+            ).filter(request__request_type = 'Item Request', request__request_status = 'Approve').order_by('-report_date')
+        elif status_filter == 'Decline':
+            requests = Reports.objects.all().select_related('request').values(
+                'report_id', 'report_date', 'request__request_type', 'request__request_item_name',
+                'request__request_item_quantity', 'request__request_date', 'request__request_status', 'request', 'request__request_user'
+            ).filter(request__request_type = 'Item Request', request__request_status = 'Decline').order_by('-report_date')
+        else:
+            requests = Reports.objects.all().select_related('request').values(
+                'report_id', 'report_date', 'request__request_type', 'request__request_item_name',
+                'request__request_item_quantity', 'request__request_date', 'request__request_status', 'request', 'request__request_user'
+            ).filter(request__request_type = 'Item Request').order_by('-report_date')
+
+        paginated = pagination_history(request, requests)
         custodian_user = Account.objects.get(account_id = user)
         custodian_name = custodian_user.account_fname
         display_data = {
-            'requests': requests,
+            'status_filter': status_filter,
+            'requests': paginated,
             'custodian_name': custodian_name,
         }
         return render(request, 'core/Custodian/RequestReports.html', display_data)

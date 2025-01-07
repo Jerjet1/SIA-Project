@@ -125,52 +125,52 @@
                                     <form method="POST" action="{% url 'admin_account_update' account_id=account.account_id %}">
                                         {%csrf_token%}
                                         <div class="mb-2 flex justify-between">
-                                            <label class="block text-gray-700 text-sm font-bold mt-2" for="first-name">
+                                            <label class="block text-black text-sm font-bold mt-2" for="first-name">
                                                 First Name
                                             </label>
                                             <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 ml-6 
-                                            text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                            text-black leading-tight focus:outline-none focus:shadow-outline" 
                                             name="first-name" type="text" value="{{account.account_fname}}">
                                         </div>
                                         <div class="mb-2 flex justify-between">
-                                            <label class="block text-gray-700 text-sm font-bold mt-2" for="last-name">
+                                            <label class="block text-black text-sm font-bold mt-2" for="last-name">
                                                 Last name
                                             </label>
                                             <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 ml-7 
-                                            text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                            text-black leading-tight focus:outline-none focus:shadow-outline" 
                                             name="last-name" type="text" value="{{account.account_lname}}">
                                         </div>
                                         <div class="mb-2 flex justify-between">
-                                            <label class="block text-gray-700 text-sm font-bold mt-2" for="contact">
+                                            <label class="block text-black text-sm font-bold mt-2" for="contact">
                                                 Contact No
                                             </label>
                                             <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 ml-5 
-                                            text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                            text-black leading-tight focus:outline-none focus:shadow-outline" 
                                             name="contact" type="text" value="{{account.account_contactno}}" 
                                             pattern="\d{11}" maxlength="11" oninput="validateContactNo(this)">
                                         </div>
                                         <div class="mb-2 flex justify-between">
-                                            <label class="block text-gray-700 text-sm font-bold mt-2 mr-2" for="address">
+                                            <label class="block text-black text-sm font-bold mt-2 mr-2" for="address">
                                                 Address
                                             </label>
                                             <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 ml-7
-                                            text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                            text-black leading-tight focus:outline-none focus:shadow-outline" 
                                             name="address" type="text" value="{{account.account_address}}">
                                         </div>
                                         <div class="mb-2 flex justify-between">
-                                            <label class="block text-gray-700 text-sm font-bold mt-2" for="username">
+                                            <label class="block text-black text-sm font-bold mt-2" for="username">
                                                 Username
                                             </label>
                                             <input disabled class="shadow appearance-none border rounded w-[15rem] py-2 px-3 ml-6 
-                                            text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                            text-black leading-tight focus:outline-none focus:shadow-outline" 
                                             type="text" value="{{account.account_user}}">
                                         </div>
                                         <div class="mb-2 flex justify-between">
-                                            <label class="block text-gray-700 text-sm font-bold mt-2" for="password">
+                                            <label class="block text-black text-sm font-bold mt-2" for="password">
                                                 Password
                                             </label>
                                             <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 ml-6 
-                                            text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                            text-black leading-tight focus:outline-none focus:shadow-outline" 
                                             type="password" name="password">
                                         </div>
                                         <div class=" flex justify-center items-center">

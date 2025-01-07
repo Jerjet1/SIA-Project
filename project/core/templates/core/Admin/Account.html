@@ -22,59 +22,59 @@
                 <form method="POST" action="{% url 'admin_create_account' %}">
                     {%csrf_token%}
                     <div class="mb-2 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2" for="first-name">
+                        <label class="block text-black text-sm font-bold mt-2" for="first-name">
                             First Name
                         </label>
                         <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 ml-3 
-                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        text-black leading-tight focus:outline-none focus:shadow-outline" 
                         name="fname" id="first-name" type="text" placeholder="First Name">
                     </div>
                     <div class="mb-2 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2" for="last-name">
+                        <label class="block text-black text-sm font-bold mt-2" for="last-name">
                             Last Name
                         </label>
                         <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 
-                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        text-black leading-tight focus:outline-none focus:shadow-outline" 
                         name="lname" id="last-name" type="text" placeholder="Last Name">
                     </div>
                     <div class="mb-2 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2" for="contact-no">
+                        <label class="block text-black text-sm font-bold mt-2" for="contact-no">
                             Contact No.
                         </label>
                         <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 
-                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        text-black leading-tight focus:outline-none focus:shadow-outline" 
                         name="contactno" id="contact-no" type="text" pattern="\d{11}" placeholder="+63" oninput="validateContactNo(this)">
                     </div>
                     <div class="mb-2 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2" for="address">
+                        <label class="block text-black text-sm font-bold mt-2" for="address">
                             Address
                         </label>
                         <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 
-                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        text-black leading-tight focus:outline-none focus:shadow-outline" 
                         name="address" id="address" type="text"  placeholder="City street" >
                     </div>
                     <div class="mb-2 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2" for="username">
+                        <label class="block text-black text-sm font-bold mt-2" for="username">
                             Username
                         </label>
                         <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3
-                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        text-black leading-tight focus:outline-none focus:shadow-outline" 
                         name="username" id="username" type="text" placeholder="Username">
                     </div>
                     <div class="mb-2 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2" for="password">
+                        <label class="block text-black text-sm font-bold mt-2" for="password">
                             Password
                         </label>
                         <input required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 
-                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        text-black leading-tight focus:outline-none focus:shadow-outline" 
                         name="password" id="password" type="password" placeholder="Password">
                     </div>
                     <div class="mb-2 flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mt-2" for="role">
+                        <label class="block text-black text-sm font-bold mt-2" for="role">
                             Role
                         </label>
                         <select required class="shadow appearance-none border rounded w-[20rem] py-2 px-3 
-                        text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        text-black leading-tight focus:outline-none focus:shadow-outline" 
                         id="role" name="role">
                             <option value="" disabled selected>Select Role</option>
                             <option value="Admin">Admin</option>
