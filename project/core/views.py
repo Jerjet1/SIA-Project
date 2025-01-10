@@ -18,6 +18,7 @@ def Admin_user(request,user_id):
         elif admin_user.account_role == 'Custodian':
             return redirect('custodian_request')
     except Account.DoesNotExist:
+        request.session.flush()
         return redirect('Login')
     
 def Custodian_user(request, user_id):
@@ -30,6 +31,7 @@ def Custodian_user(request, user_id):
         else:
             return redirect('admin_request')
     except Account.DoesNotExist:
+        request.session.flush()
         return redirect('Login')
     
 def Worker_user(request, user_id):
@@ -42,6 +44,7 @@ def Worker_user(request, user_id):
         else:
             return redirect('admin_request')
     except Account.DoesNotExist:
+        request.session.flush()
         return redirect('Login')
     
 # function for pagination
