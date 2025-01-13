@@ -803,6 +803,11 @@ def updateInventory(request, inventory_id):
         if not (inventory_name and inventory_descripton and stocks):
             return redirect('custodian_inventory')
         
+        existing_item = Item.objects.filter(item_name=inventory_name).exclude(item_id = inventory_items.item.item_id).first()
+        if existing_item:
+            messages.error(request, "Item with this name already exists.")
+            return redirect('custodian_inventory')
+
         item = inventory_items.item
         #update inventory
         item.item_name = inventory_name
@@ -812,7 +817,7 @@ def updateInventory(request, inventory_id):
         item.save()
         inventory_items.save()
         #message here..
-
+        messages.success(request, "Inventory updated successfully.")
         return redirect('custodian_inventory')
     return redirect('custodian_inventory')
 
