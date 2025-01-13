@@ -18,6 +18,7 @@ def Admin_user(request,user_id):
         elif admin_user.account_role == 'Custodian':
             return redirect('custodian_request')
     except Account.DoesNotExist:
+        request.session.flush()
         return redirect('Login')
     
 def Custodian_user(request, user_id):
@@ -30,6 +31,7 @@ def Custodian_user(request, user_id):
         else:
             return redirect('admin_request')
     except Account.DoesNotExist:
+        request.session.flush()
         return redirect('Login')
     
 def Worker_user(request, user_id):
@@ -42,6 +44,7 @@ def Worker_user(request, user_id):
         else:
             return redirect('admin_request')
     except Account.DoesNotExist:
+        request.session.flush()
         return redirect('Login')
     
 # function for pagination
@@ -324,7 +327,7 @@ def UpdateAccount(request, account_id):
         if Account.objects.filter(account_fname=account_first_name, account_lname=account_last_name).exclude(
             account_id=account_id).exists():
             #message here
-            print('not updated')
+            messages.error(request, 'cannot update user already exist')
             return redirect('Account_list')
         
         if account.account_role == 'Admin':
@@ -640,10 +643,6 @@ def AdminSupplier(request):
                 # Return an error message (can also pass this to the template)
                 return redirect('admin_supplier')
 
-            # Check if the supplier name already exists
-            if Supplier.objects.filter(supplier_name=supplier_name).exists():
-                messages.error(request, 'supplier already exist')
-                return redirect('admin_supplier')
             try:
                 # Fetch the associated item
                 item = get_object_or_404(Item, item_id=item_id)
@@ -805,7 +804,6 @@ def updateInventory(request, inventory_id):
             return redirect('custodian_inventory')
         
         item = inventory_items.item
-
         #update inventory
         item.item_name = inventory_name
         item.item_description = inventory_descripton

@@ -93,7 +93,7 @@ class Request(models.Model):
     request_id = models.AutoField(primary_key=True)
     request_type = models.CharField(max_length=25, choices=REQUEST_TYPE)
     request_user = models.CharField(max_length=50, blank=False, null=False)
-    request_item_quantity = models.SmallIntegerField(blank=True, null=True)
+    request_item_quantity = models.IntegerField(blank=True, null=True)
     request_repair_details = models.CharField(max_length=255, blank=True, null=True)
     request_item_name = models.CharField(max_length=50, blank=True, null=True)
     request_date = models.DateField(auto_now_add=True)
@@ -127,7 +127,7 @@ class Supplier(models.Model):
 
 class Inventory(models.Model):
     inventory_id = models.AutoField(primary_key=True)
-    inventory_quantity = models.SmallIntegerField(default= 0)
+    inventory_quantity = models.IntegerField(default= 0)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
 
     class Meta:
