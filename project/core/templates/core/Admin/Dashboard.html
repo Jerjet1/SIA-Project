@@ -112,7 +112,13 @@
                 </ul>
             </div>
         </div>
+        
         {% block content %}
+        <!-- for editing please dont leave me -->
+        <!-- <div>
+            PENDING REQUESTS
+        </div> -->
+
         <!--container div-->
         <div class="w-full bg-white flex justify-center items-center mt-10 relative">
             <!-- Messages Section -->
@@ -216,11 +222,11 @@
                                                 </div>
                                             {% endif %}
                                             <div class="flex justify-center items-center w-full space-x-5">
-                                                <button class="bg-gray-2 px-2 py-1 hover:text-orange-500 rounded-lg text-white" 
+                                                <button class="bg-green-500 px-2 py-1 hover:bg-green-600 rounded-lg text-white" 
                                                     onclick="openModal('approveModal-{{request.request_id}}')">
                                                     approve
                                                 </button>
-                                                <button class="bg-gray-2 px-2 py-1 hover:text-orange-500 rounded-lg text-white" 
+                                                <button class="bg-red-500 px-2 py-1 hover:bg-red-600 rounded-lg text-white" 
                                                     onclick="openModal('declineModal-{{request.request_id}}')">
                                                     decline
                                                 </button>

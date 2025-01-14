@@ -99,7 +99,7 @@ def Login(request):
                     else:
                         return redirect('admin_request')
                 else:
-                    messages.error(request,'Account has been deactivate contact your admin')
+                    messages.error(request,'Account has been deactivated, Please contact your admin')
                     return redirect('Login')
             else:
                 print('Invalid password')
