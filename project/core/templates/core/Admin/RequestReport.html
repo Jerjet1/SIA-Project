@@ -1,7 +1,11 @@
 {% extends "core/Admin/Dashboard.html" %}
 {% block content %}
-<div class="w-full bg-white flex justify-center items-center">
-    <div class="w-[50rem] h-[30rem]">
+<div class="w-full bg-white flex justify-center items-center relative">
+    <div class="flex justify-center items-center text-black text-5xl font-bold 
+                absolute top-5 left-1/2 transform -translate-x-1/2">
+        <h1>Item History</h1>
+    </div>
+    <div class="w-[50rem] h-[30rem] mt-10">
         <div class="flex justify-between mb-4">
             <!--dropdown Filter-->
             <div>
@@ -102,7 +106,7 @@
                                     </p>
                                 </div>
                                 <button 
-                                    class="bg-gray-2 text-white px-4 py-1 rounded-lg hover:text-orange-500" type="button"
+                                    class="bg-green-500 text-white px-4 py-1 rounded-lg hover:bg-green-800" type="button"
                                     onclick="closeModal('viewModal-{{request.report_id}}')">Close</button>
                             </div>
                         </div>

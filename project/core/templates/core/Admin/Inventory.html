@@ -5,7 +5,7 @@
     <!-- Messages Section -->
     {% if messages %}
         {% for message in messages %}
-        <div id="notifications" class="px-4 py-2 rounded absolute top-10 left-1/2 transform -translate-x-1/2 
+        <div id="notifications" class="px-4 py-2 rounded absolute top-20 left-1/2 transform -translate-x-1/2 
             text-white {% if message.tags == 'error' %}bg-red-500{% elif message.tags == 'success' %}
             bg-green-500
             {% endif %}">
@@ -13,7 +13,11 @@
         </div>
         {% endfor %}
     {% endif %}
-    <div class="w-[50rem] h-[35rem]  mt-10">
+    <div class="flex justify-center items-center text-black text-5xl font-bold 
+                absolute top-5 left-1/2 transform -translate-x-1/2">
+        <h1>Item Inventory</h1>
+    </div>
+    <div class="w-[50rem] h-[30rem]">
         <!--search and add item container-->
         <div class=" min-w-full h-14 pt-2 flex justify-between">
             <!--search-->

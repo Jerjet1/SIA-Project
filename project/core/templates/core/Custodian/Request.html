@@ -5,7 +5,7 @@
     <!-- Messages Section -->
     {% if messages %}
         {% for message in messages %}
-        <div id="notifications" class="px-4 py-2 rounded absolute top-10 left-1/2 transform -translate-x-1/2 
+        <div id="notifications" class="px-4 py-2 rounded absolute top-24 left-1/2 transform -translate-x-1/2 
             text-white {% if message.tags == 'error' %}bg-red-500{% elif message.tags == 'success' %}
             bg-green-500
             {% endif %}">
@@ -13,7 +13,11 @@
         </div>
         {% endfor %}
     {% endif %}
-    <div class="w-[50rem] h-[35rem]  mt-10">
+    <div class="flex justify-center items-center text-black text-5xl font-bold 
+        absolute top-6 left-1/2 transform -translate-x-1/2">
+        <h1>Pending Requests</h1>
+    </div>
+    <div class="w-[50rem] h-[30rem]">
         <!--container for search and create request-->
         <div class=" min-w-full h-20 pt-2 flex justify-end">
             <!--create request button-->
@@ -48,11 +52,11 @@
                             </span>
                         </td>
                         <td class="pt-1">
-                            <button class="bg-gray-2 text-white hover:text-orange-500 px-2 py-1 rounded-lg" 
+                            <button class="bg-green-500 text-white hover:bg-green-800 px-2 py-1 rounded-lg" 
                             onclick="openModal('update-{{request.request_id}}')">
                                 Update
                             </button>
-                            <button class="bg-gray-2 text-white hover:text-orange-500 px-2 py-1 rounded-lg" 
+                            <button class="bg-red-500 text-white hover:bg-red-800 px-2 py-1 rounded-lg" 
                             onclick="openModal('deleteModal-{{request.request_id}}')">
                                 Delete
                             </button>
@@ -116,14 +120,14 @@
                                                     </label>
                                                     <input required class="shadow appearance-none border rounded
                                                     w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline" 
-                                                    id="quantity" type="text" name="quantity" maxlength="10" value="{{request.request_item_quantity}}" 
+                                                    id="quantity" type="text" name="quantity" maxlength="6" value="{{request.request_item_quantity}}" 
                                                     oninput="validatestocks(this)">
                                                 </div>
                                                 <div class="flex justify-center items-center">
                                                     <button type="submit"
-                                                        class="bg-gray-2 text-white hover:text-orange-500 px-2 py-1 rounded-lg" 
+                                                        class="bg-gray-2 text-white hover:text-orange-500 px-5 py-2 mt-4 rounded-2xl" 
                                                         id="submitButton">
-                                                        Update
+                                                        Save
                                                     </button>
                                                 </div>
                                             </form>
@@ -153,7 +157,7 @@
                                                     </label>
                                                     <input required class="shadow appearance-none border rounded 
                                                     w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline" 
-                                                    id="quantity" name="quantity" maxlength="10" type="text" value="{{request.request_item_quantity}}" oninput="validatestocks(this)">
+                                                    id="quantity" name="quantity" maxlength="6" type="text" value="{{request.request_item_quantity}}" oninput="validatestocks(this)">
                                                 </div>
                                                 <div class="mb-4">
                                                     <label class="block text-black text-md font-bold mt-2 mr-2" for="repair">
@@ -166,9 +170,9 @@
                                             </div>
                                             <div class="flex justify-center items-center">
                                                 <button type="submit"
-                                                    class="bg-gray-2 text-white hover:text-orange-500 px-2 py-1 rounded-lg" 
+                                                    class="bg-gray-2 text-white hover:text-orange-500 px-5 py-2 mt-2 rounded-2xl" 
                                                     id="submitButton">
-                                                    Update
+                                                    Save
                                                 </button>
                                             </div>
                                         </form>
@@ -223,7 +227,7 @@
                         </label>
                         <input required class="shadow appearance-none border rounded
                          w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline" 
-                        id="quantity" type="text" name="quantity" placeholder="0" maxlength="10" oninput="validatestocks(this)">
+                        id="quantity" type="text" name="quantity" placeholder="0" maxlength="6" oninput="validatestocks(this)">
                     </div>
                     <div class="mb-4">
                         <label class="block text-black text-md font-bold mt-2 mr-2" for="repair">
@@ -268,7 +272,7 @@
                         </label>
                         <input required class="shadow appearance-none border rounded
                          w-[15rem] py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline" 
-                        id="quantity" type="text" name="quantity" placeholder="0" maxlength="10" oninput="validatestocks(this)">
+                        id="quantity" type="text" name="quantity" placeholder="0" maxlength="6" oninput="validatestocks(this)">
                     </div>
                     <div class="flex justify-center items-center">
                         <button type="submit"

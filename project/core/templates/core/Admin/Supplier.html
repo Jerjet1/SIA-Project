@@ -5,7 +5,7 @@
     <!-- Messages Section -->
     {% if messages %}
         {% for message in messages %}
-        <div id="notifications" class="px-4 py-2 rounded absolute top-10 left-1/2 transform -translate-x-1/2 
+        <div id="notifications" class="px-4 py-2 rounded absolute top-24 left-1/2 transform -translate-x-1/2 
             text-white {% if message.tags == 'error' %}bg-red-500{% elif message.tags == 'success' %}
             bg-green-500
             {% endif %}">
@@ -13,7 +13,11 @@
         </div>
         {% endfor %}
     {% endif %}
-    <div class="w-[61rem] h-[38rem] mt-10">
+    <div class="flex justify-center items-center text-black text-5xl font-bold 
+                absolute top-5 left-1/2 transform -translate-x-1/2">
+        <h1>Supplier List</h1>
+    </div>
+    <div class="w-[61rem] h-[30rem]">
         <!--Search and add supplier container-->
         <div class=" min-w-full h-[6rem] pt-2 flex justify-between">
             <!--search-->
@@ -64,11 +68,11 @@
                         <td class="pt-1">₱{{supplier.supplier_price}}</td>
                         <td class="pt-1">{{supplier.supplier_grade}}</td>
                         <td class="pt-1">
-                            <button class="bg-gray-2 px-2 py-1 rounded-lg text-white hover:text-orange-500" 
+                            <button class="bg-green-500 px-2 py-1 rounded-lg text-white hover:bg-green-800" 
                                 onclick="openModal('updateModal-{{supplier.supplier_id}}')">
                                 Update
                             </button>
-                            <button class="bg-gray-2 px-2 py-1 rounded-lg text-white hover:text-orange-500" 
+                            <button class="bg-red-500 px-2 py-1 rounded-lg text-white hover:bg-red-800" 
                                 onclick="openModal('deleteModal-{{supplier.supplier_id}}')">
                                 Delete
                             </button>
@@ -93,7 +97,7 @@
                                                 </label>
                                                 <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
                                                 text-black leading-tight focus:outline-none focus:shadow-outline" 
-                                                id="name" name="name" type="text" value="{{supplier.supplier_name}}">
+                                                id="name" name="name" type="text" value="{{supplier.supplier_name}}" maxlength="255">
                                             </div>
                                             <!--supplier address-->
                                             <div class="mb-4 flex justify-between">
@@ -102,7 +106,7 @@
                                                 </label>
                                                 <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
                                                 text-black leading-tight focus:outline-none focus:shadow-outline" 
-                                                id="address" name="address" type="text" value="{{supplier.supplier_address}}">
+                                                id="address" name="address" type="text" value="{{supplier.supplier_address}}" maxlength="255">
                                             </div>
                                             <!--supplier contact no-->
                                             <div class="mb-4 flex justify-between">
@@ -138,7 +142,7 @@
                                                 <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
                                                 text-black leading-tight focus:outline-none focus:shadow-outline" 
                                                 id="price" name="price" type="text" pattern="^\d*\.?\d*$" value="{{supplier.supplier_price}}" 
-                                                oninput="validatePrice(this)">
+                                                oninput="validatePrice(this)" maxlength="6">
                                             </div>
                                             <!--supplier item grade-->
                                             <div class="mb-4 flex justify-between">
@@ -216,7 +220,7 @@
                         </label>
                         <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
                         text-black leading-tight focus:outline-none focus:shadow-outline" 
-                        id="name" name="name" type="text" placeholder="Name">
+                        id="name" name="name" type="text" placeholder="Name" maxlength="255">
                     </div>
                     <!--supplier address-->
                     <div class="mb-4 flex justify-between">
@@ -256,7 +260,7 @@
                         </label>
                         <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
                         text-black leading-tight focus:outline-none focus:shadow-outline" 
-                        id="price" name="price" type="text" pattern="^\d*\.?\d*$" placeholder="₱" maxlength="10" oninput="validatePrice(this)">
+                        id="price" name="price" type="text" pattern="^\d*\.?\d*$" placeholder="₱" maxlength="6" oninput="validatePrice(this)">
                     </div>
                     <!--supplier grade-->
                     <div class="mb-4 flex justify-between">

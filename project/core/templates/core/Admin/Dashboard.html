@@ -118,14 +118,18 @@
             <!-- Messages Section -->
             {% if messages %}
                 {% for message in messages %}
-                <div id="notifications" class="px-4 py-2 rounded absolute top-2 left-1/2 transform -translate-x-1/2 
+                <div id="notifications" class="px-4 py-2 rounded absolute top-16 left-1/2 transform -translate-x-1/2 
                     text-white {% if message.tags == 'error' %}bg-red-500
                     {% endif %}">
                     {{ message }}
                 </div>
                 {% endfor %}
             {% endif %}
-            <div class="w-[50rem] h-[30rem]">
+            <div class="flex justify-center items-center text-black text-5xl font-bold 
+                absolute top-1 left-1/2 transform -translate-x-1/2">
+                <h1>Pending Requests</h1>
+            </div>
+            <div class="w-[50rem] h-[20rem]">
                 <!--table container-->
                 <div class="min-w-full h-[25rem] bg-gray-3 overflow-auto" id="request-container">
                     <table class="w-full">
@@ -216,11 +220,11 @@
                                                 </div>
                                             {% endif %}
                                             <div class="flex justify-center items-center w-full space-x-5">
-                                                <button class="bg-gray-2 px-2 py-1 hover:text-orange-500 rounded-lg text-white" 
+                                                <button class="bg-green-500 px-2 py-1 hover:bg-green-800 rounded-lg text-white" 
                                                     onclick="openModal('approveModal-{{request.request_id}}')">
                                                     approve
                                                 </button>
-                                                <button class="bg-gray-2 px-2 py-1 hover:text-orange-500 rounded-lg text-white" 
+                                                <button class="bg-red-500 px-2 py-1 hover:bg-red-800 rounded-lg text-white" 
                                                     onclick="openModal('declineModal-{{request.request_id}}')">
                                                     decline
                                                 </button>
@@ -238,11 +242,11 @@
                                                     {%csrf_token%}
                                                     <input type="hidden" value="approve" name="status">
                                                     <button 
-                                                        class="bg-gray-2 text-white px-5 py-1.5 rounded-lg" type="submit"
+                                                        class="bg-green-500 text-white px-5 py-1.5 rounded-lg hover:bg-green-800" type="submit"
                                                         onclick="closeModal('approveModal-{{request.request_id}}')">Yes</button>
                                                     </form>
                                                 <button 
-                                                    class="bg-gray-2 px-5 py-1.5 rounded-lg text-white"
+                                                    class="bg-red-500 px-5 py-1.5 rounded-lg text-white hover:bg-red-800"
                                                     onclick="closeModal('approveModal-{{request.request_id}}')">Cancel</button>
                                             </div>
                                         </div>
@@ -258,12 +262,12 @@
                                                     {%csrf_token%}
                                                     <input type="hidden" value="decline" name="status">
                                                     <button 
-                                                        class="bg-gray-2 text-white px-4 py-2 rounded-lg"
+                                                        class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-800"
                                                         onclick="closeModal('declineModal-{{request.request_id}}')" 
                                                         type="submit">Yes</button>
                                                 </form>
                                                 <button 
-                                                    class="bg-gray-2 px-4 py-2 text-white rounded-lg" type="button"
+                                                    class="bg-red-500 px-4 py-2 text-white rounded-lg hover:bg-red-800" type="button"
                                                     onclick="closeModal('declineModal-{{request.request_id}}')">Cancel</button>
                                             </div>
                                         </div>

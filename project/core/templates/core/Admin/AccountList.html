@@ -2,7 +2,11 @@
 {% load static tailwind_tags %}
 {% block content %}
 <div class="w-full bg-white flex justify-center items-center relative">
-    <div class="w-[67rem] h-[35rem] mt-10">
+    <div class="flex justify-center items-center text-black text-5xl font-bold 
+                absolute top-10 left-1/2 transform -translate-x-1/2">
+            <h1>Account List</h1>
+    </div>
+    <div class="w-[67rem] h-[32rem] mt-10">
         <div class=" min-w-full h-20 pt-2">
             <input type="text" id="search-input" placeholder="Search" class="h-9 rounded-3xl 
             hover:border-blue-700 mt-6" oninput="filterAccounts(this)">
@@ -10,7 +14,7 @@
         <!-- Messages Section -->
         {% if messages %}
             {% for message in messages %}
-            <div id="notifications" class="px-4 py-2 rounded absolute top-10 left-1/2 transform -translate-x-1/2 
+            <div id="notifications" class="px-4 py-2 rounded absolute top-24 left-1/2 transform -translate-x-1/2 
                 text-white {% if message.tags == 'error' %}bg-red-500{% elif message.tags == 'success' %}
                 bg-green-500
                 {% endif %}">
@@ -46,21 +50,21 @@
                             </span>
                         </td>
                         <td class="p-1">
-                            <button class="bg-gray-2 hover:text-orange-500 text-white px-2 py-1 rounded-lg" type="button"
+                            <button class="bg-green-500 hover:bg-green-800 text-white px-2 py-1 rounded-lg" type="button"
                             onclick="openModal('Update-{{account.account_id}}')">
                                 Update
                             </button>
-                            <button class="bg-gray-2 hover:text-orange-500 text-white px-2 py-1 rounded-lg" type="button"
+                            <button class="bg-red-500 hover:bg-red-800 text-white px-2 py-1 rounded-lg" type="button"
                             onclick="openModal('Delete-{{account.account_id}}')">
                                 Delete
                             </button>
                             {% if account.account_status == 'active' %}
-                                <button class="bg-gray-2 hover:text-orange-500 text-white px-2 py-1 rounded-lg" type="button"
+                                <button class="bg-blue-500 hover:bg-blue-800 text-white px-2 py-1 rounded-lg" type="button"
                                 onclick="openModal('Deactivate-{{account.account_id}}')">
                                     Deactivate
                                 </button>
                             {% else %}
-                                <button class="bg-gray-2 hover:text-orange-500 text-white px-2 py-1 rounded-lg" type="button"
+                                <button class="bg-blue-500 hover:bg-blue-800 text-white px-2 py-1 rounded-lg" type="button"
                                 onclick="openModal('Activate-{{account.account_id}}')">
                                     Activate
                                 </button>
@@ -141,7 +145,7 @@
                                             </label>
                                             <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 ml-6 
                                             text-black leading-tight focus:outline-none focus:shadow-outline" 
-                                            name="first-name" type="text" value="{{account.account_fname}}">
+                                            name="first-name" type="text" value="{{account.account_fname}}" maxlength="50">
                                         </div>
                                         <div class="mb-2 flex justify-between">
                                             <label class="block text-black text-sm font-bold mt-2" for="last-name">
@@ -149,7 +153,7 @@
                                             </label>
                                             <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 ml-7 
                                             text-black leading-tight focus:outline-none focus:shadow-outline" 
-                                            name="last-name" type="text" value="{{account.account_lname}}">
+                                            name="last-name" type="text" value="{{account.account_lname}}" maxlength="50">
                                         </div>
                                         <div class="mb-2 flex justify-between">
                                             <label class="block text-black text-sm font-bold mt-2" for="contact">
@@ -166,7 +170,7 @@
                                             </label>
                                             <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 ml-7
                                             text-black leading-tight focus:outline-none focus:shadow-outline" 
-                                            name="address" type="text" value="{{account.account_address}}">
+                                            name="address" type="text" value="{{account.account_address}}" maxlength="255">
                                         </div>
                                         <div class="mb-2 flex justify-between">
                                             <label class="block text-black text-sm font-bold mt-2" for="username">
@@ -174,7 +178,7 @@
                                             </label>
                                             <input disabled class="shadow appearance-none border rounded w-[15rem] py-2 px-3 ml-6 
                                             text-black leading-tight focus:outline-none focus:shadow-outline" 
-                                            type="text" value="{{account.account_user}}">
+                                            type="text" value="{{account.account_user}}" maxlength="20">
                                         </div>
                                         <div class="mb-2 flex justify-between">
                                             <label class="block text-black text-sm font-bold mt-2" for="password">
@@ -182,7 +186,7 @@
                                             </label>
                                             <input required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 ml-6 
                                             text-black leading-tight focus:outline-none focus:shadow-outline" 
-                                            type="password" name="password">
+                                            type="password" name="password" maxlength="20">
                                         </div>
                                         <div class=" flex justify-center items-center">
                                             <button type="submit" class="mt-5 bg-gray-2 py-2 px-5 text-white rounded-2xl 
@@ -202,6 +206,9 @@
     </div>
 </div>
 <script>
+    setTimeout(() => {
+        document.getElementById('notifications').style.display = 'none';
+    }, 5000);
     function openModal(modalId) {
                 console.log('Opening modal:', modalId);
                 const modal = document.getElementById(modalId);

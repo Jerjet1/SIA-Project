@@ -5,7 +5,7 @@
     <!-- Messages Section -->
     {% if messages %}
         {% for message in messages %}
-        <div id="notifications" class="px-4 py-2 rounded absolute top-10 left-1/2 transform -translate-x-1/2 
+        <div id="notifications" class="px-4 py-2 rounded absolute top-20 left-1/2 transform -translate-x-1/2 
             text-white {% if message.tags == 'error' %}bg-red-500{% elif message.tags == 'success' %}
             bg-green-500
             {% endif %}">
@@ -13,7 +13,11 @@
         </div>
         {% endfor %}
     {% endif %}
-    <div class="w-[50rem] h-[35rem]  mt-10">
+    <div class="flex justify-center items-center text-black text-5xl font-bold 
+                absolute top-5 left-1/2 transform -translate-x-1/2">
+        <h1>Pending Delivery</h1>
+    </div>
+    <div class="w-[50rem] h-[30rem]">
         <!--search-->
         <div class=" min-w-full h-20 pt-2 flex justify-between">
             <input type="text" placeholder="Search" class="h-9 mt-6 rounded-3xl hover:border-blue-700" id="search-input" 
@@ -54,9 +58,9 @@
                             </span>
                         </td>
                         <td class="pt-1 mt-1">
-                            <button class="bg-gray-2 text-white px-3 py-1 rounded-lg hover:text-orange-500" 
+                            <button class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-800" 
                             onclick="openModal('update-{{delivery.delivery_id}}')">Update</button>
-                            <button class="bg-gray-2 text-white px-3 py-1 rounded-lg hover:text-orange-500" 
+                            <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-800" 
                             onclick="openModal('delete-{{delivery.delivery_id}}')">Delete</button>
                         </td>
                         <!-- Update Modal -->
@@ -116,7 +120,7 @@
                                                 <input type="text" id="quantity-input-update-{{delivery.delivery_id}}" name="quantity" 
                                                 class="shadow appearance-none border rounded py-2 px-3 w-[15rem] text-black leading-tight focus:outline-none 
                                                 focus:shadow-outline" placeholder="Enter quantity" value="{{delivery.delivery_quantity}}" 
-                                                required oninput="validatestocks(this)">
+                                                required oninput="validatestocks(this)" maxlength="6">
                                             </div>
                                         </div>
                                         <!-- Total Price Display -->
@@ -128,7 +132,7 @@
                                         <!-- Submit Button -->
                                         <div class="flex justify-center items-center">
                                             <button type="submit" class="bg-gray-2 text-white px-5 py-2 rounded-2xl hover:text-orange-500">
-                                                Update
+                                                Save
                                             </button>
                                         </div>
                                     </div>
@@ -210,7 +214,7 @@
                         <div class="flex justify-between space-x-2">
                             <label class="font-bold text-lg mt-1">Quantity:</label>
                             <input type="text" id="quantity-input" name="quantity" class="shadow appearance-none border rounded py-2 px-3 mb-0.5 w-[15rem]
-                            text-black leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter quantity" required oninput="validatestocks(this)">
+                            text-black leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter quantity" required oninput="validatestocks(this)" maxlength="6">
                         </div>
                     </div>
                     <!-- Total Price Display -->

@@ -5,7 +5,7 @@
     <!-- Messages Section -->
     {% if messages %}
         {% for message in messages %}
-        <div id="notifications" class="px-4 py-2 rounded absolute top-10 left-1/2 transform -translate-x-1/2 
+        <div id="notifications" class="px-4 py-2 rounded absolute top-24 left-1/2 transform -translate-x-1/2 
             text-white {% if message.tags == 'error' %}bg-red-500{% elif message.tags == 'success' %}
             bg-green-500
             {% endif %}">
@@ -13,7 +13,11 @@
         </div>
         {% endfor %}
     {% endif %}
-    <div class="w-[50rem] h-[35rem]  mt-10">
+    <div class="flex justify-center items-center text-black text-5xl font-bold 
+        absolute top-10 left-1/2 transform -translate-x-1/2">
+        <h1>Pending Delivery</h1>
+    </div>
+    <div class="w-[50rem] h-[30rem]">
         <!--search-->
         <div class=" min-w-full h-20 pt-2">
             <input type="text" placeholder="Search" class="h-9 mt-6 rounded-3xl hover:border-blue-700" id="search-input" 
@@ -47,9 +51,9 @@
                             </span>
                         </td>
                         <td class="pt-1 mt-1">
-                            <button class="bg-gray-2 text-white px-3 py-1 rounded-lg hover:text-orange-500" 
+                            <button class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-800" 
                             onclick="openModal('accept-{{delivery.delivery_id}}')">accept</button>
-                            <button class="bg-gray-2 text-white px-3 py-1 rounded-lg hover:text-orange-500" 
+                            <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-800" 
                             onclick="openModal('return-{{delivery.delivery_id}}')">return</button>
                         </td>
                         <!--accept modal-->
@@ -63,7 +67,6 @@
                                         <img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7 ">
                                     </button>
                                 </div>
-                                <h2 class="text-lg font-bold text-center">Confirm Order</h2>
                                 <div class="flex flex-col justify-center items-center pt-5">
                                     <form method="POST" action="{% url 'accept_delivery' delivery_id=delivery.delivery_id%}" id="deliveryForm">
                                         {%csrf_token%}
@@ -84,7 +87,7 @@
                                             <label for="quantity" class="block text-black text-lg font-bold w-15">Quantity</label>
                                             <input type="text" name="quantity" id="quantity-{{delivery.delivery_id}}" required class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
                                             text-black leading-tight focus:outline-none focus:shadow-outline ml-1.5" 
-                                            value="{{delivery.delivery_quantity}}" maxlength="10" oninput="validatestocks(this)">
+                                            value="{{delivery.delivery_quantity}}" maxlength="6" oninput="validatestocks(this)">
                                         </div>
                                         <!--price-->
                                         <div class="mb-2 flex items-center justify-center w-full">
@@ -98,8 +101,8 @@
                                             <input type="text" name="total" id="total-{{delivery.delivery_id}}" readonly class="shadow appearance-none border rounded w-[15rem] py-2 px-3 
                                             text-black leading-tight focus:outline-none focus:shadow-outline ml-9" value="{{delivery.delivery_total}}">
                                         </div>
-                                        <button type="submit" class="bg-gray-2 text-white px-7 py-2 rounded-2xl mt-4
-                                        hover:text-orange-500">Yes</button>
+                                        <button type="submit" class="bg-green-500 text-white px-7 py-2 rounded-2xl mt-4
+                                        hover:bg-green-800">Yes</button>
                                     </form>
                                 </div>
                             </div>
@@ -111,7 +114,6 @@
                                     onclick="closeModal('return-{{delivery.delivery_id}}')">
                                     <img src="{% static 'images/closebtn.png' %}" alt="closebutton" class="w-7 h-7">
                                 </button>
-                                <h2 class="text-lg font-bold text-center">Confirm Order</h2>
                                 <div class="flex flex-col justify-center items-center">
                                     <form method="POST" action="{% url 'return_delivery' delivery_id=delivery.delivery_id %}">
                                         {% csrf_token %}
@@ -121,7 +123,7 @@
                                             text-black leading-tight focus:outline-none focus:shadow-outline resize-none" maxlength="255"></textarea>
                                         </div>
                                         <div class="mt-2">
-                                            <button type="submit" class="bg-gray-2 text-white px-7 py-2 rounded-2xl hover:text-orange-500 mt-3">Yes</button>
+                                            <button type="submit" class="bg-green-500 text-white px-7 py-2 rounded-2xl hover:bg-green-800 mt-3">Yes</button>
                                         </div>
                                     </form>
                                 </div>
