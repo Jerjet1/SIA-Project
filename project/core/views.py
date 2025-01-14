@@ -571,6 +571,7 @@ def update_supplier(request, supplier_id):
         suppliers.supplier_grade = supplier_grade
         suppliers.item = item
         suppliers.save()
+        messages.success(request, 'update Successfully')
         return redirect('admin_supplier')
     return redirect('admin_supplier')
 
@@ -1163,20 +1164,33 @@ def update_request_worker(request, request_id):
     if request.method == 'POST':
         user_request_item = request.POST.get("items")
         user_request_quantity = request.POST.get("quantity")
+        try:
+            item_quantity = int(user_request_quantity)
+            #validation
+            if not (user_request_item and user_request_quantity):
+                #message here..
+                return redirect('worker_request')
 
-        #validation
-        if not (user_request_item and user_request_quantity):
-            #message here..
+            try:
+                inventory = get_object_or_404(Inventory, item = user_request_item)
+            except:
+                return redirect('worker_request')
+
+            if item_quantity > inventory.inventory_quantity:
+                messages.error(request, 'insufficient stocks')
+                return redirect('worker_request')
+
+            items = get_object_or_404(Item, item_id = user_request_item)
+
+            user_request.request_item_quantity = item_quantity
+            user_request.request_item_name = items.item_name
+            user_request.item = items
+            user_request.save()
+            messages.success(request, 'update successfully')
             return redirect('worker_request')
-        
-        items = get_object_or_404(Item, item_id = user_request_item)
-
-        user_request.request_item_quantity = user_request_quantity
-        user_request.request_item_name = items.item_name
-        user_request.item = items
-        user_request.save()
-        messages.success(request, 'update successfully')
-        return redirect('worker_request')
+        except Exception:
+            messages.error(request, 'Unexpected occured')
+            return redirect('worker_request')
     return redirect('worker_request')
     
 # Worker create request(partial)
